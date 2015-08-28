@@ -6,10 +6,15 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXFileReference section */
+		274E36B51B9020A70028D388 /* JackAnalyzer.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = JackAnalyzer.py; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
 /* Begin PBXGroup section */
 		274E36AA1B9020030028D388 = {
 			isa = PBXGroup;
 			children = (
+				274E36B51B9020A70028D388 /* JackAnalyzer.py */,
 			);
 			sourceTree = "<group>";
 		};
