@@ -55,13 +55,31 @@ def constructor(input_file_or_stream):
     temp = strftime("%a, %d, %b, %Y, %X", localtime())
 
     # Write comment header into out_file
-    out_file.write("<!-- \nJACK ANALYZED\nFROM: " + input_file_or_stream + "\nON: " + temp + "\n-->\n\n")
+    out_file.write("<!-- \nJACK ANALYZED\nFROM: " + input_file_or_stream + "\nINPUT TYPE: " + input_type + "\nON: " + temp + "\n-->\n\n")
+
+    # Process file(s)...
+    if input_type == "file":
+        processFile(input_file_or_stream, out_file)
+    if input_type == "directory":
+        import glob
+        files = glob.glob(source_path)
+        for file in files:
+            processFile(file,out_file)
 
     # Close the out_file
     out_file.write("\n<!-- \nEND OF FILE\n-->")
     out_file.close()
     print "** JACK ANALYZER Complete"
 
+    return
+
+
+def processFile(source_file, out_file):
+    
+    print "Processing: " + source_file + "\n"
+    
+    out_file.write("<!--\nSOURCE JACK CODE FOR: " + source_file + "\n-->\n\n")
+    
     return
 
 
