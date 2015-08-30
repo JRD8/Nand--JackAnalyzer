@@ -12,7 +12,7 @@ def main():
     print "JRD Nand-2-Tetris Jack Analyzer, 2015\n"
     print "Enter the Source Jack File (.jack) or Source Jack Directory (within this path) to be analyzed:"
     #source_input = raw_input(">") # User inputs source...
-    source_input = "test" # Uncomment to test without user input
+    source_input = "test.jack" # Uncomment to test without user input
     
     ## These are the test Jack files.  Uncomment to substitute for source_input ##
     #...
@@ -46,6 +46,7 @@ def constructor(input_file_or_stream):
     else:
         out_filename = input_file_or_stream + ".xml" # for directory input...
 
+    # Open the out_file
     out_file = open(out_filename, 'w')
     print "Writing the Destination File (.xml): " + out_filename + "\n"
 
@@ -53,8 +54,13 @@ def constructor(input_file_or_stream):
     from time import localtime, strftime
     temp = strftime("%a, %d, %b, %Y, %X", localtime())
 
-    # Write header as comments
-    out_file.write("<!-- \nJACK ANALYZED FROM: " + input_file_or_stream + "\n ON: " + temp + "\n-->\n\n")
+    # Write comment header into out_file
+    out_file.write("<!-- \nJACK ANALYZED\nFROM: " + input_file_or_stream + "\nON: " + temp + "\n-->\n\n")
+
+    # Close the out_file
+    out_file.write("\n<!-- \nEND OF FILE\n-->")
+    out_file.close()
+    print "** JACK ANALYZER Complete"
 
     return
 
