@@ -130,6 +130,19 @@ def processFile(source_file, out_file):
     print seventhText
     print "\n"
 
+    # Split out the ";" statements
+    eightText = []
+    i = 0
+    for e in seventhText:
+        if e.find(";") == -1:
+            eightText.append(e)
+        else:
+            temp = e.split(";")
+            eightText.append(temp[0])
+            eightText.append(";")
+    print eightText
+    print "\n"
+
     return
 
 
