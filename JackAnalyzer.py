@@ -80,6 +80,19 @@ def processFile(source_file, out_file):
     
     out_file.write("<!--\nSOURCE JACK CODE FOR: " + source_file + "\n-->\n\n")
     
+    firstStep = open(source_file, "r")
+    firstText = firstStep.read()
+    print "First Text: \n" + firstText
+    secondText = firstText.split("\n")
+    print secondText
+    print "\n"
+    
+    thirdText = [] # remove Comment lines
+    for e in secondText:
+        if (e.find("//") != 0):
+            thirdText.append(e)
+    print thirdText
+
     return
 
 
