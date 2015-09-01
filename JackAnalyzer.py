@@ -80,6 +80,8 @@ def processFile(source_file, out_file):
     
     out_file.write("<!--\nSOURCE JACK CODE FOR: " + source_file + "\n-->\n\n")
     
+    # TOKENIZE MODULE
+    
     firstStep = open(source_file, "r")
     firstText = firstStep.read()
     print "First Text: \n" + firstText
@@ -87,7 +89,7 @@ def processFile(source_file, out_file):
     print secondText
     print "\n"
     
-    thirdText = [] # remove Comment lines
+    thirdText = [] # remove // Comment lines
     for e in secondText:
         if (e.find("//") != 0):
             thirdText.append(e)
@@ -111,6 +113,21 @@ def processFile(source_file, out_file):
     # Remove white spaces, tabs
     sixthText = fifthText.split()
     print sixthText
+    print "\n"
+
+    # Remove /** and /* ... */ comments
+    seventhText = []
+    include = True
+    i = 0
+    while (i < len(sixthText)):
+        if ((sixthText[i] == "/**") | (sixthText[i] == "/*")):
+            include = False
+        if (include):
+            seventhText.insert(i, sixthText[i])
+        if (sixthText[i] == "*/"):
+            include = True
+        i = i + 1
+    print seventhText
     print "\n"
 
     return
