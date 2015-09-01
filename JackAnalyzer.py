@@ -92,6 +92,26 @@ def processFile(source_file, out_file):
         if (e.find("//") != 0):
             thirdText.append(e)
     print thirdText
+    print "\n"
+
+    fourthText = [] # remove \r and \t\r elements
+    for e in thirdText:
+        if ((e != "\r") & (e != "\t\r") & (e != "")):
+            fourthText.append(e)
+    print fourthText
+    print "\n"
+
+    # Recombine into single string
+    fifthText = ""
+    for e in fourthText:
+        fifthText = fifthText + e
+    print fifthText
+    print "\n"
+
+    # Remove white spaces, tabs
+    sixthText = fifthText.split()
+    print sixthText
+    print "\n"
 
     return
 
