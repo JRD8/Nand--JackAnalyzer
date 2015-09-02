@@ -77,73 +77,92 @@ def constructor(input_file_or_stream):
 def processFile(source_file, out_file):
     
     print "Processing: " + source_file + "\n"
-    
     out_file.write("<!--\nSOURCE JACK CODE FOR: " + source_file + "\n-->\n\n")
     
-    # TOKENIZE MODULE
+    tokenizedSource = tokenizeFile(source_file) # Tokenize the source file
+    print tokenizedSource
+    print "\n"
+    
+    return
+
+def tokenizeFile(source_file):
     
     firstStep = open(source_file, "r")
-    firstText = firstStep.read()
-    print "First Text: \n" + firstText
-    secondText = firstText.split("\n")
-    print secondText
+    firstPass = firstStep.read()
+    print firstPass
+
+    # Remove \n carriage returns
+    secondPass = firstPass.split("\n")
+    print secondPass
     print "\n"
     
-    thirdText = [] # remove // Comment lines
-    for e in secondText:
+    # remove // Comment lines
+    thirdPass = []
+    for e in secondPass:
         if (e.find("//") != 0):
-            thirdText.append(e)
-    print thirdText
+            thirdPass.append(e)
+    print thirdPass
     print "\n"
 
-    fourthText = [] # remove \r and \t\r elements
-    for e in thirdText:
+    # remove \r and \t\r elements
+    fourthPass = []
+    for e in thirdPass:
         if ((e != "\r") & (e != "\t\r") & (e != "")):
-            fourthText.append(e)
-    print fourthText
+            fourthPass.append(e)
+    print fourthPass
     print "\n"
 
     # Recombine into single string
-    fifthText = ""
-    for e in fourthText:
-        fifthText = fifthText + e
-    print fifthText
+    fifthPass = ""
+    for e in fourthPass:
+        fifthPass = fifthPass + e
+    print fifthPass
     print "\n"
-
+    
     # Remove white spaces, tabs
-    sixthText = fifthText.split()
-    print sixthText
+    sixthPass = fifthPass.split()
+    print sixthPass
     print "\n"
-
+    
     # Remove /** and /* ... */ comments
-    seventhText = []
+    seventhPass = []
     include = True
     i = 0
-    while (i < len(sixthText)):
-        if ((sixthText[i] == "/**") | (sixthText[i] == "/*")):
+    while (i < len(sixthPass)):
+        if ((sixthPass[i] == "/**") | (sixthPass[i] == "/*")):
             include = False
         if (include):
-            seventhText.insert(i, sixthText[i])
-        if (sixthText[i] == "*/"):
+            seventhPass.insert(i, sixthPass[i])
+        if (sixthPass[i] == "*/"):
             include = True
         i = i + 1
-    print seventhText
+    print seventhPass
     print "\n"
 
-    # Split out the ";" statements
-    eightText = []
-    i = 0
-    for e in seventhText:
-        if e.find(";") == -1:
-            eightText.append(e)
-        else:
-            temp = e.split(";")
-            eightText.append(temp[0])
-            eightText.append(";")
-    print eightText
+    # Split out the symbol elements
+    symbols = ['}', '{', ')', '(', ']', '[', '.', ',', ';', '+', '-', '*', '/', '&', '|', '<', '>', '=', '~', '"']
+    temp = seventhPass
+    for symbol in symbols:
+        newTemp = []
+        for e in temp:
+            if e.find(symbol) == -1:
+                newTemp.append(e)
+            else:
+                temp = e.split(symbol)
+                newTemp.append(temp[0])
+                newTemp.append(symbol)
+                newTemp.append(temp[1])
+        temp = newTemp
+    eightPass = []
+    for e in temp: # clean out the blank list elements
+        if len(e) != 0:
+            eightPass.append(e)
+    print eightPass
     print "\n"
+    
+    # TODO Combine String elements into one token
 
-    return
+    return eightPass
 
 
 def hasMoreTokens():
