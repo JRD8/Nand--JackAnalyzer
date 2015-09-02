@@ -161,8 +161,15 @@ def tokenizeFile(source_file):
     print "\n"
     
     # TODO Combine String elements into one token
-
-    return eightPass
+    ninthPass = []
+    extract = False
+    for e in eightPass:
+        if ((e.find("\"") == -1) & (~extract)):
+            ninthPass.append(e)
+        if ((e.find("\"") != -1):
+            extract = True
+            temp.append(e)
+    return ninthPass
 
 
 def hasMoreTokens():
