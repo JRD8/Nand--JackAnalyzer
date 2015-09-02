@@ -80,8 +80,8 @@ def processFile(source_file, out_file):
     out_file.write("<!--\nSOURCE JACK CODE FOR: " + source_file + "\n-->\n\n")
     
     tokenizedSource = tokenizeFile(source_file) # Tokenize the source file
-    print tokenizedSource
-    print "\n"
+    for temp in tokenizedSource:
+        print temp
     
     return
 
@@ -93,36 +93,36 @@ def tokenizeFile(source_file):
 
     # Remove \n carriage returns
     secondPass = firstPass.split("\n")
-    print secondPass
-    print "\n"
+    #print secondPass
+    # print "\n"
     
     # remove // Comment lines
     thirdPass = []
     for e in secondPass:
         if (e.find("//") != 0):
             thirdPass.append(e)
-    print thirdPass
-    print "\n"
+    #print thirdPass
+    #print "\n"
 
     # remove \r and \t\r elements
     fourthPass = []
     for e in thirdPass:
         if ((e != "\r") & (e != "\t\r") & (e != "")):
             fourthPass.append(e)
-    print fourthPass
-    print "\n"
+    #print fourthPass
+    #print "\n"
 
     # Recombine into single string
     fifthPass = ""
     for e in fourthPass:
         fifthPass = fifthPass + e
     print fifthPass
-    print "\n"
+    #print "\n"
     
     # Remove white spaces, tabs
     sixthPass = fifthPass.split()
-    print sixthPass
-    print "\n"
+    #print sixthPass
+    #print "\n"
     
     # Remove /** and /* ... */ comments
     seventhPass = []
@@ -136,8 +136,8 @@ def tokenizeFile(source_file):
         if (sixthPass[i] == "*/"):
             include = True
         i = i + 1
-    print seventhPass
-    print "\n"
+    #print seventhPass
+    #print "\n"
 
     # Split out the symbol elements
     symbols = ['}', '{', ')', '(', ']', '[', '.', ',', ';', '+', '-', '*', '/', '&', '|', '<', '>', '=', '~', '"']
@@ -157,18 +157,29 @@ def tokenizeFile(source_file):
     for e in temp: # clean out the blank list elements
         if len(e) != 0:
             eightPass.append(e)
-    print eightPass
-    print "\n"
+    #print eightPass
+    #print "\n"
     
-    # TODO Combine String elements into one token
+    # Combine String elements into one token
     ninthPass = []
     extract = False
     for e in eightPass:
-        if ((e.find("\"") == -1) & (~extract)):
+        if (e.find("\"") != -1): # Finds a " string
+            extract = ~extract
+            if (extract): # An open " string...
+                temp = ""
+                temp = temp + e
+            if (~extract): # A close " string...
+                temp = temp + e
+                ninthPass.append(temp)
+        if (e.find("\"") == -1) & (~extract): # Not a # string
             ninthPass.append(e)
-        if ((e.find("\"") != -1):
-            extract = True
-            temp.append(e)
+        if (e.find("\"") == -1) & (extract): # Part of a "string"
+            temp = temp + e + " "
+
+    #print ninthPass
+    #print "\n"
+
     return ninthPass
 
 
