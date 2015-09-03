@@ -4,6 +4,9 @@
 
 ## JACK TOKENIZER MODULE ##
 
+# Global Variable Declarations
+currentPos = 0
+tokenizedSource = []
 
 def main():
     
@@ -76,13 +79,21 @@ def constructor(input_file_or_stream):
 
 def processFile(source_file, out_file):
     
+    global tokenizedSource
+    global currentPos
+    
     print "Processing: " + source_file + "\n"
     out_file.write("<!--\nSOURCE JACK CODE FOR: " + source_file + "\n-->\n\n")
     
     tokenizedSource = tokenizeFile(source_file) # Tokenize the source file
-    for temp in tokenizedSource:
-        print temp
+    print tokenizedSource
+    print "\n"
     
+    while (hasMoreTokens()):
+        currentToken = advance()
+        print "Current Pos = " + str(currentPos) + ", Current Token is " + currentToken + "\n"
+        currentPos = currentPos + 1
+
     return
 
 def tokenizeFile(source_file):
@@ -90,39 +101,30 @@ def tokenizeFile(source_file):
     firstStep = open(source_file, "r")
     firstPass = firstStep.read()
     print firstPass
+    print "\n"
 
     # Remove \n carriage returns
     secondPass = firstPass.split("\n")
-    #print secondPass
-    # print "\n"
     
     # remove // Comment lines
     thirdPass = []
     for e in secondPass:
         if (e.find("//") != 0):
             thirdPass.append(e)
-    #print thirdPass
-    #print "\n"
 
     # remove \r and \t\r elements
     fourthPass = []
     for e in thirdPass:
         if ((e != "\r") & (e != "\t\r") & (e != "")):
             fourthPass.append(e)
-    #print fourthPass
-    #print "\n"
 
     # Recombine into single string
     fifthPass = ""
     for e in fourthPass:
         fifthPass = fifthPass + e
-    print fifthPass
-    #print "\n"
     
     # Remove white spaces, tabs
     sixthPass = fifthPass.split()
-    #print sixthPass
-    #print "\n"
     
     # Remove /** and /* ... */ comments
     seventhPass = []
@@ -136,8 +138,6 @@ def tokenizeFile(source_file):
         if (sixthPass[i] == "*/"):
             include = True
         i = i + 1
-    #print seventhPass
-    #print "\n"
 
     # Split out the symbol elements
     symbols = ['}', '{', ')', '(', ']', '[', '.', ',', ';', '+', '-', '*', '/', '&', '|', '<', '>', '=', '~', '"']
@@ -157,8 +157,6 @@ def tokenizeFile(source_file):
     for e in temp: # clean out the blank list elements
         if len(e) != 0:
             eightPass.append(e)
-    #print eightPass
-    #print "\n"
     
     # Combine String elements into one token
     ninthPass = []
@@ -169,27 +167,30 @@ def tokenizeFile(source_file):
             if (extract): # An open " string...
                 temp = ""
                 temp = temp + e
-            if (~extract): # A close " string...
-                temp = temp + e
+            if (~extract): # A close " string, with a routine to check for correct number of white spaces before closed quotes
+                temp = temp[0:-1]
+                begin = fifthPass.find(temp) # fifthPass is the last version of list before white spaces were removed
+                end = fifthPass.find("\"", begin + 1)
+                temp = fifthPass[begin:end] + "\""
                 ninthPass.append(temp)
         if (e.find("\"") == -1) & (~extract): # Not a # string
             ninthPass.append(e)
         if (e.find("\"") == -1) & (extract): # Part of a "string"
             temp = temp + e + " "
 
-    #print ninthPass
-    #print "\n"
-
     return ninthPass
 
 
 def hasMoreTokens():
-    result = false
+    if (currentPos < len(tokenizedSource)):
+        result = True
+    else:
+        result = False
     return result
 
 
 def advance():
-    return
+    return tokenizedSource[currentPos]
 
 
 def tokenType():
@@ -224,3 +225,5 @@ def stringVal():
 
 # Process main routine
 main()
+
+
