@@ -206,7 +206,11 @@ def tokenType():
     for symbol in symbols:
         if (currentToken == symbol):
             return "SYMBOL"
-    return "Something Else"
+    if (currentToken.isdigit()):
+        return "INT_CONST"
+    if (currentToken.find("\"")):
+        return "STRING_CONST"
+    return "IDENTIFIER"
 
 
 def keyWord():
