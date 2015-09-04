@@ -4,9 +4,15 @@
 
 ## JACK TOKENIZER MODULE ##
 
-# Global Variable Declarations
+# Global variable declarations
 currentPos = 0
+currentToken = ""
+currentTokenType = ""
 tokenizedSource = []
+symbols = ['}', '{', ')', '(', ']', '[', '.', ',', ';', '+', '-', '*', '/', '&', '|', '<', '>', '=', '~', '"'] # Note that includes " Mark
+keywords = ['class', 'constructor', 'function', 'method', 'field', 'static', 'var', 'int', 'char', 'boolean', 'void', 'true', 'false', 'null', 'this', 'let', 'do', 'if', 'else', 'while', 'return']
+stringConstant = "\""
+
 
 def main():
     
@@ -79,8 +85,8 @@ def constructor(input_file_or_stream):
 
 def processFile(source_file, out_file):
     
-    global tokenizedSource
-    global currentPos
+    # Import global variables since they are being modified within this routing and not 'read-only'
+    global tokenizedSource, currentPos, currentToken, currentTokenType
     
     print "Processing: " + source_file + "\n"
     out_file.write("<!--\nSOURCE JACK CODE FOR: " + source_file + "\n-->\n\n")
@@ -91,7 +97,8 @@ def processFile(source_file, out_file):
     
     while (hasMoreTokens()):
         currentToken = advance()
-        print "Current Pos = " + str(currentPos) + ", Current Token is " + currentToken + "\n"
+        currentTokenType = tokenType()
+        print "Current Pos = " + str(currentPos) + ", Current Token is " + currentToken + " Current Token Type is: " + currentTokenType +"\n"
         currentPos = currentPos + 1
 
     return
@@ -140,7 +147,6 @@ def tokenizeFile(source_file):
         i = i + 1
 
     # Split out the symbol elements
-    symbols = ['}', '{', ')', '(', ']', '[', '.', ',', ';', '+', '-', '*', '/', '&', '|', '<', '>', '=', '~', '"']
     temp = seventhPass
     for symbol in symbols:
         newTemp = []
@@ -194,8 +200,13 @@ def advance():
 
 
 def tokenType():
-    current_token_type = ""
-    return current_token_type
+    for keyword in keywords:
+        if (currentToken == keyword):
+            return "KEYWORD"
+    for symbol in symbols:
+        if (currentToken == symbol):
+            return "SYMBOL"
+    return "Something Else"
 
 
 def keyWord():
