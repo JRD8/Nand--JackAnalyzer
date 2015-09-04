@@ -99,6 +99,21 @@ def processFile(source_file, out_file):
         currentToken = advance()
         currentTokenType = tokenType()
         print "Current Pos = " + str(currentPos) + ", Current Token is " + currentToken + " Current Token Type is: " + currentTokenType +"\n"
+        
+        # Unit testing
+        if currentTokenType == "KEYWORD":
+            temp = keyWord()
+            print "Keyword: " + temp + "\n"
+        if currentTokenType == "SYMBOL":
+            temp = symbol()
+            print "Symbol: " + temp + "\n"
+        if currentTokenType == "IDENTIFIER":
+            temp = identifier()
+            print "Identifier: " + temp + "\n"
+        if currentTokenType == "INT_CONST":
+            temp = str(intVal())
+            print "Integer Constant: " + temp + "\n"
+        
         currentPos = currentPos + 1
 
     return
@@ -116,7 +131,7 @@ def tokenizeFile(source_file):
     # remove // Comment lines
     thirdPass = []
     for e in secondPass:
-        if (e.find("//") != 0):
+        if e.find("//") != 0:
             thirdPass.append(e)
 
     # remove \r and \t\r elements
@@ -140,9 +155,9 @@ def tokenizeFile(source_file):
     while (i < len(sixthPass)):
         if ((sixthPass[i] == "/**") | (sixthPass[i] == "/*")):
             include = False
-        if (include):
+        if include:
             seventhPass.insert(i, sixthPass[i])
-        if (sixthPass[i] == "*/"):
+        if sixthPass[i] == "*/":
             include = True
         i = i + 1
 
@@ -168,20 +183,20 @@ def tokenizeFile(source_file):
     ninthPass = []
     extract = False
     for e in eightPass:
-        if (e.find("\"") != -1): # Finds a " string
+        if e.find("\"") != -1: # Finds a " string
             extract = ~extract
-            if (extract): # An open " string...
+            if extract: # An open " string...
                 temp = ""
                 temp = temp + e
-            if (~extract): # A close " string, with a routine to check for correct number of white spaces before closed quotes
+            if ~extract: # A close " string, with a routine to check for correct number of white spaces before closed quotes
                 temp = temp[0:-1]
                 begin = fifthPass.find(temp) # fifthPass is the last version of list before white spaces were removed
                 end = fifthPass.find("\"", begin + 1)
                 temp = fifthPass[begin:end] + "\""
                 ninthPass.append(temp)
-        if (e.find("\"") == -1) & (~extract): # Not a # string
+        if e.find("\"") == -1 & ~extract: # Not a # string
             ninthPass.append(e)
-        if (e.find("\"") == -1) & (extract): # Part of a "string"
+        if e.find("\"") == -1 & extract: # Part of a "string"
             temp = temp + e + " "
 
     return ninthPass
@@ -206,31 +221,27 @@ def tokenType():
     for symbol in symbols:
         if (currentToken == symbol):
             return "SYMBOL"
-    if (currentToken.isdigit()):
+    if currentToken.isdigit():
         return "INT_CONST"
-    if (currentToken.find("\"")):
+    if currentToken.find("\""):
         return "STRING_CONST"
     return "IDENTIFIER"
 
 
 def keyWord():
-    current_token_keyword = ""
-    return current_token_keyword
+    return currentToken.upper()
 
 
 def symbol():
-    current_token_char = ""
-    return current_token_char
+    return currentToken
 
 
 def identifier():
-    current_token_identifier = ""
-    return current_token_identifier
+    return currentToken
 
 
 def intVal():
-    current_intVal = 0 # Null Int?
-    return current_intVal
+    return int(currentToken)
 
 
 def stringVal():
