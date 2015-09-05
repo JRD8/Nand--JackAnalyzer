@@ -178,31 +178,23 @@ def tokenizeFile(source_file):
         if seventhPass[i] == "*/":
             include = True
         i = i + 1
+    print eightPass
 
-    # Ninth Pass: Split out the symbol elements
-    temp = eightPass
-    for symbol in symbols:
-        newTemp = []
-        for e in temp:
-            if e.find(symbol) == -1:
-                newTemp.append(e)
-            else:
-                temp = e.split(symbol)
-                newTemp.append(temp[0])
-                newTemp.append(symbol)
-                newTemp.append(temp[1])
-        temp = newTemp
-    insertPass = [] # Split out the " marks
-    for e in temp:
-        if e.find("\"") == -1:
-            insertPass.append(e)
-        if e.find("\"") != -1:
-            lastTemp = e.partition("\"")
-            for each in lastTemp:
-                insertPass.append(each)
-
+    # Ninth Pass: Split out the symbol elements - temporarily including " marks
+    temp = symbols.append("\"")
     ninthPass = []
-    for e in insertPass: # clean out the blank list elements
+    insertPass = []
+
+    for e in temp:
+        if e.find(symbol) == -1:
+            insertPass.append(e)
+        
+        # TODO split symbols including delimiter
+        else:
+            temp2 = e.split(symbol)
+
+
+    for e in insertPass: # cleanup the blank list elements
         if len(e) != 0:
             ninthPass.append(e)
 
