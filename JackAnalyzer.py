@@ -9,7 +9,8 @@ currentPos = 0
 currentToken = ""
 currentTokenType = ""
 tokenizedSource = []
-symbols = ['}', '{', ')', '(', ']', '[', '.', ',', ';', '+', '-', '*', '/', '&', '|', '<', '>', '=', '~', '"'] # Note that includes " Mark
+
+symbols = ['}', '{', ')', '(', ']', '[', '.', ',', ';', '+', '-', '*', '/', '&', '|', '<', '>', '=', '~']
 keywords = ['class', 'constructor', 'function', 'method', 'field', 'static', 'var', 'int', 'char', 'boolean', 'void', 'true', 'false', 'null', 'this', 'let', 'do', 'if', 'else', 'while', 'return']
 stringConstant = "\""
 
@@ -78,7 +79,7 @@ def constructor(input_file_or_stream):
     # Close the out_file
     out_file.write("\n<!-- \nEND OF FILE\n-->")
     out_file.close()
-    print "** JACK ANALYZER Complete"
+    print "----------------------------\n** JACK ANALYZER Complete **"
 
     return
 
@@ -92,28 +93,34 @@ def processFile(source_file, out_file):
     out_file.write("<!--\nSOURCE JACK CODE FOR: " + source_file + "\n-->\n\n")
     
     tokenizedSource = tokenizeFile(source_file) # Tokenize the source file
+    print "Tokenized Source Code: \n"
     print tokenizedSource
-    print "\n"
+    print "\n--------------------------------------------\n"
     
     while (hasMoreTokens()):
         currentToken = advance()
         currentTokenType = tokenType()
-        print "Current Pos = " + str(currentPos) + ", Current Token is " + currentToken + " Current Token Type is: " + currentTokenType +"\n"
+        print "\n\nCurrent Pos = " + str(currentPos) + ", Current Token Type: " + currentTokenType + "\n"
+        print "Current Token is: " + currentToken + "\n"
         
         # Unit testing
         if currentTokenType == "KEYWORD":
             temp = keyWord()
-            print "Keyword: " + temp + "\n"
+            print "Keyword: ",
         if currentTokenType == "SYMBOL":
             temp = symbol()
-            print "Symbol: " + temp + "\n"
+            print "Symbol: ",
         if currentTokenType == "IDENTIFIER":
             temp = identifier()
-            print "Identifier: " + temp + "\n"
+            print "Identifier: ",
         if currentTokenType == "INT_CONST":
             temp = str(intVal())
-            print "Integer Constant: " + temp + "\n"
-        
+            print "Integer Constant: ",
+        if currentTokenType == "STRING_CONST":
+            temp = stringVal()
+            print "String Constant: ",
+        print temp + "\n"
+
         currentPos = currentPos + 1
 
     return
@@ -122,8 +129,8 @@ def tokenizeFile(source_file):
     
     firstStep = open(source_file, "r")
     firstPass = firstStep.read()
+    print "----------------------------------------\n\nSource Code: \n"
     print firstPass
-    print "\n"
 
     # Remove \n carriage returns
     secondPass = firstPass.split("\n")
@@ -131,7 +138,7 @@ def tokenizeFile(source_file):
     # remove // Comment lines
     thirdPass = []
     for e in secondPass:
-        if e.find("//") != 0:
+        if e.startswith("//", 0, 2) == False:
             thirdPass.append(e)
 
     # remove \r and \t\r elements
@@ -174,11 +181,19 @@ def tokenizeFile(source_file):
                 newTemp.append(symbol)
                 newTemp.append(temp[1])
         temp = newTemp
+    insertPass = [] # Split out the " marks
+    for e in temp:
+        if e.find("\"") == -1:
+            insertPass.append(e)
+        if e.find("\"") != -1:
+            lastTemp = e.partition("\"")
+            for each in lastTemp:
+                insertPass.append(each)
     eightPass = []
-    for e in temp: # clean out the blank list elements
+    for e in insertPass: # clean out the blank list elements
         if len(e) != 0:
             eightPass.append(e)
-    
+
     # Combine String elements into one token
     ninthPass = []
     extract = False
@@ -189,14 +204,15 @@ def tokenizeFile(source_file):
                 temp = ""
                 temp = temp + e
             if ~extract: # A close " string, with a routine to check for correct number of white spaces before closed quotes
+                temp = temp + "\""
                 temp = temp[0:-1]
                 begin = fifthPass.find(temp) # fifthPass is the last version of list before white spaces were removed
                 end = fifthPass.find("\"", begin + 1)
                 temp = fifthPass[begin:end] + "\""
                 ninthPass.append(temp)
-        if e.find("\"") == -1 & ~extract: # Not a # string
+        if ((e.find("\"") == -1) & (~extract)): # Not a # string
             ninthPass.append(e)
-        if e.find("\"") == -1 & extract: # Part of a "string"
+        if ((e.find("\"") == -1) & (extract)): # Part of a "string"
             temp = temp + e + " "
 
     return ninthPass
@@ -223,7 +239,7 @@ def tokenType():
             return "SYMBOL"
     if currentToken.isdigit():
         return "INT_CONST"
-    if currentToken.find("\""):
+    if (currentToken.find("\"") != -1):
         return "STRING_CONST"
     return "IDENTIFIER"
 
@@ -245,8 +261,7 @@ def intVal():
 
 
 def stringVal():
-    current_stringVal = ""
-    return current_stringVal
+    return currentToken
 
 
 # Process main routine
