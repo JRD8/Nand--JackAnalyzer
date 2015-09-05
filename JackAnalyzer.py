@@ -127,49 +127,60 @@ def processFile(source_file, out_file):
 
 def tokenizeFile(source_file):
     
+    # First Pass: Read in source file
     firstStep = open(source_file, "r")
     firstPass = firstStep.read()
     print "----------------------------------------\n\nSource Code: \n"
     print firstPass
 
-    # Remove \n carriage returns
-    secondPass = firstPass.split("\n")
-    
-    # remove // Comment lines
-    thirdPass = []
-    for e in secondPass:
-        if e.startswith("//", 0, 2) == False:
-            thirdPass.append(e)
+    # Second Pass: Replace all white spaces within a String with \x00 (control null) characters
+    i = 0
+    temp = list(firstPass)
+    quoteOpen = 0
+    while (i < len(temp)):
+        if temp[i] == "\"":
+            quoteOpen = ~quoteOpen
+        if ((temp[i] == " ") & (quoteOpen)):
+            temp[i] = "\x00"
+        i = i + 1
+    secondPass = "".join(temp)
 
-    # remove \r and \t\r elements
+    # Third Pass: Remove \n carriage returns
+    thirdPass = secondPass.split("\n")
+    
+    # Fourth Pass: Remove // Comment lines
     fourthPass = []
     for e in thirdPass:
-        if ((e != "\r") & (e != "\t\r") & (e != "")):
+        if e.startswith("//", 0, 2) == False:
             fourthPass.append(e)
 
-    # Recombine into single string
-    fifthPass = ""
+    # Fifth Pass: Remove \r and \t\r elements
+    fifthPass = []
     for e in fourthPass:
-        fifthPass = fifthPass + e
+        if ((e != "\r") & (e != "\t\r") & (e != "")):
+            fifthPass.append(e)
+
+    # Sixth Pass: Recombine into single string
+    sixthPass = "".join(fifthPass)
     
-    # Remove white spaces, tabs
-    sixthPass = fifthPass.split()
+    # Seventh Pass: Remove white spaces, tabs
+    seventhPass = sixthPass.split()
     
-    # Remove /** and /* ... */ comments
-    seventhPass = []
+    # Eighth Pass: Remove /** and /* ... */ comments
+    eightPass = []
     include = True
     i = 0
-    while (i < len(sixthPass)):
-        if ((sixthPass[i] == "/**") | (sixthPass[i] == "/*")):
+    while (i < len(seventhPass)):
+        if ((seventhPass[i] == "/**") | (seventhPass[i] == "/*")):
             include = False
         if include:
-            seventhPass.insert(i, sixthPass[i])
-        if sixthPass[i] == "*/":
+            eightPass.insert(i, seventhPass[i])
+        if seventhPass[i] == "*/":
             include = True
         i = i + 1
 
-    # Split out the symbol elements
-    temp = seventhPass
+    # Ninth Pass: Split out the symbol elements
+    temp = eightPass
     for symbol in symbols:
         newTemp = []
         for e in temp:
@@ -189,35 +200,17 @@ def tokenizeFile(source_file):
             lastTemp = e.partition("\"")
             for each in lastTemp:
                 insertPass.append(each)
-    print "insert pass"
-    print insertPass
-    eightPass = []
+
+    ninthPass = []
     for e in insertPass: # clean out the blank list elements
         if len(e) != 0:
-            eightPass.append(e)
-
-    # Combine String elements into one token #TODO - NEED TO DEBUG
-    ninthPass = []
-    extract = False
-    for e in eightPass:
-        if e.find("\"") != -1: # Finds a " string
-            extract = ~extract
-            if extract: # An open " string...
-                temp = ""
-                temp = temp + e
-            if ~extract: # A close " string, with a routine to check for correct number of white spaces before closed quotes
-                temp = temp + "\""
-                temp = temp[0:-1]
-                begin = fifthPass.find(temp) # fifthPass is the last version of list before white spaces were removed
-                end = fifthPass.find("\"", begin + 1)
-                temp = fifthPass[begin:end] + "\""
-                ninthPass.append(temp)
-        if ((e.find("\"") == -1) & (~extract)): # Not a # string
             ninthPass.append(e)
-        if ((e.find("\"") == -1) & (extract)): # Part of a "string"
-            temp = temp + e + " "
 
-    return ninthPass
+    # Tenth Pass: Replace \x00 (control null) characters with white spaces
+    tenthPass = []
+    for e in ninthPass:
+        tenthPass.append(e.replace("\x00", " "))
+    return tenthPass
 
 
 def hasMoreTokens():
