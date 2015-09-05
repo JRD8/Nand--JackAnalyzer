@@ -127,13 +127,8 @@ def processFile(source_file, out_file):
 
 def tokenizeFile(source_file):
     
-    import re
+    import re # Import the Regular Expresssion module for re.split method
     
-    #allSymbols = '{}()[].,;+-/*&|<>=~"'
-    #temp3 = '([}{)(\][.,;+-/&|<>=~"*])'
-    #temp2 = re.split(temp3, temp)
-    #print temp2
-
     # First Pass: Read in source file
     firstStep = open(source_file, "r")
     firstPass = firstStep.read()
@@ -158,7 +153,11 @@ def tokenizeFile(source_file):
     # Fourth Pass: Remove // Comment lines
     fourthPass = []
     for e in thirdPass:
-        if e.startswith("//", 0, 2) == False:
+        if e.find("//") != -1:
+            temp = e.lstrip(" ")
+            if temp.startswith("//", 0, 2) == False:
+                fourthPass.append(e)
+        else:
             fourthPass.append(e)
 
     # Fifth Pass: Remove \r and \t\r elements
@@ -185,26 +184,56 @@ def tokenizeFile(source_file):
         if seventhPass[i] == "*/":
             include = True
         i = i + 1
-
-    # Ninth Pass: Split out the symbol elements - temporarily including " marks
-    ninthPass = []
-    insertPass = []
-    allSymbols = '([}{)(\][.,;+-/&|<>=~"*])'
+    
+    # Nineth Pass: Split out the string constants
+    ninethPass = []
     for e in eightPass:
-        temp = re.split(allSymbols, e)
-        for f in temp:
-            insertPass.append(f)
+        temp2 = []
+        if e.find("\"") == -1: # has no quotation marks...
+            ninethPass.append(e)
 
+        else: # has at least one quotation mark...
+            temp = re.split('(\")', e)
+            temp3 = ""
+            quoteOpen = 0
+            for f in temp:
+                if f.find("\"") == -1: # No quotes...
+                    if (quoteOpen):
+                        temp3 = temp3 + f
+                    if (~quoteOpen):
+                        temp2.append(f)
+                if f.find("\"") != -1:
+                    if (quoteOpen): # Found closing quote
+                        temp3 = temp3 + f
+                        temp2.append(temp3)
+                    if (~quoteOpen): # Found opening quote
+                        temp3 = temp3 + f
+                    quoteOpen = ~quoteOpen
+
+        for g in temp2:
+            ninethPass.append(g)
+
+    # Tenth Pass: Split out the symbol elements
+    tenthPass = []
+    insertPass = []
+    allSymbols = '([}{)(\][.,;+-/&|<>=~*])'
+    for e in ninethPass:
+        if e.find("\"") == -1: # Not a string constant
+            temp = re.split(allSymbols, e)
+            for f in temp:
+                insertPass.append(f)
+        else: # Is a string constant...
+            insertPass.append(e)
     for e in insertPass: # cleanup the blank list elements
         if len(e) != 0:
-            ninthPass.append(e)
+            tenthPass.append(e)
 
-    # Tenth Pass: Replace \x00 (control null) characters with white spaces
-    tenthPass = []
-    for e in ninthPass:
-        tenthPass.append(e.replace("\x00", " "))
+    # Eleventh Pass: Replace \x00 (control null) characters with white spaces
+    eleventhPass = []
+    for e in tenthPass:
+        eleventhPass.append(e.replace("\x00", " "))
 
-    return tenthPass
+    return eleventhPass
 
 
 def hasMoreTokens():
