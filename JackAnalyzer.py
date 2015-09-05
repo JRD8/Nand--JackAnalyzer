@@ -189,12 +189,14 @@ def tokenizeFile(source_file):
             lastTemp = e.partition("\"")
             for each in lastTemp:
                 insertPass.append(each)
+    print "insert pass"
+    print insertPass
     eightPass = []
     for e in insertPass: # clean out the blank list elements
         if len(e) != 0:
             eightPass.append(e)
 
-    # Combine String elements into one token
+    # Combine String elements into one token #TODO - NEED TO DEBUG
     ninthPass = []
     extract = False
     for e in eightPass:
@@ -261,7 +263,7 @@ def intVal():
 
 
 def stringVal():
-    return currentToken
+    return currentToken.strip("\"") # stringVal returns without quotation marks
 
 
 # Process main routine
