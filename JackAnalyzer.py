@@ -129,10 +129,11 @@ def tokenizeFile(source_file):
     
     import re
     
-    print '"the end of the end"'
-    temp = re.split('(\")', '"the end of the end"')
-    print temp
-    
+    #allSymbols = '{}()[].,;+-/*&|<>=~"'
+    #temp3 = '([}{)(\][.,;+-/&|<>=~"*])'
+    #temp2 = re.split(temp3, temp)
+    #print temp2
+
     # First Pass: Read in source file
     firstStep = open(source_file, "r")
     firstPass = firstStep.read()
@@ -184,28 +185,15 @@ def tokenizeFile(source_file):
         if seventhPass[i] == "*/":
             include = True
         i = i + 1
-    print eightPass
 
     # Ninth Pass: Split out the symbol elements - temporarily including " marks
-    expandedSymbols = symbols + ['"']
     ninthPass = []
     insertPass = []
-
-    match = False
+    allSymbols = '([}{)(\][.,;+-/&|<>=~"*])'
     for e in eightPass:
-            matchSymbol = ""
-            for symbol in expandedSymbols:
-                if e.find(symbol) != -1:
-                    match = True
-                    matchSymbol = symbol
-            if (match == False):
-                insertPass.append(e)
-            if (match == True):
-                temp = re.split(matchSymbol, e)
-                for token in temp:
-                    insertPass.append(token)
-    print "insert pass"
-    print insertPass
+        temp = re.split(allSymbols, e)
+        for f in temp:
+            insertPass.append(f)
 
     for e in insertPass: # cleanup the blank list elements
         if len(e) != 0:
@@ -215,6 +203,7 @@ def tokenizeFile(source_file):
     tenthPass = []
     for e in ninthPass:
         tenthPass.append(e.replace("\x00", " "))
+
     return tenthPass
 
 
