@@ -79,7 +79,7 @@ def constructor(input_file_or_stream):
     # Close the out_file
     out_file.write("\n<!-- \nEND OF FILE\n-->")
     out_file.close()
-    print "----------------------------\n** JACK ANALYZER Complete **"
+    print "\n----------------------------\n** JACK ANALYZER Complete **"
 
     return
 
@@ -154,7 +154,7 @@ def tokenizeFile(source_file):
     fourthPass = []
     for e in thirdPass:
         if e.find("//") != -1:
-            temp = e.lstrip(" ")
+            temp = e.lstrip(" \t")
             if temp.startswith("//", 0, 2) == False:
                 fourthPass.append(e)
         else:
