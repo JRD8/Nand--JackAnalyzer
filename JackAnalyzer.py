@@ -29,12 +29,12 @@ def main():
     
     print "\nThis is the Source: " + source_input
     
-    constructor(source_input)
+    jackTokenizerConstructor(source_input)
 
     return
 
 
-def constructor(input_file_or_stream):
+def jackTokenizerConstructor(input_file_or_stream):
     
     if input_file_or_stream.find(".jack") == -1: # Directory input
         input_type = "directory"
@@ -257,7 +257,8 @@ def tokenType():
             return "SYMBOL"
     if currentToken.isdigit():
         return "INT_CONST"
-    if (currentToken.find("\"") != -1):
+        #if (currentToken.find("\"") != -1):
+    if currentToken.startswith("\"") & currentToken.endswith("\""):
         return "STRING_CONST"
     return "IDENTIFIER"
 
@@ -282,7 +283,68 @@ def stringVal():
     return currentToken.strip("\"") # stringVal returns without quotation marks
 
 
+## COMPILATION ENGINE MODULE ##
+
+
+def compilationEngineConstructor():
+    return
+
+
+def compileClass():
+    return
+
+
+def compileClassVarDec():
+    return
+
+
+def compileSubroutine():
+    return
+
+
+def compileParameterList():
+    return
+
+
+def compileVarDec():
+    return
+
+
+def compileStatements():
+    return
+
+
+def compileDo():
+    return
+
+
+def compileLet():
+    return
+
+
+def compileWhile():
+    return
+
+
+def compileReturn():
+    return
+
+
+def compileIf():
+    return
+
+
+def compileExpression():
+    return
+
+
+def compileTerm():
+    return
+
+
+def compileExpressionList():
+    return
+
+
 # Process main routine
 main()
-
-
