@@ -8,6 +8,7 @@
 currentPos = 0
 currentToken = ""
 currentTokenType = ""
+out_file = ""
 tokenizedSource = []
 
 symbols = ['}', '{', ')', '(', ']', '[', '.', ',', ';', '+', '-', '*', '/', '&', '|', '<', '>', '=', '~']
@@ -35,6 +36,8 @@ def main():
 
 
 def jackTokenizerConstructor(input_file_or_stream):
+    
+    global out_file
     
     if input_file_or_stream.find(".jack") == -1: # Directory input
         input_type = "directory"
@@ -97,13 +100,13 @@ def processFile(source_file, out_file):
     print tokenizedSource
     print "\n--------------------------------------------\n"
     
+    # Unit Testing
     while (hasMoreTokens()):
         currentToken = advance()
         currentTokenType = tokenType()
-        print "\n\nCurrent Pos = " + str(currentPos) + ", Current Token Type: " + currentTokenType + "\n"
+        print "\n\nCurrent Pos = " + str(currentPos - 1) + ", Current Token Type: " + currentTokenType + "\n"
         print "Current Token is: " + currentToken + "\n"
-        
-        # Unit testing
+
         if currentTokenType == "KEYWORD":
             temp = keyWord()
             print "Keyword: ",
@@ -121,8 +124,11 @@ def processFile(source_file, out_file):
             print "String Constant: ",
         print temp + "\n"
 
-        currentPos = currentPos + 1
-
+    # This is not needed, should just call the complilatonEngineConstructor() when removing unit testing
+    if not hasMoreTokens():
+        currentPos = 0
+        compilationEngineConstructor()
+    
     return
 
 def tokenizeFile(source_file):
@@ -245,7 +251,12 @@ def hasMoreTokens():
 
 
 def advance():
-    return tokenizedSource[currentPos]
+    global currentPos
+
+    result = tokenizedSource[currentPos]
+    currentPos = currentPos + 1
+
+    return result
 
 
 def tokenType():
@@ -287,10 +298,40 @@ def stringVal():
 
 
 def compilationEngineConstructor():
+    
+    global currentPos, currentToken, currentTokenType
+    
+    currentPos = 0
+    currentToken = ""
+    currentTokenType = ""
+
+    compileClass()
+    
     return
 
 
 def compileClass():
+    
+    global currentPos, currentToken, currentTokenType
+    
+    if hasMoreTokens():
+        currentToken = advance()
+        currentTokenType = tokenType()
+    
+    if ((currentTokenType == "KEYWORD") & (currentToken == "class")):
+        
+        # open terminal
+        stringToExport = "<class>\n\t<keyword> class </keyword>\n"
+        out_file.write(stringToExport)
+        print stringToExport
+        
+        #...
+
+        # close terminal
+        stringToExport = "</class>\n"
+        out_file.write(stringToExport)
+        print stringToExport
+
     return
 
 
