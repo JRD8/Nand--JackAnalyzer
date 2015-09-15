@@ -346,8 +346,23 @@ def compileClass():
                         out_file.write(stringToExport)
                         print stringToExport
                     
-                    #.....
-            
+                        if hasMoreTokens():
+                            currentToken = advance()
+                            currentTokenType = tokenType()
+                            
+                            # Found a compileSubroutine keyword...
+                            if ((currentTokenType == "KEYWORD") & ((currentToken == "function") | (currentToken == "method") | (currentToken == "constructor"))):
+                                compileSubroutine()
+                            
+                            # Found a compileClassVarDec keyword...
+                            if ((currentTokenType == "KEYWORD") & ((currentToken == "static") | (currentToken == "field"))):
+                               compileClassVarDec()
+
+                            # Found a non-KEYWORD or am ineligible KEYWORD
+                            if ((currentTokenType != "KEYWORD") | (currentToken != "static") & (currentToken != "field") & (currentToken != "function") & (currentToken != "method") & (currentToken != "constructor")):
+                                error()
+                        else:
+                            error()
                     else:
                         error()
                 else:
@@ -369,10 +384,12 @@ def compileClass():
 
 
 def compileClassVarDec():
+    print "compileClassVarDec"
     return
 
 
 def compileSubroutine():
+    print "compileSubroutine"
     return
 
 
@@ -420,7 +437,7 @@ def compileExpressionList():
     return
 
 def error():
-    print error
+    print "ERROR!"
     return
 
 
