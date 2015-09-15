@@ -317,20 +317,53 @@ def compileClass():
     if hasMoreTokens():
         currentToken = advance()
         currentTokenType = tokenType()
+    else:
+        error()
     
     if ((currentTokenType == "KEYWORD") & (currentToken == "class")):
         
-        # open terminal
+        # open class terminal
         stringToExport = "<class>\n\t<keyword> class </keyword>\n"
         out_file.write(stringToExport)
         print stringToExport
         
-        #...
+        if hasMoreTokens():
+            currentToken = advance()
+            currentTokenType = tokenType()
+            
+            # Print identifier terminal
+            if currentTokenType == "IDENTIFIER":
+                stringToExport = "\t<identifier> " + currentToken + " </identifier>\n"
+                out_file.write(stringToExport)
+                print stringToExport
 
-        # close terminal
+                if hasMoreTokens():
+                    currentToken = advance()
+                    currentTokenType = tokenType()
+                        
+                    if ((currentTokenType == "SYMBOL") & (currentToken == "{")):
+                        stringToExport = "\t<symbol> " + currentToken + " </symbol>\n"
+                        out_file.write(stringToExport)
+                        print stringToExport
+                    
+                    #.....
+            
+                    else:
+                        error()
+                else:
+                    error()
+            else:
+                error()
+        else:
+            error()
+
+        # close class terminal
         stringToExport = "</class>\n"
         out_file.write(stringToExport)
         print stringToExport
+
+    else:
+        error()
 
     return
 
@@ -384,6 +417,10 @@ def compileTerm():
 
 
 def compileExpressionList():
+    return
+
+def error():
+    print error
     return
 
 
