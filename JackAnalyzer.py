@@ -350,10 +350,11 @@ def compileClass():
                     # Found a subroutineDec
                     if ((currentTokenType == "KEYWORD") & ((currentToken == "function") | (currentToken == "method") | (currentToken == "constructor"))):
                         compileSubroutine()
-                                
                     # Found a ClassVarDec
-                    if ((currentTokenType == "KEYWORD") & ((currentToken == "static") | (currentToken == "field"))):
+                    elif ((currentTokenType == "KEYWORD") & ((currentToken == "static") | (currentToken == "field"))):
                         compileClassVarDec()
+                    else:
+                        error()
                         
                     performBasicCheck()
 
@@ -405,12 +406,15 @@ def compileClassVarDec():
             stringToExport = "\t\t<keyword> " + currentToken + " </keyword>\n"
             out_file.write(stringToExport)
             print stringToExport
-        
-        if ((currentTokenType == "IDENTIFIER")):
+
+        elif ((currentTokenType == "IDENTIFIER")):
             print "Writing className"
             stringToExport = "\t\t<identifier> " + currentToken + " </identifier>\n"
             out_file.write(stringToExport)
             print stringToExport
+
+        else:
+            error()
     
         performBasicCheck()
         
@@ -420,15 +424,39 @@ def compileClassVarDec():
             stringToExport = "\t\t<identifier> " + currentToken + " </identifier>\n"
             out_file.write(stringToExport)
             print stringToExport
+
+        else:
+            error()
         
         performBasicCheck()
     
+        # Loop to write multiple varNames
+        while ((currentTokenType == "SYMBOL") & (currentToken == ",")):
+            print "Writing a , multiple varName"
+            stringToExport = "\t\t<symbol> " + currentToken + " </symbol>\n"
+            out_file.write(stringToExport)
+            print stringToExport
+        
+            performBasicCheck()
+        
+            # Write varName
+            if ((currentTokenType == "IDENTIFIER")):
+                print "Writing varName"
+                stringToExport = "\t\t<identifier> " + currentToken + " </identifier>\n"
+                out_file.write(stringToExport)
+                print stringToExport
+
+            else:
+                error()
+                    
+            performBasicCheck()
+        
+        # Writing a ; statement close
         if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
             print "Writing a ; statement close"
             stringToExport = "\t\t<symbol> " + currentToken + " </symbol>\n"
             out_file.write(stringToExport)
             print stringToExport
-
         else:
             error()
     
@@ -439,8 +467,6 @@ def compileClassVarDec():
     
     else:
         error()
-
-
 
     return
 
