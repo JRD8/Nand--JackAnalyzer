@@ -433,6 +433,7 @@ def compileExpressionList():
 
 ## HELPER ROUTINES ##
 
+
 def performBasicCheck():
 
     global currentToken, currentTokenType
