@@ -312,59 +312,53 @@ def compilationEngineConstructor():
 
 def compileClass():
     
-    global currentPos, currentToken, currentTokenType
+    global currentToken, currentTokenType
     
-    if hasMoreTokens():
-        currentToken = advance()
-        currentTokenType = tokenType()
-    else:
-        error()
+    performBasicCheck()
     
     if ((currentTokenType == "KEYWORD") & (currentToken == "class")):
-        
         # open class terminal
         stringToExport = "<class>\n\t<keyword> class </keyword>\n"
         out_file.write(stringToExport)
         print stringToExport
         
-        if hasMoreTokens():
-            currentToken = advance()
-            currentTokenType = tokenType()
+        performBasicCheck()
             
-            # Print identifier terminal
-            if currentTokenType == "IDENTIFIER":
-                stringToExport = "\t<identifier> " + currentToken + " </identifier>\n"
+        # Print identifier terminal
+        if currentTokenType == "IDENTIFIER":
+            stringToExport = "\t<identifier> " + currentToken + " </identifier>\n"
+            out_file.write(stringToExport)
+            print stringToExport
+
+            performBasicCheck()
+                        
+            if ((currentTokenType == "SYMBOL") & (currentToken == "{")):
+                stringToExport = "\t<symbol> " + currentToken + " </symbol>\n"
                 out_file.write(stringToExport)
                 print stringToExport
-
-                if hasMoreTokens():
-                    currentToken = advance()
-                    currentTokenType = tokenType()
                         
-                    if ((currentTokenType == "SYMBOL") & (currentToken == "{")):
-                        stringToExport = "\t<symbol> " + currentToken + " </symbol>\n"
-                        out_file.write(stringToExport)
-                        print stringToExport
+                # Begin Recursion...
+                performBasicCheck()
+                            
+                # Loop to found either a classVarDec or a subroutineDec initial keyword
+                while ((currentTokenType == "KEYWORD") & ((currentToken == "function") | (currentToken == "method") | (currentToken == "constructor") | (currentToken == "static") | (currentToken == "field"))):
                     
-                        if hasMoreTokens():
-                            currentToken = advance()
-                            currentTokenType = tokenType()
-                            
-                            # Found a compileSubroutine keyword...
-                            if ((currentTokenType == "KEYWORD") & ((currentToken == "function") | (currentToken == "method") | (currentToken == "constructor"))):
-                                compileSubroutine()
-                            
-                            # Found a compileClassVarDec keyword...
-                            if ((currentTokenType == "KEYWORD") & ((currentToken == "static") | (currentToken == "field"))):
-                               compileClassVarDec()
+                    # Found a subroutineDec
+                    if ((currentTokenType == "KEYWORD") & ((currentToken == "function") | (currentToken == "method") | (currentToken == "constructor"))):
+                        compileSubroutine()
+                                
+                    # Found a ClassVarDec
+                    if ((currentTokenType == "KEYWORD") & ((currentToken == "static") | (currentToken == "field"))):
+                        compileClassVarDec()
+                        
+                    performBasicCheck()
 
-                            # Found a non-KEYWORD or am ineligible KEYWORD
-                            if ((currentTokenType != "KEYWORD") | (currentToken != "static") & (currentToken != "field") & (currentToken != "function") & (currentToken != "method") & (currentToken != "constructor")):
-                                error()
-                        else:
-                            error()
-                    else:
-                        error()
+                # End Recursion...
+                if ((currentTokenType == "SYMBOL") & (currentToken == "}")):
+                    stringToExport = "\t<symbol> " + currentToken + " </symbol>\n"
+                    out_file.write(stringToExport)
+                    print stringToExport
+
                 else:
                     error()
             else:
@@ -435,6 +429,22 @@ def compileTerm():
 
 def compileExpressionList():
     return
+
+
+## HELPER ROUTINES ##
+
+def performBasicCheck():
+
+    global currentToken, currentTokenType
+
+    if hasMoreTokens():
+        currentToken = advance()
+        currentTokenType = tokenType()
+    else:
+        error()
+    
+    return
+
 
 def error():
     print "ERROR!"
