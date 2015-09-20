@@ -23,7 +23,7 @@ def main():
     print "JRD Nand-2-Tetris Jack Analyzer, 2015\n"
     print "Enter the Source Jack File (.jack) or Source Jack Directory (within this path) to be analyzed:"
     #source_input = raw_input(">") # User inputs source...
-    source_input = "test.jack" # Uncomment to test without user input
+    source_input = "UnitTest.jack" # Uncomment to test without user input
     
     ## These are the test Jack files.  Uncomment to substitute for source_input ##
     #...
@@ -304,6 +304,8 @@ def compilationEngineConstructor():
     currentPos = 0
     currentToken = ""
     currentTokenType = ""
+    
+    print "-----------------------\nWriting XML Code...\n"
 
     compileClass()
     
@@ -314,26 +316,28 @@ def compileClass():
     
     global currentToken, currentTokenType
     
+    
     performBasicCheck()
     
+    # Write class header
     if ((currentTokenType == "KEYWORD") & (currentToken == "class")):
-        # open class terminal
         stringToExport = "<class>\n\t<keyword> class </keyword>\n"
         out_file.write(stringToExport)
         print stringToExport
         
         performBasicCheck()
             
-        # Print identifier terminal
+        # Write className
         if currentTokenType == "IDENTIFIER":
             stringToExport = "\t<identifier> " + currentToken + " </identifier>\n"
             out_file.write(stringToExport)
             print stringToExport
 
             performBasicCheck()
-                        
+            
+            # Write {
             if ((currentTokenType == "SYMBOL") & (currentToken == "{")):
-                stringToExport = "\t<symbol> " + currentToken + " </symbol>\n"
+                stringToExport = "\t<symbol> " + currentToken + " </symbol>\n\n" # DELETE EXTRA LINE BREAK
                 out_file.write(stringToExport)
                 print stringToExport
                         
@@ -354,6 +358,8 @@ def compileClass():
                     performBasicCheck()
 
                 # End Recursion...
+                
+                # Write }
                 if ((currentTokenType == "SYMBOL") & (currentToken == "}")):
                     stringToExport = "\t<symbol> " + currentToken + " </symbol>\n"
                     out_file.write(stringToExport)
@@ -366,8 +372,8 @@ def compileClass():
         else:
             error()
 
-        # close class terminal
-        stringToExport = "</class>\n"
+        # Write class footer
+        stringToExport = "</class>\n\n" # DELETE EXTRA LINE BREAK
         out_file.write(stringToExport)
         print stringToExport
 
@@ -378,7 +384,64 @@ def compileClass():
 
 
 def compileClassVarDec():
+
     print "compileClassVarDec"
+    
+    # Write classVarDec header
+    stringToExport = "\t<classVarDec>\n"
+    out_file.write(stringToExport)
+    print stringToExport
+    
+    if ((currentTokenType == "KEYWORD") & ((currentToken == "static") | (currentToken == "field"))):
+        stringToExport = "\t\t<keyword> " + currentToken + " </keyword>\n"
+        out_file.write(stringToExport)
+        print stringToExport
+        
+        performBasicCheck()
+        
+        # Write type
+        if ((currentTokenType == "KEYWORD") & ((currentToken == "int") | (currentToken == "char") | (currentToken == "boolean"))):
+            print "Writing an int/char/boolean"
+            stringToExport = "\t\t<keyword> " + currentToken + " </keyword>\n"
+            out_file.write(stringToExport)
+            print stringToExport
+        
+        if ((currentTokenType == "IDENTIFIER")):
+            print "Writing className"
+            stringToExport = "\t\t<identifier> " + currentToken + " </identifier>\n"
+            out_file.write(stringToExport)
+            print stringToExport
+    
+        performBasicCheck()
+        
+        # Write varName
+        if ((currentTokenType == "IDENTIFIER")):
+            print "Writing varName"
+            stringToExport = "\t\t<identifier> " + currentToken + " </identifier>\n"
+            out_file.write(stringToExport)
+            print stringToExport
+        
+        performBasicCheck()
+    
+        if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
+            print "Writing a ; statement close"
+            stringToExport = "\t\t<symbol> " + currentToken + " </symbol>\n"
+            out_file.write(stringToExport)
+            print stringToExport
+
+        else:
+            error()
+    
+        # Write classVarDec footer
+        stringToExport = "\t</classVarDec>\n\n" # DELETE EXTRA LINE BREAK
+        out_file.write(stringToExport)
+        print stringToExport
+    
+    else:
+        error()
+
+
+
     return
 
 
