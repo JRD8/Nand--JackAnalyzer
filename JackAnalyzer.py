@@ -365,7 +365,6 @@ def compileClass():
                     stringToExport = "\t<symbol> " + currentToken + " </symbol>\n"
                     out_file.write(stringToExport)
                     print stringToExport
-
                 else:
                     error()
             else:
@@ -406,13 +405,11 @@ def compileClassVarDec():
             stringToExport = "\t\t<keyword> " + currentToken + " </keyword>\n"
             out_file.write(stringToExport)
             print stringToExport
-
         elif ((currentTokenType == "IDENTIFIER")):
             print "Writing className"
             stringToExport = "\t\t<identifier> " + currentToken + " </identifier>\n"
             out_file.write(stringToExport)
             print stringToExport
-
         else:
             error()
     
@@ -445,7 +442,6 @@ def compileClassVarDec():
                 stringToExport = "\t\t<identifier> " + currentToken + " </identifier>\n"
                 out_file.write(stringToExport)
                 print stringToExport
-
             else:
                 error()
                     
@@ -473,11 +469,206 @@ def compileClassVarDec():
 
 def compileSubroutine():
     print "compileSubroutine"
+    
+    # Write subroutineDec header
+    stringToExport = "\t<subroutineDec>\n"
+    out_file.write(stringToExport)
+    print stringToExport
+    
+    if ((currentTokenType == "KEYWORD") & ((currentToken == "function") | (currentToken == "method") | (currentToken == "constructor"))):
+        stringToExport = "\t\t<keyword> " + currentToken + " </keyword>\n"
+        out_file.write(stringToExport)
+        print stringToExport
+    
+        performBasicCheck()
+    
+        # Write return type
+        if ((currentTokenType == "KEYWORD") & ((currentToken == "int") | (currentToken == "char") | (currentToken == "boolean") | (currentToken == "void"))):
+            print "Writing a int/boolean/char/void return type"
+            stringToExport = "\t\t<keyword> " + currentToken + " </keyword>\n"
+            out_file.write(stringToExport)
+            print stringToExport
+        elif ((currentTokenType == "IDENTIFIER")):
+            print "Writing a className return type"
+            stringToExport = "\t\t<identifier> " + currentToken + " </identifier>\n"
+            out_file.write(stringToExport)
+            print stringToExport
+        else:
+            error()
+                
+        performBasicCheck()
+            
+        # Write subroutineName
+        if ((currentTokenType == "IDENTIFIER")):
+            print "Writing subroutineName"
+            stringToExport = "\t\t<identifier> " + currentToken + " </identifier>\n"
+            out_file.write(stringToExport)
+            print stringToExport
+        else:
+            error()
+                
+        performBasicCheck()
+            
+        # Write (
+        if ((currentTokenType == "SYMBOL") & (currentToken == "(")):
+            stringToExport = "\t\t<symbol> " + currentToken + " </symbol>\n"
+            out_file.write(stringToExport)
+            print stringToExport
+
+            performBasicCheck()
+
+            compileParameterList()
+            
+            # Write )
+            if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
+                stringToExport = "\t\t<symbol> " + currentToken + " </symbol>\n"
+                out_file.write(stringToExport)
+                print stringToExport
+                
+                # Write subroutineBody header
+                stringToExport = "\t\t<subroutineBody>\n"
+                out_file.write(stringToExport)
+                print stringToExport
+
+                performBasicCheck()
+            
+                # Write {
+                if ((currentTokenType == "SYMBOL") & (currentToken == "{")):
+                    stringToExport = "\t\t\t<symbol> " + currentToken + " </symbol>\n"
+                    out_file.write(stringToExport)
+                    print stringToExport
+            
+                    performBasicCheck()
+            
+                    # Begin recursion for subroutineBody...
+                    
+                    # Write }
+                    if ((currentTokenType == "SYMBOL") & (currentToken == "}")):
+                        stringToExport = "\t\t\t<symbol> " + currentToken + " </symbol>\n"
+                        out_file.write(stringToExport)
+                        print stringToExport
+                    
+                        # Write subroutineBody footer
+                        stringToExport = "\t\t</subroutineBody>\n"
+                        out_file.write(stringToExport)
+                        print stringToExport
+
+                    else:
+                        error()
+                else:
+                    error()
+            else:
+                error()
+        else:
+            error()
+    else:
+        error()
+    
+    # Write subroutineDec footer
+    stringToExport = "\t</subroutineDec>\n\n" # DELETE EXTRA LINE BREAK
+    out_file.write(stringToExport)
+    print stringToExport
+    
     return
 
 
 def compileParameterList():
-    return
+    
+    print "compileParameterList"
+
+    # Write parameterList header
+    stringToExport = "\t\t<parameterList>\n"
+    out_file.write(stringToExport)
+    print stringToExport
+    
+    # Found an empty parameterList
+    if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
+
+        # Write parameterList footer
+        stringToExport = "\t\t</parameterList>\n"
+        out_file.write(stringToExport)
+        print stringToExport
+
+        return
+
+    else:
+        
+        # Write parameter type
+        if ((currentTokenType == "KEYWORD") & ((currentToken == "int") | (currentToken == "char") | (currentToken == "boolean"))):
+            print "Writing a int/boolean/char parameter type"
+            stringToExport = "\t\t\t<keyword> " + currentToken + " </keyword>\n"
+            out_file.write(stringToExport)
+            print stringToExport
+
+        elif ((currentTokenType == "IDENTIFIER")):
+            print "Writing a className parameter type"
+            stringToExport = "\t\t\t<identifier> " + currentToken + " </identifier>\n"
+            out_file.write(stringToExport)
+            print stringToExport
+
+        else:
+            error()
+
+        performBasicCheck()
+            
+        # Write parameter varName
+        if ((currentTokenType == "IDENTIFIER")):
+            print "Writing varName"
+            stringToExport = "\t\t\t<identifier> " + currentToken + " </identifier>\n"
+            out_file.write(stringToExport)
+            print stringToExport
+
+        else:
+            error()
+
+        performBasicCheck()
+
+        # Loop to write multiple parameter varNames
+        while ((currentTokenType == "SYMBOL") & (currentToken == ",")):
+
+            print "Writing a , multiple varName"
+            stringToExport = "\t\t\t<symbol> " + currentToken + " </symbol>\n"
+            out_file.write(stringToExport)
+            print stringToExport
+            
+            performBasicCheck()
+
+            # Write parameter type
+            if ((currentTokenType == "KEYWORD") & ((currentToken == "int") | (currentToken == "char") | (currentToken == "boolean"))):
+                print "Writing a int/boolean/char parameter type"
+                stringToExport = "\t\t\t<keyword> " + currentToken + " </keyword>\n"
+                out_file.write(stringToExport)
+                print stringToExport
+        
+            elif ((currentTokenType == "IDENTIFIER")):
+                print "Writing a className parameter type"
+                stringToExport = "\t\t\t<identifier> " + currentToken + " </identifier>\n"
+                out_file.write(stringToExport)
+                print stringToExport
+        
+            else:
+                error()
+                    
+            performBasicCheck()
+                
+            # Write parameter varName
+            if ((currentTokenType == "IDENTIFIER")):
+                print "Writing varName"
+                stringToExport = "\t\t\t<identifier> " + currentToken + " </identifier>\n"
+                out_file.write(stringToExport)
+                print stringToExport
+
+            else:
+                error()
+            
+            performBasicCheck()
+    
+        # Write parameterList footer
+        stringToExport = "\t\t</parameterList>\n"
+        out_file.write(stringToExport)
+        print stringToExport
+
+        return
 
 
 def compileVarDec():
