@@ -546,12 +546,12 @@ def compileSubroutine():
                         
                         if ((currentTokenType == "KEYWORD") & (currentToken == "var")):
                             compileVarDec()
-                        elif ((currentTokenType == "KEYWORD") & ((currentToken == "let") | (currentToken == "if") | (currentToken == "else") | (currentToken == "while") | (currentToken == "do") | (currentToken == "return")) | ((currentTokenType == "SYMBOL") & (currentToken == "{") | (currentToken == "}"))):
+                        elif ((currentTokenType == "KEYWORD") & ((currentToken == "let") | (currentToken == "if") | (currentToken == "while") | (currentToken == "do") | (currentToken == "return"))):
                             compileStatements()
                         else:
                             error()
-                
-                        performBasicCheck()
+                                
+                        performBasicCheck () # Fix error as it relates to this basicCheck
                     
                     # Write }
                     if ((currentTokenType == "SYMBOL") & (currentToken == "}")):
@@ -774,6 +774,23 @@ def compileStatements():
     out_file.write(stringToExport)
     print stringToExport
     
+    while ((currentTokenType != "SYMBOL") & (currentToken != "}")):
+        
+        if ((currentTokenType == "KEYWORD") & (currentToken == "let")):
+            compileLet()
+        elif ((currentTokenType == "KEYWORD") & (currentToken == "if")):
+            compileIf()
+        elif ((currentTokenType == "KEYWORD") & (currentToken == "while")):
+            compileWhile()
+        elif ((currentTokenType == "KEYWORD") & (currentToken == "do")):
+            compileDo()
+        elif ((currentTokenType == "KEYWORD") & (currentToken == "return")):
+            compileReturn()
+        else:
+            error()
+              
+        performBasicCheck()
+    
     # Write compileStatements footer
     stringToExport = "\t\t\t</statements>\n"
     out_file.write(stringToExport)
@@ -783,22 +800,28 @@ def compileStatements():
 
 
 def compileDo():
+              
+    print "compile do"
     return
 
 
 def compileLet():
+    print "compile let"
     return
 
 
 def compileWhile():
+    print "compile while"
     return
 
 
 def compileReturn():
+    print "compile return"
     return
 
 
 def compileIf():
+    print "compile if"
     return
 
 
