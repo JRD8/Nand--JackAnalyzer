@@ -909,32 +909,43 @@ def compileTerm():
     
     # Analyze the term components...
 
-    # Found an Integer Constant...
+    # Found an integerConstant...
     if currentTokenType == "INT_CONST":
         print "Writing an Integer Constant"
         stringToExport = tabInsert() + "<integerConstant>" + currentToken + "</integerConstant>\n"
         out_file.write(stringToExport)
         print stringToExport
 
-    # Found a String Constant...
+    # Found a stringConstant...
     elif currentTokenType == "STRING_CONST":
         print "Writing a String Constant"
         stringToExport = tabInsert() + "<stringConstant>" + currentToken.strip("\"") + "</stringConstant>\n"
         out_file.write(stringToExport)
         print stringToExport
     
-    # Found a Keyword Constant...
+    # Found a keywordConstant...
     elif ((currentTokenType == "KEYWORD") & ((currentToken == "true") | (currentToken == "false") | (currentToken == "null") | (currentToken == "this"))):
         print "Writing a Keyword Constant"
         stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
         out_file.write(stringToExport)
         print stringToExport
 
+    # Found a unaryOp term
+    elif ((currentTokenType == "SYMBOL") & ((currentToken == "-") | (currentToken == "~"))):
+        print "Writing a unaryOp term"
+        stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+        out_file.write(stringToExport)
+        print stringToExport
+
+        performBasicCheck()
+
+        compileTerm()
+
     # Found an Identifier...
     elif (currentTokenType == "IDENTIFIER"):
         lookAhead = tokenizedSource[currentPos] # Not currentPos + 1 due to advance() counting...
         
-        # Found an array
+        # Found a varName[array]
         if lookAhead == "[":
             # Writing the varName
             stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
@@ -965,13 +976,21 @@ def compileTerm():
                     error()
             else:
                 error()
-            
-        elif lookAhead == "(":
-            print "???"
-        elif lookAhead == ".":
-            print "Subroutine call"
 
-    # Found a (expression)...
+        # Found a subroutineCall
+        elif ((lookAhead == "(") | (lookAhead == ".")):
+            print "a subroutine"
+
+        # Found a varName
+        elif ((lookAhead != "(") & (lookAhead != ".") & (lookAhead != ".")):
+            stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+            out_file.write(stringToExport)
+
+        else:
+            error()
+
+
+    # Found an (expression)...
     elif ((currentTokenType == "SYMBOL") & (currentToken == "(")):
         print "Writing a (expression)"
         stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
