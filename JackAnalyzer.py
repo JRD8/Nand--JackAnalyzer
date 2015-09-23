@@ -551,7 +551,7 @@ def compileSubroutine():
                         else:
                             error()
                                 
-                        performBasicCheck () # Fix error as it relates to this basicCheck
+                        performBasicCheck ()
                     
                     # Write }
                     if ((currentTokenType == "SYMBOL") & (currentToken == "}")):
@@ -817,6 +817,37 @@ def compileWhile():
 
 def compileReturn():
     print "compile return"
+    
+    # Write compileReturn header
+    stringToExport = "\t\t\t\t<returnStatement>\n"
+    out_file.write(stringToExport)
+    print stringToExport
+    
+    if ((currentTokenType == "KEYWORD") & (currentToken == "return")):
+        stringToExport = "\t\t\t\t\t<keyword> " + currentToken + " </keyword>\n"
+        out_file.write(stringToExport)
+        print stringToExport
+    
+    performBasicCheck()
+
+    while not currentToken == ";":
+        compileExpression()
+        performBasicCheck()
+
+    # Writing a ; statement close
+    if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
+        print "Writing a ; statement close"
+        stringToExport = "\t\t\t\t\t<symbol> " + currentToken + " </symbol>\n"
+        out_file.write(stringToExport)
+        print stringToExport
+    else:
+        error()
+
+    # Write compileReturn header
+    stringToExport = "\t\t\t\t</returnStatement>\n"
+    out_file.write(stringToExport)
+    print stringToExport
+    
     return
 
 
@@ -826,6 +857,18 @@ def compileIf():
 
 
 def compileExpression():
+    print "compile expression"
+    
+    # Write compileExpression header
+    stringToExport = "\t\t\t\t\t<expression>\n"
+    out_file.write(stringToExport)
+    print stringToExport
+    
+    # Write compileExpression footer
+    stringToExport = "\t\t\t\t\t</expression>\n"
+    out_file.write(stringToExport)
+    print stringToExport
+    
     return
 
 
@@ -847,6 +890,8 @@ def performBasicCheck():
     if hasMoreTokens():
         currentToken = advance()
         currentTokenType = tokenType()
+    elif not hasMoreTokens() & ((currentPos + 1) == len(tokenizedSource)): # At end of tokenizedSource elements
+        return
     else:
         error()
     
