@@ -896,9 +896,6 @@ def compileExpression():
 
 
 def compileTerm():
-    print "compile term"
-    
-    print "current token" + currentToken
     
     # Write compileTerm header
     stringToExport = tabInsert() + "<term>\n"
@@ -979,10 +976,46 @@ def compileTerm():
 
         # Found a subroutineCall
         elif ((lookAhead == "(") | (lookAhead == ".")):
-            print "a subroutine"
+            # Writing a subroutineName/className/varName
+            stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+            out_file.write(stringToExport)
+
+            performBasicCheck()
+            
+            if ((currentTokenType == "SYMBOL") & (currentToken == ".")):
+                stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                out_file.write(stringToExport)
+            
+                performBasicCheck()
+            
+                stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+                out_file.write(stringToExport)
+            
+                performBasicCheck()
+            
+
+            # Writing ( symbol
+            if ((currentTokenType == "SYMBOL") & (currentToken == "(")):
+                stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                out_file.write(stringToExport)
+                
+                # Compiling expressionList
+                compileExpressionList()
+
+                performBasicCheck()
+
+                # Writing ) symbol
+                if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
+                    stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                    out_file.write(stringToExport)
+                else:
+                    error()
+            else:
+                error()
+
 
         # Found a varName
-        elif ((lookAhead != "(") & (lookAhead != ".") & (lookAhead != ".")):
+        elif ((lookAhead != "(") & (lookAhead != ".")):
             stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
             out_file.write(stringToExport)
 
@@ -1024,6 +1057,17 @@ def compileTerm():
 
 
 def compileExpressionList():
+    
+    # Write expressionList header
+    stringToExport = tabInsert() + "<expressionList>\n"
+    out_file.write(stringToExport)
+    print stringToExport
+    
+    # Write expressionList footer
+    stringToExport = tabInsert() + "</expressionList>\n"
+    out_file.write(stringToExport)
+    print stringToExport
+    
     return
 
 
