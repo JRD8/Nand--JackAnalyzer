@@ -898,6 +898,8 @@ def compileExpression():
 def compileTerm():
     print "compile term"
     
+    print "current token" + currentToken
+    
     # Write compileTerm header
     stringToExport = tabInsert() + "<term>\n"
     out_file.write(stringToExport)
@@ -930,12 +932,43 @@ def compileTerm():
 
     # Found an Identifier...
     elif (currentTokenType == "IDENTIFIER"):
-        lookAhead = tokenizedSource[currentPos + 1]
+        lookAhead = tokenizedSource[currentPos] # Not currentPos + 1 due to advance() counting...
+        
+        # Found an array
         if lookAhead == "[":
-            print "Array"
-        if lookAhead == "(":
+            # Writing the varName
+            stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
+            out_file.write(stringToExport)
+        
+            performBasicCheck()
+        
+            if ((currentTokenType == "SYMBOL") & (currentToken == "[")):
+                
+                # Writing [ symbol
+                stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                out_file.write(stringToExport)
+                
+                performBasicCheck()
+                
+                # Writing the expression...
+                incrementTab()
+                compileExpression()
+                decrementTab()
+                
+                performBasicCheck()
+                
+                if ((currentTokenType == "SYMBOL") & (currentToken == "]")):
+                    # Writing ] symbol
+                    stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                    out_file.write(stringToExport)
+                else:
+                    error()
+            else:
+                error()
+            
+        elif lookAhead == "(":
             print "???"
-        if lookAhead == ".":
+        elif lookAhead == ".":
             print "Subroutine call"
 
     # Found a (expression)...
