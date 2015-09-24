@@ -818,6 +818,76 @@ def compileStatements():
 def compileDo():
               
     print "compile do"
+    
+    # Write compileDo header
+    stringToExport = tabInsert() + "<doStatement>\n"
+    out_file.write(stringToExport)
+    print stringToExport
+    
+    incrementTab()
+    
+    if ((currentTokenType == "KEYWORD") & (currentToken == "do")):
+        stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
+        out_file.write(stringToExport)
+        print stringToExport
+    
+        performBasicCheck()
+    
+        if (currentTokenType == "IDENTIFIER"):
+            lookAhead = tokenizedSource[currentPos] # Not currentPos + 1 due to advance() counting...
+    
+            # Found a subroutineCall
+            if ((lookAhead == "(") | (lookAhead == ".")):
+            # Writing a subroutineName/className/varName
+                stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+                out_file.write(stringToExport)
+            
+                performBasicCheck()
+            
+                if ((currentTokenType == "SYMBOL") & (currentToken == ".")):
+                    stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                    out_file.write(stringToExport)
+                
+                    performBasicCheck()
+                
+                    stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+                    out_file.write(stringToExport)
+                
+                    performBasicCheck()
+        
+        
+                # Writing ( symbol
+                if ((currentTokenType == "SYMBOL") & (currentToken == "(")):
+                    stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                    out_file.write(stringToExport)
+                
+                    performBasicCheck()
+                
+                    # Compiling expressionList
+                    compileExpressionList()
+                
+                    # Writing ) symbol
+                    if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
+                        stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                        out_file.write(stringToExport)
+                    else:
+                        error()
+                else:
+                    error()
+            else:
+                error()
+        else:
+            error()
+    else:
+        error()
+
+    decrementTab()
+    
+    # Write compileDo footer
+    stringToExport = tabInsert() + "</doStatement>\n"
+    out_file.write(stringToExport)
+    print stringToExport
+    
     return
 
 
@@ -832,7 +902,6 @@ def compileWhile():
 
 
 def compileReturn():
-    print "compile return"
     
     # Write compileReturn header
     stringToExport = tabInsert() + "<returnStatement>\n"

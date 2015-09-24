@@ -26,6 +26,8 @@ class unitTest {
 		var testClass5 test41, test42;
 
 		return draw(3,4,8,9, test43, "james");
+
+		do draw.test44(3,4,5);
 	}
 
 
