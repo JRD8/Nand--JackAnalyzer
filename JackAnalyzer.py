@@ -989,8 +989,6 @@ def compileTerm():
                 compileExpression()
                 decrementTab()
                 
-                performBasicCheck()
-                
                 if ((currentTokenType == "SYMBOL") & (currentToken == "]")):
                     # Writing ] symbol
                     stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
@@ -1025,10 +1023,10 @@ def compileTerm():
                 stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
                 out_file.write(stringToExport)
                 
+                performBasicCheck()
+                
                 # Compiling expressionList
                 compileExpressionList()
-
-                performBasicCheck()
 
                 # Writing ) symbol
                 if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
@@ -1059,8 +1057,6 @@ def compileTerm():
         performBasicCheck()
 
         compileExpression()
-
-        performBasicCheck()
         
         if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
             stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
@@ -1089,6 +1085,24 @@ def compileExpressionList():
     out_file.write(stringToExport)
     print stringToExport
     
+    if ((currentTokenType != "SYMBOL") & (currentToken != ")")):
+    
+        incrementTab()
+    
+        compileExpression()
+    
+        # Loop to write multiple expressions
+        while ((currentTokenType == "SYMBOL") & (currentToken == ",")):
+        
+            stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+            out_file.write(stringToExport)
+            
+            performBasicCheck()
+            
+            compileExpression()
+
+        decrementTab()
+
     # Write expressionList footer
     stringToExport = tabInsert() + "</expressionList>\n"
     out_file.write(stringToExport)

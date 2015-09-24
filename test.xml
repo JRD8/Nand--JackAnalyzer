@@ -1,0 +1,20 @@
+<!-- 
+JACK ANALYZED
+FROM: test.jack
+INPUT TYPE: file
+ON: Sun, 20, Sep, 2015, 01:40:11
+-->
+
+<!--
+SOURCE JACK CODE FOR: test.jack
+-->
+
+<class>
+	<keyword> class </keyword>
+	<identifier> Main </identifier>
+	<symbol> { </symbol>
+</class>
+
+<!-- 
+END OF FILE
+-->
