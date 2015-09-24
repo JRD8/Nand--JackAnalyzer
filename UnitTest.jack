@@ -25,9 +25,11 @@ class unitTest {
 		var boolean test39, test40;
 		var testClass5 test41, test42;
 
-		while (i = 1) {
-
+		if (i = 1) {
 			return 34;
+		}
+		else {
+			return 35;
 		}
 	}
 

@@ -998,7 +998,7 @@ def compileReturn():
     else:
         error()
 
-    # Write compileReturn header
+    # Write compileReturn footer
     decrementTab()
     stringToExport = tabInsert() + "</returnStatement>\n"
     out_file.write(stringToExport)
@@ -1008,7 +1008,102 @@ def compileReturn():
 
 
 def compileIf():
+
     print "compile if"
+    
+    # Write compileIf header
+    stringToExport = tabInsert() + "<ifStatement>\n"
+    out_file.write(stringToExport)
+    
+    incrementTab()
+    
+    # Write if keyword
+    if ((currentTokenType == "KEYWORD") & (currentToken == "if")):
+        stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
+        out_file.write(stringToExport)
+        
+        performBasicCheck()
+        
+        # Write ( symbol
+        if ((currentTokenType == "SYMBOL") & (currentToken == "(")):
+            stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+            out_file.write(stringToExport)
+            
+            performBasicCheck()
+            
+            # Write expression
+            compileExpression()
+            
+            # Write ) symbol
+            if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
+                stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                out_file.write(stringToExport)
+                
+                performBasicCheck()
+                
+                # Write { symbol
+                if ((currentTokenType == "SYMBOL") & (currentToken == "{")):
+                    stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                    out_file.write(stringToExport)
+                    
+                    performBasicCheck()
+                    
+                    # Write statement(s)
+                    compileStatements()
+                    
+                    # Write } symbol
+                    if ((currentTokenType == "SYMBOL") & (currentToken == "}")):
+                        stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                        out_file.write(stringToExport)
+                        
+                        performBasicCheck()
+                    
+                        # Check if there's an additional else statement...
+                        if ((currentTokenType == "KEYWORD") & (currentToken == "else")):
+                            stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
+                            out_file.write(stringToExport)
+                        
+                            performBasicCheck()
+                        
+                            # Write { symbol
+                            if ((currentTokenType == "SYMBOL") & (currentToken == "{")):
+                                stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                                out_file.write(stringToExport)
+        
+                                performBasicCheck()
+                
+                                # Write statement(s)
+                                compileStatements()
+                    
+                                # Write } symbol
+                                if ((currentTokenType == "SYMBOL") & (currentToken == "}")):
+                                    stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                                    out_file.write(stringToExport)
+                        
+                                    performBasicCheck()
+                                        
+                                else:
+                                    error()
+                            else:
+                                error()
+                    
+                    else:
+                        error()
+                else:
+                    error()
+            else:
+                error()
+        else:
+            error()
+    else:
+        error()
+
+
+    # Write compileIf Footer
+    decrementTab()
+    stringToExport = tabInsert() + "</ifStatement>\n"
+    out_file.write(stringToExport)
+
     return
 
 

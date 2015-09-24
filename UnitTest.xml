@@ -2,7 +2,7 @@
 JACK ANALYZED
 FROM: UnitTest.jack
 INPUT TYPE: file
-ON: Thu, 24, Sep, 2015, 09:33:31
+ON: Thu, 24, Sep, 2015, 09:53:25
 -->
 
 <!--
@@ -273,8 +273,8 @@ SOURCE JACK CODE FOR: UnitTest.jack
 				<symbol>;</symbol>
 			</varDec>
 			<statements>
-				<whileStatement>
-					<keyword>while</keyword>
+				<ifStatement>
+					<keyword>if</keyword>
 					<symbol>(</symbol>
 					<expression>
 						<term>
@@ -299,7 +299,21 @@ SOURCE JACK CODE FOR: UnitTest.jack
 						</returnStatement>
 					</statements>
 					<symbol>}</symbol>
-				</whileStatement>
+					<keyword>else</keyword>
+					<symbol>{</symbol>
+					<statements>
+						<returnStatement>
+							<keyword>return</keyword>
+							<expression>
+								<term>
+									<integerConstant>35</integerConstant>
+								</term>
+							</expression>
+							<symbol>;</symbol>
+						</returnStatement>
+					</statements>
+					<symbol>}</symbol>
+				</ifStatement>
 			</statements>
 			<symbol>}</symbol>
 		</subroutineBody>
