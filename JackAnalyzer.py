@@ -24,7 +24,7 @@ def main():
     print "JRD Nand-2-Tetris Jack Analyzer, 2015\n"
     print "Enter the Source Jack File (.jack) or Source Jack Directory (within this path) to be analyzed:"
     #source_input = raw_input(">") # User inputs source...
-    source_input = "UnitTest.jack" # Uncomment to test without user input
+    source_input = "test.jack" # Uncomment to test without user input
     
     ## These are the test Jack files.  Uncomment to substitute for source_input ##
     #...
@@ -999,27 +999,23 @@ def compileReturn():
     # Write compileReturn header
     stringToExport = tabInsert() + "<returnStatement>\n"
     out_file.write(stringToExport)
-    print stringToExport
     
     # Write return keyword
     if ((currentTokenType == "KEYWORD") & (currentToken == "return")):
         incrementTab()
         stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
         out_file.write(stringToExport)
-        print stringToExport
     
     performBasicCheck()
 
     while not currentToken == ";":
-        print "current token" + currentToken
         compileExpression()
 
     # Writing a ; statement close
     if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
-        print "Writing a ; statement close"
         stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
         out_file.write(stringToExport)
-        print stringToExport
+        
     else:
         error()
 
@@ -1027,7 +1023,6 @@ def compileReturn():
     decrementTab()
     stringToExport = tabInsert() + "</returnStatement>\n"
     out_file.write(stringToExport)
-    print stringToExport
     
     return
 
@@ -1244,8 +1239,10 @@ def compileTerm():
                     stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
                     out_file.write(stringToExport)
                 else:
+                    print "1"
                     error()
             else:
+                print "2"
                 error()
 
         # Found a subroutineCall
@@ -1285,8 +1282,10 @@ def compileTerm():
                     stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
                     out_file.write(stringToExport)
                 else:
+                    print "3"
                     error()
             else:
+                print "4"
                 error()
 
 
@@ -1296,6 +1295,7 @@ def compileTerm():
             out_file.write(stringToExport)
 
         else:
+            print "5"
             error()
 
 
@@ -1311,11 +1311,12 @@ def compileTerm():
         if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
             stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
             out_file.write(stringToExport)
-            print stringToExport
+        
         else:
+            print "6"
             error()
-
     else:
+        print "7"
         error()
     
     decrementTab()
@@ -1379,6 +1380,13 @@ def performBasicCheck():
 
 def error():
     print "ERROR!"
+    #print "----- "
+    print "2Prior Token = " + str(tokenizedSource[currentPos - 3])
+    print "Prior Token = " + str(tokenizedSource[currentPos - 2])
+    print "Current Token = " + currentToken;
+    print "Next Token = " + str(tokenizedSource[currentPos])
+    print "2Next Token = " + str(tokenizedSource[currentPos + 1])
+    print "-----\n"
     return
 
 
