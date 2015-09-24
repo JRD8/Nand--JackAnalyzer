@@ -848,8 +848,8 @@ def compileReturn():
     performBasicCheck()
 
     while not currentToken == ";":
+        print "current token" + currentToken
         compileExpression()
-        performBasicCheck()
 
     # Writing a ; statement close
     if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
@@ -882,16 +882,42 @@ def compileExpression():
     out_file.write(stringToExport)
     print stringToExport
     
-    # TODO: Will need to be revised
+    print "currentToken = " + currentToken
     incrementTab()
     compileTerm()
-    decrementTab()
     
+    performBasicCheck()
+    
+    # Write an Op
+    if ((currentTokenType == "SYMBOL") & ((currentToken == "+") | (currentToken == "-") | (currentToken == "*") | (currentToken == "/") | (currentToken == "&") | (currentToken == "|") | (currentToken == "<") | (currentToken == ">") | (currentToken == "="))):
+        # Account for the 3 op XML exceptions, <,>,&
+        if currentToken == "<":
+            stringToExport = tabInsert() + "<symbol>&lt</symbol>\n"
+            out_file.write(stringToExport)
+        elif currentToken == ">":
+            stringToExport = tabInsert() + "<symbol>&gt</symbol>\n"
+            out_file.write(stringToExport)
+        elif currentToken == "&":
+            stringToExport = tabInsert() + "<symbol>&amp</symbol>\n"
+            out_file.write(stringToExport)
+        else:
+            stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+            out_file.write(stringToExport)
+                
+        performBasicCheck()
+        
+        # Write a second term
+        compileTerm()
+
+        performBasicCheck()
+    
+    decrementTab()
+
     # Write compileExpression footer
     stringToExport = tabInsert() + "</expression>\n"
     out_file.write(stringToExport)
     print stringToExport
-    
+
     return
 
 
