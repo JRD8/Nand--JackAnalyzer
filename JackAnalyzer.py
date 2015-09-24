@@ -1180,7 +1180,7 @@ def compileExpression():
 
 def compileTerm():
     
-    print "compileTem()\n"
+    print "compileTerm()\n"
     
     # Write compileTerm header
     stringToExport = tabInsert() + "<term>\n"
