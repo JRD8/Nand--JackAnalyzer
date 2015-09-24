@@ -473,8 +473,9 @@ def compileSubroutine():
     stringToExport = tabInsert() + "<subroutineDec>\n"
     out_file.write(stringToExport)
     
+    incrementTab()
+    
     if ((currentTokenType == "KEYWORD") & ((currentToken == "function") | (currentToken == "method") | (currentToken == "constructor"))):
-        incrementTab()
         stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
         out_file.write(stringToExport)
     
@@ -530,7 +531,6 @@ def compileSubroutine():
                     stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
                     out_file.write(stringToExport)
             
-                    # Begin recursion for subroutineBody...
                     performBasicCheck()
             
                     # Loop to find either a varDec or a Statement initial keyword
@@ -818,10 +818,22 @@ def compileDo():
                     # Write expressionList
                     compileExpressionList()
                 
-                    # Writing ) symbol
+                    # Write ) symbol
                     if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
                         stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
                         out_file.write(stringToExport)
+                    
+                        performBasicCheck()
+                    
+                        # Write ; end of statement
+                        if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
+                            stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                            out_file.write(stringToExport)
+                        
+                            performBasicCheck()
+                
+                        else:
+                            error()
                     else:
                         error()
                 else:
@@ -1011,7 +1023,7 @@ def compileReturn():
     while not currentToken == ";":
         compileExpression()
 
-    # Writing a ; statement close
+    # Write ; end of statement
     if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
         stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
         out_file.write(stringToExport)
@@ -1239,10 +1251,8 @@ def compileTerm():
                     stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
                     out_file.write(stringToExport)
                 else:
-                    print "1"
                     error()
             else:
-                print "2"
                 error()
 
         # Found a subroutineCall
@@ -1282,10 +1292,8 @@ def compileTerm():
                     stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
                     out_file.write(stringToExport)
                 else:
-                    print "3"
                     error()
             else:
-                print "4"
                 error()
 
 
@@ -1295,7 +1303,6 @@ def compileTerm():
             out_file.write(stringToExport)
 
         else:
-            print "5"
             error()
 
 
@@ -1313,10 +1320,8 @@ def compileTerm():
             out_file.write(stringToExport)
         
         else:
-            print "6"
             error()
     else:
-        print "7"
         error()
     
     decrementTab()
@@ -1380,7 +1385,6 @@ def performBasicCheck():
 
 def error():
     print "ERROR!"
-    #print "----- "
     print "2Prior Token = " + str(tokenizedSource[currentPos - 3])
     print "Prior Token = " + str(tokenizedSource[currentPos - 2])
     print "Current Token = " + currentToken;

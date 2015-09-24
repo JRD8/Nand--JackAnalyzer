@@ -2,7 +2,7 @@
 JACK ANALYZED
 FROM: test.jack
 INPUT TYPE: file
-ON: Thu, 24, Sep, 2015, 10:46:51
+ON: Thu, 24, Sep, 2015, 11:18:52
 -->
 
 <!--
@@ -253,9 +253,8 @@ SOURCE JACK CODE FROM: test.jack
 						</expression>
 					</expressionList>
 					<symbol>)</symbol>
+					<symbol>;</symbol>
 				</doStatement>
-			</statements>
-			<statements>
 				<doStatement>
 					<keyword>do</keyword>
 					<identifier>Output</identifier>
@@ -274,9 +273,8 @@ SOURCE JACK CODE FROM: test.jack
 						</expression>
 					</expressionList>
 					<symbol>)</symbol>
+					<symbol>;</symbol>
 				</doStatement>
-			</statements>
-			<statements>
 				<doStatement>
 					<keyword>do</keyword>
 					<identifier>Output</identifier>
@@ -286,9 +284,8 @@ SOURCE JACK CODE FROM: test.jack
 					<expressionList>
 					</expressionList>
 					<symbol>)</symbol>
+					<symbol>;</symbol>
 				</doStatement>
-			</statements>
-			<statements>
 				<returnStatement>
 					<keyword>return</keyword>
 					<symbol>;</symbol>
