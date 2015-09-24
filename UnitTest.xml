@@ -1,8 +1,8 @@
-=<!--
+<!-- 
 JACK ANALYZED
 FROM: UnitTest.jack
 INPUT TYPE: file
-ON: Thu, 24, Sep, 2015, 09:22:39
+ON: Thu, 24, Sep, 2015, 09:33:31
 -->
 
 <!--
@@ -273,81 +273,33 @@ SOURCE JACK CODE FOR: UnitTest.jack
 				<symbol>;</symbol>
 			</varDec>
 			<statements>
-				<returnStatement>
-					<keyword>return</keyword>
+				<whileStatement>
+					<keyword>while</keyword>
+					<symbol>(</symbol>
 					<expression>
 						<term>
-							<identifier>draw</identifier>
-							<symbol>(</symbol>
-							<expressionList>
-								<expression>
-									<term>
-										<integerConstant>3</integerConstant>
-									</term>
-								</expression>
-								<symbol>,</symbol>
-								<expression>
-									<term>
-										<integerConstant>4</integerConstant>
-									</term>
-								</expression>
-								<symbol>,</symbol>
-								<expression>
-									<term>
-										<integerConstant>8</integerConstant>
-									</term>
-								</expression>
-								<symbol>,</symbol>
-								<expression>
-									<term>
-										<integerConstant>9</integerConstant>
-									</term>
-								</expression>
-								<symbol>,</symbol>
-								<expression>
-									<term>
-										<identifier>test43</identifier>
-									</term>
-								</expression>
-								<symbol>,</symbol>
-								<expression>
-									<term>
-										<stringConstant>james</stringConstant>
-									</term>
-								</expression>
-							</expressionList>
-							<symbol>)</symbol>
+							<identifier>i</identifier>
+						</term>
+						<symbol>=</symbol>
+						<term>
+							<integerConstant>1</integerConstant>
 						</term>
 					</expression>
-					<symbol>;</symbol>
-				</returnStatement>
-				<doStatement>
-					<keyword>do</keyword>
-					<identifier>draw</identifier>
-					<symbol>.</symbol>
-					<identifier>test44</identifier>
-					<symbol>(</symbol>
-					<expressionList>
-						<expression>
-							<term>
-								<integerConstant>3</integerConstant>
-							</term>
-						</expression>
-						<symbol>,</symbol>
-						<expression>
-							<term>
-								<integerConstant>4</integerConstant>
-							</term>
-						</expression>
-						<symbol>,</symbol>
-						<expression>
-							<term>
-								<integerConstant>5</integerConstant>
-							</term>
-						</expression>
-					</expressionList>
 					<symbol>)</symbol>
-				</doStatement>
+					<symbol>{</symbol>
+					<statements>
+						<returnStatement>
+							<keyword>return</keyword>
+							<expression>
+								<term>
+									<integerConstant>34</integerConstant>
+								</term>
+							</expression>
+							<symbol>;</symbol>
+						</returnStatement>
+					</statements>
+					<symbol>}</symbol>
+				</whileStatement>
 			</statements>
 			<symbol>}</symbol>
 		</subroutineBody>

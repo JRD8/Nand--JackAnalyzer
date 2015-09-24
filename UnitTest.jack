@@ -25,9 +25,10 @@ class unitTest {
 		var boolean test39, test40;
 		var testClass5 test41, test42;
 
-		return draw(3,4,8,9, test43, "james");
+		while (i = 1) {
 
-		do draw.test44(3,4,5);
+			return 34;
+		}
 	}
 
 
