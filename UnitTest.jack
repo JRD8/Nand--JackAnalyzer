@@ -25,11 +25,8 @@ class unitTest {
 		var boolean test39, test40;
 		var testClass5 test41, test42;
 
-		if (i = 1) {
-			return 34;
-		}
-		else {
-			return 35;
+		do test43(4,5,6,7,8);
+		
 		}
 	}
 

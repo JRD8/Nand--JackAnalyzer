@@ -2,7 +2,7 @@
 JACK ANALYZED
 FROM: UnitTest.jack
 INPUT TYPE: file
-ON: Thu, 24, Sep, 2015, 09:53:25
+ON: Thu, 24, Sep, 2015, 10:13:16
 -->
 
 <!--
@@ -273,47 +273,43 @@ SOURCE JACK CODE FOR: UnitTest.jack
 				<symbol>;</symbol>
 			</varDec>
 			<statements>
-				<ifStatement>
-					<keyword>if</keyword>
+				<doStatement>
+					<keyword>do</keyword>
+					<identifier>test43</identifier>
 					<symbol>(</symbol>
-					<expression>
-						<term>
-							<identifier>i</identifier>
-						</term>
-						<symbol>=</symbol>
-						<term>
-							<integerConstant>1</integerConstant>
-						</term>
-					</expression>
+					<expressionList>
+						<expression>
+							<term>
+								<integerConstant>4</integerConstant>
+							</term>
+						</expression>
+						<symbol>,</symbol>
+						<expression>
+							<term>
+								<integerConstant>5</integerConstant>
+							</term>
+						</expression>
+						<symbol>,</symbol>
+						<expression>
+							<term>
+								<integerConstant>6</integerConstant>
+							</term>
+						</expression>
+						<symbol>,</symbol>
+						<expression>
+							<term>
+								<integerConstant>7</integerConstant>
+							</term>
+						</expression>
+						<symbol>,</symbol>
+						<expression>
+							<term>
+								<integerConstant>8</integerConstant>
+							</term>
+						</expression>
+					</expressionList>
 					<symbol>)</symbol>
-					<symbol>{</symbol>
-					<statements>
-						<returnStatement>
-							<keyword>return</keyword>
-							<expression>
-								<term>
-									<integerConstant>34</integerConstant>
-								</term>
-							</expression>
-							<symbol>;</symbol>
-						</returnStatement>
-					</statements>
-					<symbol>}</symbol>
-					<keyword>else</keyword>
-					<symbol>{</symbol>
-					<statements>
-						<returnStatement>
-							<keyword>return</keyword>
-							<expression>
-								<term>
-									<integerConstant>35</integerConstant>
-								</term>
-							</expression>
-							<symbol>;</symbol>
-						</returnStatement>
-					</statements>
-					<symbol>}</symbol>
-				</ifStatement>
+				</doStatement>
 			</statements>
 			<symbol>}</symbol>
 		</subroutineBody>
