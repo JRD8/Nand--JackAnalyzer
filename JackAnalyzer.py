@@ -94,7 +94,7 @@ def processFile(source_file, out_file):
     global tokenizedSource, currentPos, currentToken, currentTokenType
     
     print "Processing: " + source_file + "\n"
-    out_file.write("<!--\nSOURCE JACK CODE FOR: " + source_file + "\n-->\n\n")
+    out_file.write("<!--\nSOURCE JACK CODE FROM: " + source_file + "\n-->\n\n")
     
     tokenizedSource = tokenizeFile(source_file) # Tokenize the source file
     print "Tokenized Source Code: \n"
@@ -740,9 +740,10 @@ def compileStatements():
     stringToExport = tabInsert() + "<statements>\n"
     out_file.write(stringToExport)
     
+    incrementTab()
+    
     while ((currentTokenType != "SYMBOL") & (currentToken != "}")):
         
-        incrementTab()
         if ((currentTokenType == "KEYWORD") & (currentToken == "let")):
             compileLet()
         elif ((currentTokenType == "KEYWORD") & (currentToken == "if")):
@@ -755,10 +756,9 @@ def compileStatements():
             compileReturn()
         else:
             error()
-        decrementTab()
-              
-        performBasicCheck()
-    
+
+    decrementTab()
+
     # Write compileStatements footer
     stringToExport = tabInsert() + "</statements>\n"
     out_file.write(stringToExport)
@@ -851,6 +851,65 @@ def compileLet():
     out_file.write(stringToExport)
     
     incrementTab()
+    
+    # Write let keyword
+    if ((currentTokenType == "KEYWORD") & (currentToken == "let")):
+        stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
+        out_file.write(stringToExport)
+        
+        performBasicCheck()
+    
+        # Write varName
+        if (currentTokenType == "IDENTIFIER"):
+            stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+            out_file.write(stringToExport)
+        
+            performBasicCheck()
+            
+            # Found an expression/array & write [ symbol
+            if ((currentTokenType == "SYMBOL") & (currentToken == "[")):
+                stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                out_file.write(stringToExport)
+            
+                performBasicCheck()
+            
+                # Write expression
+                compileExpression()
+                
+                # Write ] symbol
+                if ((currentTokenType == "SYMBOL") & (currentToken == "]")):
+                    stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                    out_file.write(stringToExport)
+                
+                    performBasicCheck()
+        
+        
+            # Write = symbol
+            if ((currentTokenType == "SYMBOL") & (currentToken == "=")):
+                stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                out_file.write(stringToExport)
+            
+                performBasicCheck()
+            
+                # Compile expression
+                compileExpression()
+            
+                # Write ; end of statement
+                if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
+                    stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                    out_file.write(stringToExport)
+                
+                    performBasicCheck()
+
+                else:
+                    error()
+            else:
+                error()
+        else:
+            error()
+    else:
+        error()
+    
     
     decrementTab()
     
@@ -1302,7 +1361,6 @@ def compileExpressionList():
 
 
 ## HELPER ROUTINES ##
-
 
 def performBasicCheck():
 
