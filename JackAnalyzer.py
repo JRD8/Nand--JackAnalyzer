@@ -25,7 +25,7 @@ def main():
     print "JRD Nand-2-Tetris Jack Analyzer, 2015\n"
     print "Enter the Source Jack File (.jack) or Source Jack Directory (within this path) to be analyzed:"
     #source_input = raw_input(">") # User inputs source...
-    source_input = "unittest.jack" # Uncomment to test without user input
+    source_input = "Square.jack" # Uncomment to test without user input
     
     ## These are the test Jack files.  Uncomment to substitute for source_input ##
     #...
@@ -1116,7 +1116,7 @@ def compileReturn():
 
 def compileIf():
 
-    print "compileIf()"
+    print "compileIf()\n"
     
     # Write compileIf header
     stringToExport = tabInsert() + "<ifStatement>\n"
@@ -1474,13 +1474,23 @@ def performBasicCheck():
 
 
 def error():
-    print "ERROR!"
-    print "2Prior Token = " + str(tokenizedSource[currentPos - 3])
+    
+    print "ERROR at Token #" + str(currentPos - 1) + "\n"
     print "Prior Token = " + str(tokenizedSource[currentPos - 2])
     print "Current Token = " + currentToken;
-    print "Next Token = " + str(tokenizedSource[currentPos])
-    print "2Next Token = " + str(tokenizedSource[currentPos + 1])
-    print "-----\n"
+    print "Next Token = " + str(tokenizedSource[currentPos]) + "\n"
+    
+    # Print indexed tokenizedSource for reference
+    i = 0
+    temp = ""
+    
+    while (i < len(tokenizedSource)):
+        temp = temp + "(" + str(i) + ") " + str(tokenizedSource[i]) + "  "
+        i = i + 1
+    print temp
+
+    print "\n-----\n"
+
     return
 
 
