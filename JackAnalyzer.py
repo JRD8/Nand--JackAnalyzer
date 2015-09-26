@@ -600,14 +600,19 @@ def compileSubroutine():
                         out_file.write(stringToExport)
 
                     else:
+                        print "E14"
                         error()
                 else:
+                    print "E15"
                     error()
             else:
+                print "E16"
                 error()
         else:
+            print "E17"
             error()
     else:
+        print "E18"
         error()
     
     decrementTab()
@@ -650,6 +655,7 @@ def compileParameterList():
             out_file.write(stringToExport)
 
         else:
+            print "E19"
             error()
 
         performBasicCheck()
@@ -660,6 +666,7 @@ def compileParameterList():
             out_file.write(stringToExport)
 
         else:
+            print "E20"
             error()
 
         performBasicCheck()
@@ -682,6 +689,7 @@ def compileParameterList():
                 out_file.write(stringToExport)
         
             else:
+                print "E21"
                 error()
                     
             performBasicCheck()
@@ -692,6 +700,7 @@ def compileParameterList():
                 out_file.write(stringToExport)
 
             else:
+                print "E22"
                 error()
             
             performBasicCheck()
@@ -729,6 +738,7 @@ def compileVarDec():
             out_file.write(stringToExport)
 
         else:
+            print "E23"
             error()
         
         performBasicCheck()
@@ -739,6 +749,7 @@ def compileVarDec():
             out_file.write(stringToExport)
         
         else:
+            print "E24"
             error()
     
         performBasicCheck()
@@ -755,6 +766,7 @@ def compileVarDec():
                 stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
                 out_file.write(stringToExport)
             else:
+                print "E25"
                 error()
             
             performBasicCheck()
@@ -764,8 +776,10 @@ def compileVarDec():
             stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
             out_file.write(stringToExport)
         else:
+            print "E26"
             error()
     else:
+        print "E27"
         error()
     
     # Write varDec footer
@@ -799,6 +813,7 @@ def compileStatements():
         elif ((currentTokenType == "KEYWORD") & (currentToken == "return")):
             compileReturn()
         else:
+            print "E28"
             error()
 
     decrementTab()
@@ -877,16 +892,22 @@ def compileDo():
                             performBasicCheck()
                 
                         else:
+                            print "E29"
                             error()
                     else:
+                        print "E30"
                         error()
                 else:
+                    print "E31"
                     error()
             else:
+                print "E32"
                 error()
         else:
+            print "E33"
             error()
     else:
+        print "E34"
         error()
 
     decrementTab()
@@ -958,12 +979,16 @@ def compileLet():
                     performBasicCheck()
 
                 else:
+                    print "E35"
                     error()
             else:
+                print "E36"
                 error()
         else:
+            print "E37"
             error()
     else:
+        print "E38"
         error()
     
     
@@ -1028,14 +1053,19 @@ def compileWhile():
                         performBasicCheck()
 
                     else:
+                        print "E39"
                         error()
                 else:
+                    print "E40"
                     error()
             else:
+                print "E41"
                 error()
         else:
+            print "E42"
             error()
     else:
+        print "E43"
         error()
 
 
@@ -1073,6 +1103,7 @@ def compileReturn():
         out_file.write(stringToExport)
         
     else:
+        print "E44"
         error()
 
     # Write compileReturn footer
@@ -1159,19 +1190,26 @@ def compileIf():
                                     performBasicCheck()
                                         
                                 else:
+                                    print "E45"
                                     error()
                             else:
+                                print "E46"
                                 error()
                     
                     else:
+                        print "E47"
                         error()
                 else:
+                    print "E48"
                     error()
             else:
+                print "E49"
                 error()
         else:
+            print "E50"
             error()
     else:
+        print "E51"
         error()
 
 
@@ -1295,8 +1333,10 @@ def compileTerm():
                     stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
                     out_file.write(stringToExport)
                 else:
+                    print "E52"
                     error()
             else:
+                print "E53"
                 error()
 
         # Found a subroutineCall
@@ -1336,8 +1376,10 @@ def compileTerm():
                     stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
                     out_file.write(stringToExport)
                 else:
+                    print "E54"
                     error()
             else:
+                print "E55"
                 error()
 
 
@@ -1347,6 +1389,7 @@ def compileTerm():
             out_file.write(stringToExport)
 
         else:
+            print "E56"
             error()
 
 
@@ -1364,8 +1407,10 @@ def compileTerm():
             out_file.write(stringToExport)
         
         else:
+            print "E57"
             error()
     else:
+        print "E58"
         error()
     
     decrementTab()
@@ -1422,6 +1467,7 @@ def performBasicCheck():
     elif not hasMoreTokens() & ((currentPos + 1) == len(tokenizedSource)): # At end of tokenizedSource elements
         return
     else:
+        print "E59"
         error()
     
     return
