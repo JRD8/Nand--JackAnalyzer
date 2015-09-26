@@ -1,12 +1,8 @@
 <!-- 
 JACK ANALYZED
-FROM: UnitTest.jack
+SOURCE CODE FROM: unittest.jack
 INPUT TYPE: file
-ON: Thu, 24, Sep, 2015, 10:30:34
--->
-
-<!--
-SOURCE JACK CODE FOR: UnitTest.jack
+ON: Sat, 26, Sep, 2015, 11:06:42
 -->
 
 <class>
@@ -302,6 +298,35 @@ SOURCE JACK CODE FOR: UnitTest.jack
 					</expression>
 					<symbol>;</symbol>
 				</letStatement>
+				<whileStatement>
+					<keyword>while</keyword>
+					<symbol>(</symbol>
+					<expression>
+						<term>
+							<identifier>j</identifier>
+						</term>
+						<symbol>&amp;</symbol>
+						<term>
+							<identifier>k</identifier>
+						</term>
+					</expression>
+					<symbol>)</symbol>
+					<symbol>{</symbol>
+					<statements>
+						<letStatement>
+							<keyword>let</keyword>
+							<identifier>j</identifier>
+							<symbol>=</symbol>
+							<expression>
+								<term>
+									<identifier>k</identifier>
+								</term>
+							</expression>
+							<symbol>;</symbol>
+						</letStatement>
+					</statements>
+					<symbol>}</symbol>
+				</whileStatement>
 			</statements>
 			<symbol>}</symbol>
 		</subroutineBody>

@@ -27,9 +27,11 @@ class unitTest {
 
 		let j[4] = 8;
 		let k = "james";
+		while (j & k) 
+		{ 
+		let j = k;
+		}
 
 		}
 	}
-
-
 }

@@ -9,6 +9,7 @@ currentPos = 0
 currentToken = ""
 currentTokenType = ""
 out_file = ""
+out_fileT = ""
 tokenizedSource = []
 tabLevel = 0
 
@@ -24,7 +25,7 @@ def main():
     print "JRD Nand-2-Tetris Jack Analyzer, 2015\n"
     print "Enter the Source Jack File (.jack) or Source Jack Directory (within this path) to be analyzed:"
     #source_input = raw_input(">") # User inputs source...
-    source_input = "test.jack" # Uncomment to test without user input
+    source_input = "unittest.jack" # Uncomment to test without user input
     
     ## These are the test Jack files.  Uncomment to substitute for source_input ##
     #...
@@ -38,7 +39,7 @@ def main():
 
 def jackTokenizerConstructor(input_file_or_stream):
     
-    global out_file
+    global out_file, out_file2
     
     if input_file_or_stream.find(".jack") == -1: # Directory input
         input_type = "directory"
@@ -57,19 +58,24 @@ def jackTokenizerConstructor(input_file_or_stream):
 
     if input_type == "file":
         out_filename = input_file_or_stream[0:input_file_or_stream.find(".")] + ".xml" # for file input
+        out_filename2 = input_file_or_stream[0:input_file_or_stream.find(".")] + "T.xml" # Creates **T.xml for tokenizer ref file
     else:
         out_filename = input_file_or_stream + ".xml" # for directory input...
+        out_filename2 = input_file_or_stream + "T.xml" # for Creates **T.xml for tokenizer ref file
 
-    # Open the out_file
-    out_file = open(out_filename, 'w')
+    # Open the out_file(s)
+    out_file = open(out_filename, 'w') # Main file
     print "Writing the Destination File (.xml): " + out_filename + "\n"
+    out_file2 = open(out_filename2, 'w') # Opens the tokenizer ref file
+    
 
     # Get date/time stamp
     from time import localtime, strftime
     temp = strftime("%a, %d, %b, %Y, %X", localtime())
 
-    # Write comment header into out_file
-    out_file.write("<!-- \nJACK ANALYZED\nFROM: " + input_file_or_stream + "\nINPUT TYPE: " + input_type + "\nON: " + temp + "\n-->\n\n")
+    # Write headers into out_file(s)
+    out_file.write("<!-- \nJACK ANALYZED\nSOURCE CODE FROM: " + input_file_or_stream + "\nINPUT TYPE: " + input_type + "\nON: " + temp + "\n-->\n\n")
+    out_file2.write("<!-- \nJACK ANALYZED\nSOURCE CODE FROM: " + input_file_or_stream + "\nINPUT TYPE: " + input_type + "\nON: " + temp + "\n-->\n\n") # tokenizer ref file
 
     # Process file(s)...
     if input_type == "file":
@@ -80,10 +86,15 @@ def jackTokenizerConstructor(input_file_or_stream):
         for file in files:
             processFile(file,out_file)
 
-    # Close the out_file
+    # Close main out_file
     out_file.write("\n<!-- \nEND OF FILE\n-->")
     out_file.close()
     print "\n----------------------------\n** JACK ANALYZER Complete **"
+
+    # Close tokenizer ref file
+    out_file2.write("</tokens>\n") # Write footer
+    out_file2.write("\n<!-- \nEND OF FILE\n-->")
+    out_file2.close()
 
     return
 
@@ -94,8 +105,10 @@ def processFile(source_file, out_file):
     global tokenizedSource, currentPos, currentToken, currentTokenType
     
     print "Processing: " + source_file + "\n"
-    out_file.write("<!--\nSOURCE JACK CODE FROM: " + source_file + "\n-->\n\n")
-    
+ 
+    # Write tokenizer ref file header
+    out_file2.write("<tokens>\n")
+ 
     tokenizedSource = tokenizeFile(source_file) # Tokenize the source file
     print "Tokenized Source Code: \n"
     print tokenizedSource
@@ -111,18 +124,38 @@ def processFile(source_file, out_file):
         if currentTokenType == "KEYWORD":
             temp = keyWord()
             print "Keyword: ",
+            out_file2.write("\t<keyword>" + currentToken + "</keyword>\n") # tokenizer ref file
+        
         if currentTokenType == "SYMBOL":
             temp = symbol()
             print "Symbol: ",
+            
+            # Handle the 3 exceptions for <,<,&
+            if currentToken == "<":
+                out_file2.write("\t<symbol>&lt;</symbol>\n")
+            elif currentToken == ">":
+                out_file2.write("\t<symbol>&gt;</symbol>\n")
+            elif currentToken == "&":
+                out_file2.write("\t<symbol>&amp;</symbol>\n")
+            else:
+                out_file2.write("\t<symbol>" + currentToken + "</symbol>\n")
+                
+                
         if currentTokenType == "IDENTIFIER":
             temp = identifier()
             print "Identifier: ",
+            out_file2.write("\t<identifier>" + currentToken + "</identifier>\n") # tokenizer ref file
+        
         if currentTokenType == "INT_CONST":
             temp = str(intVal())
             print "Integer Constant: ",
+            out_file2.write("\t<integerConstant>" + currentToken + "</integerConstant>\n") # tokenizer ref file
+        
         if currentTokenType == "STRING_CONST":
             temp = stringVal()
             print "String Constant: ",
+            out_file2.write("\t<stringConstant>" + currentToken + "</stringConstant>\n") # tokenizer ref file
+        
         print temp + "\n"
 
     # This is not needed, should just call the complilatonEngineConstructor() when removing unit testing
@@ -358,11 +391,10 @@ def compileClass():
                     elif ((currentTokenType == "KEYWORD") & ((currentToken == "static") | (currentToken == "field"))):
                         compileClassVarDec()
                     else:
+                        print "E1"
                         error()
                         
                     performBasicCheck()
-
-                # End Recursion...
                 
                 # Write }
                 if ((currentTokenType == "SYMBOL") & (currentToken == "}")):
@@ -370,10 +402,13 @@ def compileClass():
                     out_file.write(stringToExport)
 
                 else:
+                    print "E2"
                     error()
             else:
+                print "E3"
                 error()
         else:
+            print "E4"
             error()
 
         decrementTab()
@@ -383,6 +418,7 @@ def compileClass():
         out_file.write(stringToExport)
 
     else:
+        print "E5"
         error()
 
     return
@@ -414,6 +450,7 @@ def compileClassVarDec():
             out_file.write(stringToExport)
         
         else:
+            print "E6"
             error()
     
         performBasicCheck()
@@ -424,6 +461,7 @@ def compileClassVarDec():
             out_file.write(stringToExport)
 
         else:
+            print "E7"
             error()
         
         performBasicCheck()
@@ -441,6 +479,7 @@ def compileClassVarDec():
                 out_file.write(stringToExport)
             
             else:
+                print "E8"
                 error()
                     
             performBasicCheck()
@@ -451,6 +490,7 @@ def compileClassVarDec():
             out_file.write(stringToExport)
 
         else:
+            print "E9"
             error()
 
         decrementTab()
@@ -460,6 +500,7 @@ def compileClassVarDec():
         out_file.write(stringToExport)
     
     else:
+        print "E10"
         error()
 
     return
@@ -491,6 +532,7 @@ def compileSubroutine():
             out_file.write(stringToExport)
 
         else:
+            print "E11"
             error()
                 
         performBasicCheck()
@@ -501,6 +543,7 @@ def compileSubroutine():
             out_file.write(stringToExport)
   
         else:
+            print "E12"
             error()
                 
         performBasicCheck()
@@ -541,6 +584,7 @@ def compileSubroutine():
                         elif ((currentTokenType == "KEYWORD") & ((currentToken == "let") | (currentToken == "if") | (currentToken == "while") | (currentToken == "do") | (currentToken == "return"))):
                             compileStatements()
                         else:
+                            print "E13"
                             error()
                                 
                         performBasicCheck ()
@@ -1157,13 +1201,13 @@ def compileExpression():
     if ((currentTokenType == "SYMBOL") & ((currentToken == "+") | (currentToken == "-") | (currentToken == "*") | (currentToken == "/") | (currentToken == "&") | (currentToken == "|") | (currentToken == "<") | (currentToken == ">") | (currentToken == "="))):
         # Account for the 3 op XML exceptions, <,>,&
         if currentToken == "<":
-            stringToExport = tabInsert() + "<symbol>&lt</symbol>\n"
+            stringToExport = tabInsert() + "<symbol>&lt;</symbol>\n"
             out_file.write(stringToExport)
         elif currentToken == ">":
-            stringToExport = tabInsert() + "<symbol>&gt</symbol>\n"
+            stringToExport = tabInsert() + "<symbol>&gt;</symbol>\n"
             out_file.write(stringToExport)
         elif currentToken == "&":
-            stringToExport = tabInsert() + "<symbol>&amp</symbol>\n"
+            stringToExport = tabInsert() + "<symbol>&amp;</symbol>\n"
             out_file.write(stringToExport)
         else:
             stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
@@ -1399,6 +1443,7 @@ def incrementTab():
     global tabLevel
 
     tabLevel = tabLevel + 1
+    
     return
 
 
