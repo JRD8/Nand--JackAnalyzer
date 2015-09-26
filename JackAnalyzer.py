@@ -1433,6 +1433,8 @@ def compileExpressionList():
     incrementTab()
     
     if ((currentTokenType != "SYMBOL") & (currentToken != ")")):
+        
+        print "got here"
     
         compileExpression()
     
