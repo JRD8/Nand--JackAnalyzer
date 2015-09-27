@@ -10,7 +10,6 @@ currentToken = ""
 currentTokenType = ""
 outFile = ""
 outFile2 = ""
-sourceInput = ""
 tokenizedSource = []
 tabLevel = 0
 
@@ -21,8 +20,6 @@ stringConstant = "\""
 
 def main():
     
-    global sourceInput
-    
     # Import Jack file form command line script
     from sys import argv
     print "JRD Nand-2-Tetris Jack Analyzer, 2015\n"
@@ -30,7 +27,7 @@ def main():
     
     # Input options?
     #sourceInput = raw_input(">") # Prompt for user input...
-    sourceInput = "Square.jack" # Test without user input
+    sourceInput = "Test" # Test without user input
     
     
     print "\nThis is the Initial Source Input: " + sourceInput
@@ -40,13 +37,26 @@ def main():
         print "(Source is a Directory Input)\n"
         import os
         scriptPath = os.path.dirname(os.path.abspath(__file__))
-        SourcePath = scriptPath + "/" + sourceInput + "/*.jack"
-        print "Source Path = " + SourcePath + "\n"
+        sourcePath = scriptPath + "/" + sourceInput #+ "/*.jack"
+        print "Source Path = " + sourcePath + "\n"
+        
+        sourceDirectoryList = os.listdir(sourcePath)
+        print sourceDirectoryList
     
+        for file in sourceDirectoryList:
+            if file.find(".jack") != -1: # Found a .jack file
+                
+                print "got here"
+
+                outFilename = sourceInput[0:file.find(".")] + ".xml" # Creates **.xml for main parser file
+                outFilename2 = sourceInput[0:file.find(".")] + "T.xml" # Creates **T.xml for tokenizer ref file
+            
+                jackTokenizerConstructor(file, outFilename, outFilename2)
+
+
     elif sourceInput.find(".jack") != -1: # File input
         inputType = "file"
         print "(Source Input is a FILE)\n"
-        SourcePath = ""
 
         print "This is the Current Source File: " + sourceInput
 
@@ -54,14 +64,14 @@ def main():
         outFilename2 = sourceInput[0:sourceInput.find(".")] + "T.xml" # Creates **T.xml for tokenizer ref file
 
 
-    jackTokenizerConstructor(sourceInput, outFilename, outFilename2)
+        jackTokenizerConstructor(sourceInput, outFilename, outFilename2)
 
     print "\n----------------------------\n** JACK ANALYZER Complete **"
 
     return
 
 
-def jackTokenizerConstructor(sourceInput, outFilename, outFilename2):
+def jackTokenizerConstructor(fileInput, outFilename, outFilename2):
     
     global outFile, outFile2
 
@@ -76,11 +86,11 @@ def jackTokenizerConstructor(sourceInput, outFilename, outFilename2):
     temp = strftime("%a, %d, %b, %Y, %X", localtime())
 
     # Write headers into outFile(s)
-    outFile.write("<!-- \nJACK ANALYZED\nSOURCE CODE FROM: " + sourceInput + "\nON: " + temp + "\n-->\n\n")
-    outFile2.write("<!-- \nJACK ANALYZED\nSOURCE CODE FROM: " + sourceInput + "\nON: " + temp + "\n-->\n\n") # tokenizer ref file
+    outFile.write("<!-- \nJACK ANALYZED\nSOURCE CODE FROM: " + fileInput + "\nON: " + temp + "\n-->\n\n")
+    outFile2.write("<!-- \nJACK ANALYZED\nSOURCE CODE FROM: " + fileInput + "\nON: " + temp + "\n-->\n\n") # tokenizer ref file
 
     # Process file
-    processFile()
+    processFile(fileInput)
 
     # Close main outFile
     outFile.write("\n<!-- \nEND OF FILE\n-->")
@@ -94,14 +104,14 @@ def jackTokenizerConstructor(sourceInput, outFilename, outFilename2):
     return
 
 
-def processFile():
+def processFile(fileInput):
     
     global tokenizedSource, currentPos, currentToken, currentTokenType
  
     # Write tokenizer ref file header
     outFile2.write("<tokens>\n")
  
-    tokenizedSource = tokenizeFile(sourceInput) # Tokenize the source file
+    tokenizedSource = tokenizeFile(fileInput) # Tokenize the source file
     print "Tokenized Source Code: \n"
     print tokenizedSource
     print "\n--------------------------------------------\n"
