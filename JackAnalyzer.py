@@ -27,7 +27,7 @@ def main():
     
     # Input options?
     #userInput = raw_input(">") # Prompt for user input...
-    userInput = "test" # Test without user input
+    userInput = "squaregame.jack" # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
@@ -36,7 +36,7 @@ def main():
         print "(Source is a Directory Input)\n"
         import os
         scriptPath = os.path.dirname(os.path.abspath(__file__))
-        sourcePath = scriptPath + "/" + userInput
+        sourcePath = scriptPath + "/" + userInput + "/"
         print "Source Path = " + sourcePath + "\n"
         
         sourceDirectoryList = os.listdir(sourcePath)
@@ -47,8 +47,12 @@ def main():
                 
                 print sourceFile
 
-                outFilename = sourceFile[0:sourceFile.find(".")] + ".xml" # Creates **.xml for main parser file
-                outFilename2 = sourceFile[0:sourceFile.find(".")] + "T.xml" # Creates **T.xml for tokenizer ref file
+                outFilename = sourcePath + sourceFile[0:sourceFile.find(".")] + ".xml" # Creates **.xml for main parser file
+                print outFilename
+                outFilename2 = sourcePath + sourceFile[0:sourceFile.find(".")] + "T.xml" # Creates **T.xml for tokenizer ref file
+                print outFilename2
+                
+                sourceFile = sourcePath + sourceFile
             
                 jackTokenizerConstructor(sourceFile, outFilename, outFilename2)
 
