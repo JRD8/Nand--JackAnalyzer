@@ -124,7 +124,7 @@ def processFile(source_file, out_file):
         if currentTokenType == "KEYWORD":
             temp = keyWord()
             print "Keyword: ",
-            out_file2.write("\t<keyword>" + currentToken + "</keyword>\n") # tokenizer ref file
+            out_file2.write("\t<keyword> " + currentToken + " </keyword>\n") # tokenizer ref file
         
         if currentTokenType == "SYMBOL":
             temp = symbol()
@@ -132,29 +132,29 @@ def processFile(source_file, out_file):
             
             # Handle the 3 exceptions for <,<,&
             if currentToken == "<":
-                out_file2.write("\t<symbol>&lt;</symbol>\n")
+                out_file2.write("\t<symbol> &lt; </symbol>\n")
             elif currentToken == ">":
-                out_file2.write("\t<symbol>&gt;</symbol>\n")
+                out_file2.write("\t<symbol> &gt; </symbol>\n")
             elif currentToken == "&":
-                out_file2.write("\t<symbol>&amp;</symbol>\n")
+                out_file2.write("\t<symbol> &amp; </symbol>\n")
             else:
-                out_file2.write("\t<symbol>" + currentToken + "</symbol>\n")
+                out_file2.write("\t<symbol> " + currentToken + " </symbol>\n")
                 
                 
         if currentTokenType == "IDENTIFIER":
             temp = identifier()
             print "Identifier: ",
-            out_file2.write("\t<identifier>" + currentToken + "</identifier>\n") # tokenizer ref file
+            out_file2.write("\t<identifier> " + currentToken + " </identifier>\n") # tokenizer ref file
         
         if currentTokenType == "INT_CONST":
             temp = str(intVal())
             print "Integer Constant: ",
-            out_file2.write("\t<integerConstant>" + currentToken + "</integerConstant>\n") # tokenizer ref file
+            out_file2.write("\t<integerConstant> " + currentToken + " </integerConstant>\n") # tokenizer ref file
         
         if currentTokenType == "STRING_CONST":
             temp = stringVal()
             print "String Constant: ",
-            out_file2.write("\t<stringConstant>" + currentToken + "</stringConstant>\n") # tokenizer ref file
+            out_file2.write("\t<stringConstant> " + currentToken + " </stringConstant>\n") # tokenizer ref file
         
         print temp + "\n"
 
@@ -361,21 +361,21 @@ def compileClass():
     
         incrementTab()
         
-        stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
+        stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
         out_file.write(stringToExport)
         
         performBasicCheck()
             
         # Write className
         if currentTokenType == "IDENTIFIER":
-            stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+            stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             out_file.write(stringToExport)
 
             performBasicCheck()
             
             # Write {
             if ((currentTokenType == "SYMBOL") & (currentToken == "{")):
-                stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n\n" # DELETE EXTRA LINE BREAK
+                stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                 out_file.write(stringToExport)
                         
                 # Begin Recursion...
@@ -398,7 +398,7 @@ def compileClass():
                 
                 # Write }
                 if ((currentTokenType == "SYMBOL") & (currentToken == "}")):
-                    stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                    stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                     out_file.write(stringToExport)
 
                 else:
@@ -414,7 +414,7 @@ def compileClass():
         decrementTab()
 
         # Write class footer
-        stringToExport = tabInsert() + "</class>\n\n" # DELETE EXTRA LINE BREAK
+        stringToExport = tabInsert() + "</class>\n"
         out_file.write(stringToExport)
 
     else:
@@ -435,18 +435,18 @@ def compileClassVarDec():
     incrementTab()
     
     if ((currentTokenType == "KEYWORD") & ((currentToken == "static") | (currentToken == "field"))):
-        stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
+        stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
         out_file.write(stringToExport)
         
         performBasicCheck()
         
         # Write type
         if ((currentTokenType == "KEYWORD") & ((currentToken == "int") | (currentToken == "char") | (currentToken == "boolean"))):
-            stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
+            stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
             out_file.write(stringToExport)
         
         elif ((currentTokenType == "IDENTIFIER")):
-            stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+            stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             out_file.write(stringToExport)
         
         else:
@@ -457,7 +457,7 @@ def compileClassVarDec():
         
         # Write varName
         if ((currentTokenType == "IDENTIFIER")):
-            stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+            stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             out_file.write(stringToExport)
 
         else:
@@ -468,14 +468,14 @@ def compileClassVarDec():
     
         # Loop to write multiple varNames
         while ((currentTokenType == "SYMBOL") & (currentToken == ",")):
-            stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+            stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
             out_file.write(stringToExport)
         
             performBasicCheck()
         
             # Write varName
             if ((currentTokenType == "IDENTIFIER")):
-                stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+                stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 out_file.write(stringToExport)
             
             else:
@@ -486,7 +486,7 @@ def compileClassVarDec():
         
         # Writing a ; statement close
         if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
-            stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+            stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
             out_file.write(stringToExport)
 
         else:
@@ -496,7 +496,7 @@ def compileClassVarDec():
         decrementTab()
 
         # Write classVarDec footer
-        stringToExport = tabInsert() + "</classVarDec>\n\n" # DELETE EXTRA LINE BREAK
+        stringToExport = tabInsert() + "</classVarDec>\n"
         out_file.write(stringToExport)
     
     else:
@@ -517,18 +517,18 @@ def compileSubroutine():
     incrementTab()
     
     if ((currentTokenType == "KEYWORD") & ((currentToken == "function") | (currentToken == "method") | (currentToken == "constructor"))):
-        stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
+        stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
         out_file.write(stringToExport)
     
         performBasicCheck()
     
         # Write return type
         if ((currentTokenType == "KEYWORD") & ((currentToken == "int") | (currentToken == "char") | (currentToken == "boolean") | (currentToken == "void"))):
-            stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
+            stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
             out_file.write(stringToExport)
  
         elif ((currentTokenType == "IDENTIFIER")):
-            stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+            stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             out_file.write(stringToExport)
 
         else:
@@ -539,7 +539,7 @@ def compileSubroutine():
             
         # Write subroutineName
         if ((currentTokenType == "IDENTIFIER")):
-            stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+            stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             out_file.write(stringToExport)
   
         else:
@@ -550,7 +550,7 @@ def compileSubroutine():
             
         # Write (
         if ((currentTokenType == "SYMBOL") & (currentToken == "(")):
-            stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+            stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
             out_file.write(stringToExport)
 
             performBasicCheck()
@@ -559,7 +559,7 @@ def compileSubroutine():
             
             # Write )
             if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
-                stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                 out_file.write(stringToExport)
                 
                 # Write subroutineBody header
@@ -571,7 +571,7 @@ def compileSubroutine():
                 # Write {
                 if ((currentTokenType == "SYMBOL") & (currentToken == "{")):
                     incrementTab()
-                    stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                    stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                     out_file.write(stringToExport)
             
                     performBasicCheck()
@@ -591,7 +591,7 @@ def compileSubroutine():
                     
                     # Write }
                     if ((currentTokenType == "SYMBOL") & (currentToken == "}")):
-                        stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                        stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                         out_file.write(stringToExport)
                     
                         # Write subroutineBody footer
@@ -618,7 +618,7 @@ def compileSubroutine():
     decrementTab()
     
     # Write subroutineDec footer
-    stringToExport = tabInsert() + "</subroutineDec>\n\n" # DELETE EXTRA LINE BREAK
+    stringToExport = tabInsert() + "</subroutineDec>\n"
     out_file.write(stringToExport)
     
     return
@@ -646,12 +646,12 @@ def compileParameterList():
         # Write parameter type
         if ((currentTokenType == "KEYWORD") & ((currentToken == "int") | (currentToken == "char") | (currentToken == "boolean"))):
             incrementTab()
-            stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
+            stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
             out_file.write(stringToExport)
 
         elif ((currentTokenType == "IDENTIFIER")):
             incrementTab()
-            stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+            stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             out_file.write(stringToExport)
 
         else:
@@ -662,7 +662,7 @@ def compileParameterList():
             
         # Write parameter varName
         if ((currentTokenType == "IDENTIFIER")):
-            stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+            stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             out_file.write(stringToExport)
 
         else:
@@ -674,18 +674,18 @@ def compileParameterList():
         # Loop to write multiple parameter varNames
         while ((currentTokenType == "SYMBOL") & (currentToken == ",")):
 
-            stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+            stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
             out_file.write(stringToExport)
             
             performBasicCheck()
 
             # Write parameter type
             if ((currentTokenType == "KEYWORD") & ((currentToken == "int") | (currentToken == "char") | (currentToken == "boolean"))):
-                stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
+                stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
                 out_file.write(stringToExport)
         
             elif ((currentTokenType == "IDENTIFIER")):
-                stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+                stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 out_file.write(stringToExport)
         
             else:
@@ -696,7 +696,7 @@ def compileParameterList():
                 
             # Write parameter varName
             if ((currentTokenType == "IDENTIFIER")):
-                stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+                stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 out_file.write(stringToExport)
 
             else:
@@ -723,18 +723,18 @@ def compileVarDec():
     
     if ((currentTokenType == "KEYWORD") & (currentToken == "var")):
         incrementTab()
-        stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
+        stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
         out_file.write(stringToExport)
         
         performBasicCheck()
     
         # Write varDec type
         if ((currentTokenType == "KEYWORD") & ((currentToken == "int") | (currentToken == "char") | (currentToken == "boolean"))):
-            stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
+            stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
             out_file.write(stringToExport)
 
         elif ((currentTokenType == "IDENTIFIER")):
-            stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+            stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             out_file.write(stringToExport)
 
         else:
@@ -745,7 +745,7 @@ def compileVarDec():
         
         # Write varDec varName
         if ((currentTokenType == "IDENTIFIER")):
-            stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+            stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             out_file.write(stringToExport)
         
         else:
@@ -756,14 +756,14 @@ def compileVarDec():
         
         # Loop to write multiple varNames
         while ((currentTokenType == "SYMBOL") & (currentToken == ",")):
-            stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+            stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
             out_file.write(stringToExport)
             
             performBasicCheck()
             
             # Write varName
             if ((currentTokenType == "IDENTIFIER")):
-                stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+                stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 out_file.write(stringToExport)
             else:
                 print "E25"
@@ -773,7 +773,7 @@ def compileVarDec():
         
         # Writing a ; statement close
         if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
-            stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+            stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
             out_file.write(stringToExport)
         else:
             print "E26"
@@ -837,7 +837,7 @@ def compileDo():
     
     # Write do keyword
     if ((currentTokenType == "KEYWORD") & (currentToken == "do")):
-        stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
+        stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
         out_file.write(stringToExport)
     
         performBasicCheck()
@@ -848,20 +848,20 @@ def compileDo():
     
             if ((lookAhead == "(") | (lookAhead == ".")):
             # Writing a subroutineName/className/varName
-                stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+                stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 out_file.write(stringToExport)
             
                 performBasicCheck()
 
                 # Write a . symbol
                 if ((currentTokenType == "SYMBOL") & (currentToken == ".")):
-                    stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                    stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                     out_file.write(stringToExport)
                 
                     performBasicCheck()
                 
                     # Write a subroutineName
-                    stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+                    stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                     out_file.write(stringToExport)
                 
                     performBasicCheck()
@@ -869,7 +869,7 @@ def compileDo():
         
                 # Writing ( symbol
                 if ((currentTokenType == "SYMBOL") & (currentToken == "(")):
-                    stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                    stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                     out_file.write(stringToExport)
                 
                     performBasicCheck()
@@ -879,14 +879,14 @@ def compileDo():
                 
                     # Write ) symbol
                     if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
-                        stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                        stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                         out_file.write(stringToExport)
                     
                         performBasicCheck()
                         
                         # Write ; end of statement
                         if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
-                            stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                            stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                             out_file.write(stringToExport)
                         
                             performBasicCheck()
@@ -931,21 +931,21 @@ def compileLet():
     
     # Write let keyword
     if ((currentTokenType == "KEYWORD") & (currentToken == "let")):
-        stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
+        stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
         out_file.write(stringToExport)
         
         performBasicCheck()
     
         # Write varName
         if (currentTokenType == "IDENTIFIER"):
-            stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+            stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             out_file.write(stringToExport)
         
             performBasicCheck()
             
             # Found an expression/array & write [ symbol
             if ((currentTokenType == "SYMBOL") & (currentToken == "[")):
-                stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                 out_file.write(stringToExport)
             
                 performBasicCheck()
@@ -955,7 +955,7 @@ def compileLet():
                 
                 # Write ] symbol
                 if ((currentTokenType == "SYMBOL") & (currentToken == "]")):
-                    stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                    stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                     out_file.write(stringToExport)
                 
                     performBasicCheck()
@@ -963,7 +963,7 @@ def compileLet():
         
             # Write = symbol
             if ((currentTokenType == "SYMBOL") & (currentToken == "=")):
-                stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                 out_file.write(stringToExport)
             
                 performBasicCheck()
@@ -973,7 +973,7 @@ def compileLet():
             
                 # Write ; end of statement
                 if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
-                    stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                    stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                     out_file.write(stringToExport)
                 
                     performBasicCheck()
@@ -1013,14 +1013,14 @@ def compileWhile():
     
     # Write while keyword
     if ((currentTokenType == "KEYWORD") & (currentToken == "while")):
-        stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
+        stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
         out_file.write(stringToExport)
         
         performBasicCheck()
     
         # Write ( symbol
         if ((currentTokenType == "SYMBOL") & (currentToken == "(")):
-            stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+            stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
             out_file.write(stringToExport)
         
             performBasicCheck()
@@ -1030,14 +1030,14 @@ def compileWhile():
         
             # Write ) symbol
             if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
-                stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                 out_file.write(stringToExport)
             
                 performBasicCheck()
             
                 # Write { symbol
                 if ((currentTokenType == "SYMBOL") & (currentToken == "{")):
-                    stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                    stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                     out_file.write(stringToExport)
                 
                     performBasicCheck()
@@ -1047,7 +1047,7 @@ def compileWhile():
                 
                     # Write } symbol
                     if ((currentTokenType == "SYMBOL") & (currentToken == "}")):
-                        stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                        stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                         out_file.write(stringToExport)
                     
                         performBasicCheck()
@@ -1089,7 +1089,7 @@ def compileReturn():
     # Write return keyword
     if ((currentTokenType == "KEYWORD") & (currentToken == "return")):
         incrementTab()
-        stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
+        stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
         out_file.write(stringToExport)
     
     performBasicCheck()
@@ -1099,7 +1099,7 @@ def compileReturn():
 
     # Write ; end of statement
     if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
-        stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+        stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
         out_file.write(stringToExport)
         
     else:
@@ -1126,14 +1126,14 @@ def compileIf():
     
     # Write if keyword
     if ((currentTokenType == "KEYWORD") & (currentToken == "if")):
-        stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
+        stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
         out_file.write(stringToExport)
         
         performBasicCheck()
         
         # Write ( symbol
         if ((currentTokenType == "SYMBOL") & (currentToken == "(")):
-            stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+            stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
             out_file.write(stringToExport)
             
             performBasicCheck()
@@ -1143,14 +1143,14 @@ def compileIf():
             
             # Write ) symbol
             if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
-                stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                 out_file.write(stringToExport)
                 
                 performBasicCheck()
                 
                 # Write { symbol
                 if ((currentTokenType == "SYMBOL") & (currentToken == "{")):
-                    stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                    stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                     out_file.write(stringToExport)
                     
                     performBasicCheck()
@@ -1160,21 +1160,21 @@ def compileIf():
                     
                     # Write } symbol
                     if ((currentTokenType == "SYMBOL") & (currentToken == "}")):
-                        stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                        stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                         out_file.write(stringToExport)
                         
                         performBasicCheck()
                     
                         # Check if there's an additional else statement...
                         if ((currentTokenType == "KEYWORD") & (currentToken == "else")):
-                            stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
+                            stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
                             out_file.write(stringToExport)
                         
                             performBasicCheck()
                         
                             # Write { symbol
                             if ((currentTokenType == "SYMBOL") & (currentToken == "{")):
-                                stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                                stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                                 out_file.write(stringToExport)
         
                                 performBasicCheck()
@@ -1184,7 +1184,7 @@ def compileIf():
                     
                                 # Write } symbol
                                 if ((currentTokenType == "SYMBOL") & (currentToken == "}")):
-                                    stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                                    stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                                     out_file.write(stringToExport)
                         
                                     performBasicCheck()
@@ -1237,16 +1237,16 @@ def compileExpression():
     if ((currentTokenType == "SYMBOL") & ((currentToken == "+") | (currentToken == "-") | (currentToken == "*") | (currentToken == "/") | (currentToken == "&") | (currentToken == "|") | (currentToken == "<") | (currentToken == ">") | (currentToken == "="))):
         # Account for the 3 op XML exceptions, <,>,&
         if currentToken == "<":
-            stringToExport = tabInsert() + "<symbol>&lt;</symbol>\n"
+            stringToExport = tabInsert() + "<symbol> &lt; </symbol>\n"
             out_file.write(stringToExport)
         elif currentToken == ">":
-            stringToExport = tabInsert() + "<symbol>&gt;</symbol>\n"
+            stringToExport = tabInsert() + "<symbol> &gt; </symbol>\n"
             out_file.write(stringToExport)
         elif currentToken == "&":
-            stringToExport = tabInsert() + "<symbol>&amp;</symbol>\n"
+            stringToExport = tabInsert() + "<symbol> &amp; </symbol>\n"
             out_file.write(stringToExport)
         else:
-            stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+            stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
             out_file.write(stringToExport)
                 
         performBasicCheck()
@@ -1277,28 +1277,28 @@ def compileTerm():
 
     # Found an integerConstant...
     if currentTokenType == "INT_CONST":
-        stringToExport = tabInsert() + "<integerConstant>" + currentToken + "</integerConstant>\n"
+        stringToExport = tabInsert() + "<integerConstant> " + currentToken + " </integerConstant>\n"
         out_file.write(stringToExport)
     
         performBasicCheck()
 
     # Found a stringConstant...
     elif currentTokenType == "STRING_CONST":
-        stringToExport = tabInsert() + "<stringConstant>" + currentToken.strip("\"") + "</stringConstant>\n"
+        stringToExport = tabInsert() + "<stringConstant> " + currentToken.strip("\"") + " </stringConstant>\n"
         out_file.write(stringToExport)
 
         performBasicCheck()
     
     # Found a keywordConstant...
     elif ((currentTokenType == "KEYWORD") & ((currentToken == "true") | (currentToken == "false") | (currentToken == "null") | (currentToken == "this"))):
-        stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
+        stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
         out_file.write(stringToExport)
 
         performBasicCheck()
 
     # Found a unaryOp term
     elif ((currentTokenType == "SYMBOL") & ((currentToken == "-") | (currentToken == "~"))):
-        stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+        stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
         out_file.write(stringToExport)
 
         performBasicCheck()
@@ -1312,7 +1312,7 @@ def compileTerm():
         # Found a varName[array]
         if lookAhead == "[":
             # Writing the varName
-            stringToExport = tabInsert() + "<keyword>" + currentToken + "</keyword>\n"
+            stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
             out_file.write(stringToExport)
         
             performBasicCheck()
@@ -1320,7 +1320,7 @@ def compileTerm():
             if ((currentTokenType == "SYMBOL") & (currentToken == "[")):
                 
                 # Writing [ symbol
-                stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                 out_file.write(stringToExport)
                 
                 performBasicCheck()
@@ -1332,7 +1332,7 @@ def compileTerm():
                 
                 if ((currentTokenType == "SYMBOL") & (currentToken == "]")):
                     # Writing ] symbol
-                    stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                    stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                     out_file.write(stringToExport)
                 
                     performBasicCheck()
@@ -1347,20 +1347,20 @@ def compileTerm():
         # Found a subroutineCall
         elif ((lookAhead == "(") | (lookAhead == ".")):
             # Writing a subroutineName/className/varName
-            stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+            stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             out_file.write(stringToExport)
 
             performBasicCheck()
             
             # Write a . symbol
             if ((currentTokenType == "SYMBOL") & (currentToken == ".")):
-                stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                 out_file.write(stringToExport)
             
                 performBasicCheck()
             
                 # Write a subroutineName
-                stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+                stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 out_file.write(stringToExport)
             
                 performBasicCheck()
@@ -1368,7 +1368,7 @@ def compileTerm():
 
             # Writing ( symbol
             if ((currentTokenType == "SYMBOL") & (currentToken == "(")):
-                stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                 out_file.write(stringToExport)
                 
                 performBasicCheck()
@@ -1378,7 +1378,7 @@ def compileTerm():
 
                 # Writing ) symbol
                 if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
-                    stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+                    stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                     out_file.write(stringToExport)
         
                     performBasicCheck()
@@ -1393,7 +1393,7 @@ def compileTerm():
 
         # Found a varName
         elif ((lookAhead != "(") & (lookAhead != ".")):
-            stringToExport = tabInsert() + "<identifier>" + currentToken + "</identifier>\n"
+            stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             out_file.write(stringToExport)
         
             performBasicCheck()
@@ -1405,7 +1405,7 @@ def compileTerm():
 
     # Found an (expression)...
     elif ((currentTokenType == "SYMBOL") & (currentToken == "(")):
-        stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+        stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
         out_file.write(stringToExport)
 
         performBasicCheck()
@@ -1413,7 +1413,7 @@ def compileTerm():
         compileExpression()
         
         if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
-            stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+            stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
             out_file.write(stringToExport)
         
             performBasicCheck()
@@ -1451,7 +1451,7 @@ def compileExpressionList():
         # Loop to write multiple expressions
         while ((currentTokenType == "SYMBOL") & (currentToken == ",")):
         
-            stringToExport = tabInsert() + "<symbol>" + currentToken + "</symbol>\n"
+            stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
             out_file.write(stringToExport)
             
             performBasicCheck()
