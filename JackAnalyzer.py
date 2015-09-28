@@ -27,7 +27,7 @@ def main():
     
     # Input options?
     #userInput = raw_input(">") # Prompt for user input...
-    userInput = "squaregame.jack" # Test without user input
+    userInput = "dirtest" # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
@@ -40,19 +40,16 @@ def main():
         print "Source Path = " + sourcePath + "\n"
         
         sourceDirectoryList = os.listdir(sourcePath)
-        print sourceDirectoryList
     
         for sourceFile in sourceDirectoryList:
             if sourceFile.find(".jack") != -1: # Found a .jack file
                 
-                print sourceFile
-
                 outFilename = sourcePath + sourceFile[0:sourceFile.find(".")] + ".xml" # Creates **.xml for main parser file
-                print outFilename
                 outFilename2 = sourcePath + sourceFile[0:sourceFile.find(".")] + "T.xml" # Creates **T.xml for tokenizer ref file
-                print outFilename2
                 
                 sourceFile = sourcePath + sourceFile
+                
+                print "Processing Source File: " + sourceFile + "\n"
             
                 jackTokenizerConstructor(sourceFile, outFilename, outFilename2)
 
@@ -86,8 +83,7 @@ def jackTokenizerConstructor(sourceFile, outFilename, outFilename2):
     # Open the outFile(s)
     outFile = open(outFilename, 'w') # Opens the main parser file
     outFile2 = open(outFilename2, 'w') # Opens the tokenizer ref file
-    print "Writing the Destination File (*.xml) and Tokenizer Ref File (*T.xml): " + outFilename + " and " + outFilename2 + "\n"
-    
+    print "Writing the Destination Parser File (*.xml): " + outFilename + "\nWriting Tokenizer Ref File (*T.xml): " + outFilename2 + "\n"
 
     # Get date/time stamp
     from time import localtime, strftime
@@ -108,6 +104,8 @@ def jackTokenizerConstructor(sourceFile, outFilename, outFilename2):
     outFile2.write("</tokens>\n") # Write footer
     outFile2.write("\n<!-- \nEND OF FILE\n-->")
     outFile2.close()
+    
+    print "Closing files:\n" + outFilename + "\n"+ outFilename2 + "\n-----------------------\n"
 
     return
 
@@ -208,6 +206,18 @@ def tokenizeFile(source_file):
                 fourthPass.append(e)
         else:
             fourthPass.append(e)
+    # Routine to remove // comments inline after statement
+    temp = []
+    for e in fourthPass:
+        if ((e.find("\r") != -1) & (e.find("//") == -1)):
+            temp.append(e)
+        else:
+            i = e.find("//")
+            if i != 1:
+                temp.append(e[0:i])
+            else:
+                temp.append(e)
+    fourthPass = temp
 
     # Fifth Pass: Remove \r and \t\r elements
     fifthPass = []
