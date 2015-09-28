@@ -79,15 +79,6 @@ def main():
 def jackTokenizerConstructor(sourceFile, outFilename, outFilename2):
     
     global outFile, outFile2
-    
-    # Reset the global variables
-    currentPos = 0
-    currentToken = ""
-    currentTokenType = ""
-    outFile = ""
-    outFile2 = ""
-    tokenizedSource = []
-    tabLevel = 0
 
     # Open the outFile(s)
     outFile = open(outFilename, 'w') # Opens the main parser file
@@ -122,6 +113,12 @@ def jackTokenizerConstructor(sourceFile, outFilename, outFilename2):
 def processFile(sourceFile):
     
     global tokenizedSource, currentPos, currentToken, currentTokenType
+    
+    # Reset key variables variables
+    currentPos = 0
+    currentToken = ""
+    currentTokenType = ""
+    tabLevel = 0
  
     # Write tokenizer ref file header
     outFile2.write("<tokens>\n")
@@ -132,7 +129,6 @@ def processFile(sourceFile):
     print "\n--------------------------------------------\n"
     
     # Log and write the tokenizer ref file
-    print "has more tokens = " + str(hasMoreTokens())
     while (hasMoreTokens()):
         currentToken = advance()
         currentTokenType = tokenType()
