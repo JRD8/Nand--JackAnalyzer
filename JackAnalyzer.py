@@ -26,8 +26,8 @@ def main():
     print "Enter the Source Jack File (.jack) or Source Jack Directory (within this path) to be analyzed:"
     
     # Input options?
-    #userInput = raw_input(">") # Prompt for user input...
-    userInput = "dirtest" # Test without user input
+    userInput = raw_input(">") # Prompt for user input...
+    #userInput = "dirtest" # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
@@ -168,7 +168,7 @@ def processFile(sourceFile):
         if currentTokenType == "STRING_CONST":
             temp = stringVal()
             print "String Constant: ",
-            outFile2.write("\t<stringConstant> " + currentToken + " </stringConstant>\n") # tokenizer ref file
+            outFile2.write("\t<stringConstant> " + currentToken.strip("\"") + " </stringConstant>\n") # tokenizer ref file
         
         print temp + "\n"
 
@@ -1337,7 +1337,7 @@ def compileTerm():
         # Found a varName[array]
         if lookAhead == "[":
             # Writing the varName
-            stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
+            stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
         
             performBasicCheck()
