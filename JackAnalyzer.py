@@ -1492,6 +1492,30 @@ def compileExpressionList():
     return
 
 
+## SYMBOL TABLE MODULE ##
+
+def symbolTableConstructor():
+    return
+
+def startSubroutine():
+    return
+
+def define(name, type, kind):
+    return
+
+def varCount(kind):
+    return count
+
+def kindOf(name):
+    return result
+
+def typeOf(name):
+    return result
+
+def indexOf(name):
+    return index
+
+
 ## HELPER ROUTINES ##
 
 def performBasicCheck():
