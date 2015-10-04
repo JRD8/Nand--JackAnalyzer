@@ -26,8 +26,8 @@ def main():
     print "Enter the Source Jack File (.jack) or Source Jack Directory (within this path) to be analyzed:"
     
     # Input options?
-    userInput = raw_input(">") # Prompt for user input...
-    #userInput = "dirtest" # Test without user input
+    #userInput = raw_input(">") # Prompt for user input...
+    userInput = "square.jack" # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
@@ -171,6 +171,10 @@ def processFile(sourceFile):
             outFile2.write("\t<stringConstant> " + currentToken.strip("\"") + " </stringConstant>\n") # tokenizer ref file
         
         print temp + "\n"
+
+    # Create the Class-scope symbol table
+    symbolTableConstructor()
+
 
     if not hasMoreTokens():
         currentPos = 0
@@ -1495,6 +1499,47 @@ def compileExpressionList():
 ## SYMBOL TABLE MODULE ##
 
 def symbolTableConstructor():
+    
+    classScopeSymbolTable = {}
+    currentScope = "class"
+    currentScopeIndex = 0
+    currentFieldIndex = 0
+    currentStaticIndex = 0
+
+    i = 0
+    while (i < len(tokenizedSource)):
+
+        print tokenizedSource[i]
+        
+        # Found a Field varable declaration
+        if (tokenizedSource[i] == "field"):
+            currentKind = tokenizedSource[i]
+            i = i + 1
+            currentType = tokenizedSource[i]
+            i = i + 1
+            currentName = tokenizedSource[i]
+            classScopeSymbolTable[currentName] = [currentType, currentKind, currentFieldIndex]
+
+            currentFieldIndex = currentFieldIndex + 1
+            i = i + 1
+
+        # Found a Static varable declaration
+        elif (tokenizedSource[i] == "static"):
+            currentKind = tokenizedSource[i]
+            i = i + 1
+            currentType = tokenizedSource[i]
+            i = i + 1
+            currentName = tokenizedSource[i]
+            classScopeSymbolTable[currentName] = [currentType, currentKind, currentStaticIndex]
+
+            currentStaticIndex = currentStaticIndex + 1
+            i = i + 1
+
+        else:
+            i = i + 1
+
+    print classScopeSymbolTable
+
     return
 
 def startSubroutine():
