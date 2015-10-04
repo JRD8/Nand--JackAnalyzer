@@ -8,10 +8,16 @@
 currentPos = 0
 currentToken = ""
 currentTokenType = ""
+
 outFile = ""
 outFile2 = ""
+
 tokenizedSource = []
 tabLevel = 0
+
+classScopeSymbolTable = {}
+currentFieldIndex = 0
+currentStaticIndex = 0
 
 symbols = ['}', '{', ')', '(', ']', '[', '.', ',', ';', '+', '-', '*', '/', '&', '|', '<', '>', '=', '~']
 keywords = ['class', 'constructor', 'function', 'method', 'field', 'static', 'var', 'int', 'char', 'boolean', 'void', 'true', 'false', 'null', 'this', 'let', 'do', 'if', 'else', 'while', 'return']
@@ -1500,45 +1506,38 @@ def compileExpressionList():
 
 def symbolTableConstructor():
     
+    global classScopeSymbolTable, currentFieldIndex, currentStaticIndex
+    
     classScopeSymbolTable = {}
-    currentScope = "class"
-    currentScopeIndex = 0
     currentFieldIndex = 0
     currentStaticIndex = 0
-
+    
+    
     i = 0
     while (i < len(tokenizedSource)):
 
         print tokenizedSource[i]
         
         # Found a Field varable declaration
-        if (tokenizedSource[i] == "field"):
-            currentKind = tokenizedSource[i]
+        if ((tokenizedSource[i] == "field") | (tokenizedSource[i] == "static")):
+            currentKind = tokenizedSource[i].upper()
+
             i = i + 1
             currentType = tokenizedSource[i]
+
             i = i + 1
             currentName = tokenizedSource[i]
-            classScopeSymbolTable[currentName] = [currentType, currentKind, currentFieldIndex]
-
-            currentFieldIndex = currentFieldIndex + 1
-            i = i + 1
-
-        # Found a Static varable declaration
-        elif (tokenizedSource[i] == "static"):
-            currentKind = tokenizedSource[i]
-            i = i + 1
-            currentType = tokenizedSource[i]
-            i = i + 1
-            currentName = tokenizedSource[i]
-            classScopeSymbolTable[currentName] = [currentType, currentKind, currentStaticIndex]
-
-            currentStaticIndex = currentStaticIndex + 1
+            
+            define(currentName, currentType, currentKind)
+            
             i = i + 1
 
         else:
             i = i + 1
 
     print classScopeSymbolTable
+    print varCount("FIELD")
+    print varCount("STATIC")
 
     return
 
@@ -1546,10 +1545,27 @@ def startSubroutine():
     return
 
 def define(name, type, kind):
+    
+    global classScopeSymbolTable, currentFieldIndex, currentStaticIndex
+
+    if kind == "FIELD":
+        classScopeSymbolTable[name] = [type, kind, currentFieldIndex]
+        currentFieldIndex = currentFieldIndex + 1
+    
+    elif kind == "STATIC":
+        classScopeSymbolTable[name] = [type, kind, currentStaticIndex]
+        currentStaticIndex = currentStaticIndex + 1
+    
     return
 
 def varCount(kind):
-    return count
+    
+    if kind == "FIELD":
+        return currentFieldIndex
+    
+    elif kind == "STATIC":
+        return currentStaticIndex
+
 
 def kindOf(name):
     return result
