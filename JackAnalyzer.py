@@ -1508,37 +1508,45 @@ def symbolTableConstructor():
     
     global classScopeSymbolTable, currentFieldIndex, currentStaticIndex
     
+    # Reset class scope variables
     classScopeSymbolTable = {}
     currentFieldIndex = 0
     currentStaticIndex = 0
     
-    
+    # Iterate through the tokenizedSource list...
     i = 0
     while (i < len(tokenizedSource)):
-
-        print tokenizedSource[i]
         
-        # Found a Field varable declaration
+        # Found a Field/Static variable declaration
         if ((tokenizedSource[i] == "field") | (tokenizedSource[i] == "static")):
             currentKind = tokenizedSource[i].upper()
-
+            
+            # Increment position to get the current variable type
             i = i + 1
             currentType = tokenizedSource[i]
 
+            # Increment position to get the current variable name
             i = i + 1
             currentName = tokenizedSource[i]
-            
-            define(currentName, currentType, currentKind)
+            define(currentName, currentType, currentKind) # Add to the classScopeSymbolTable
             
             i = i + 1
-
+            # Check for multiple variable assignments
+            while tokenizedSource[i] == ",":
+                
+                # Increment to get additional variable names
+                i = i + 1
+                currentName = tokenizedSource[i]
+                define(currentName, currentType, currentKind) # Add to the classScopeSymbolTable
+    
+                i = i + 1
+    
         else:
             i = i + 1
 
+    print "-----------------------\nGenerating Class Scope Symbol Table:"
     print classScopeSymbolTable
-    print varCount("FIELD")
-    print varCount("STATIC")
-
+    
     return
 
 def startSubroutine():
