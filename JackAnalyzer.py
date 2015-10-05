@@ -98,19 +98,19 @@ def jackTokenizerConstructor(sourceFile, outFilename, outFilename2):
     # Write headers into outFile(s)
     outFile.write("<!-- \nJACK ANALYZED\nSOURCE CODE FROM: " + sourceFile + "\nON: " + temp + "\n-->\n\n")
     outFile2.write("<!-- \nJACK ANALYZED\nSOURCE CODE FROM: " + sourceFile + "\nON: " + temp + "\n-->\n\n") # tokenizer ref file
-
-    # Process file
+    
+    # Process main Parser file
     processFile(sourceFile)
-
-    # Close main outFile
-    outFile.write("\n<!-- \nEND OF FILE\n-->")
-    outFile.close()
-
+    
     # Close tokenizer ref file
     outFile2.write("</tokens>\n") # Write footer
     outFile2.write("\n<!-- \nEND OF FILE\n-->")
     outFile2.close()
-    
+
+    # Close main Parser File
+    outFile.write("\n<!-- \nEND OF FILE\n-->")
+    outFile.close()
+
     print "Closing files:\n" + outFilename + "\n"+ outFilename2 + "\n-----------------------\n"
 
     return
@@ -126,13 +126,16 @@ def processFile(sourceFile):
     currentTokenType = ""
     tabLevel = 0
  
-    # Write tokenizer ref file header
-    outFile2.write("<tokens>\n")
- 
     tokenizedSource = tokenizeFile(sourceFile) # Tokenize the source file
     print "Tokenized Source Code: \n"
     print tokenizedSource
     print "\n--------------------------------------------\n"
+    
+    # Create the Class scope symbol table
+    symbolTableConstructor()
+    
+    # Write tokenizer ref file header
+    outFile2.write("<tokens>\n")
     
     # Log and write the tokenizer ref file
     while (hasMoreTokens()):
@@ -177,10 +180,6 @@ def processFile(sourceFile):
             outFile2.write("\t<stringConstant> " + currentToken.strip("\"") + " </stringConstant>\n") # tokenizer ref file
         
         print temp + "\n"
-
-    # Create the Class-scope symbol table
-    symbolTableConstructor()
-
 
     if not hasMoreTokens():
         currentPos = 0
@@ -1528,6 +1527,12 @@ def symbolTableConstructor():
             # Increment position to get the current variable name
             i = i + 1
             currentName = tokenizedSource[i]
+            
+            # Test if the currentName is a duplicate
+            for e in classScopeSymbolTable:
+                if (e == currentName):
+                    print "E60"
+        
             define(currentName, currentType, currentKind) # Add to the classScopeSymbolTable
             
             i = i + 1
@@ -1537,12 +1542,26 @@ def symbolTableConstructor():
                 # Increment to get additional variable names
                 i = i + 1
                 currentName = tokenizedSource[i]
+                
+                # Test if the currentName is a duplicate
+                for e in classScopeSymbolTable:
+                    if (e == currentName):
+                        print "E61"
+                
                 define(currentName, currentType, currentKind) # Add to the classScopeSymbolTable
     
                 i = i + 1
     
         else:
             i = i + 1
+
+    # Write headers into outFile(s)
+    outFile.write("<!-- \nCLASS SCOPE SYMBOL TABLE: \n")
+    outFile.write(str(classScopeSymbolTable))
+    outFile.write("\n-->\n\n")
+    outFile2.write("<!-- \nCLASS SCOPE SYMBOL TABLE: \n")
+    outFile2.write(str(classScopeSymbolTable))
+    outFile2.write("\n-->\n\n")
 
     print "-----------------------\nGenerating Class Scope Symbol Table:"
     print classScopeSymbolTable
