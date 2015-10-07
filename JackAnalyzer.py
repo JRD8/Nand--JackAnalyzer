@@ -16,8 +16,11 @@ tokenizedSource = []
 tabLevel = 0
 
 classScopeSymbolTable = {}
+subroutineScopeSymbolTable = {}
 currentFieldIndex = 0
 currentStaticIndex = 0
+currentVarIndex = 0
+currentArgIndex = 0
 
 symbols = ['}', '{', ')', '(', ']', '[', '.', ',', ';', '+', '-', '*', '/', '&', '|', '<', '>', '=', '~']
 keywords = ['class', 'constructor', 'function', 'method', 'field', 'static', 'var', 'int', 'char', 'boolean', 'void', 'true', 'false', 'null', 'this', 'let', 'do', 'if', 'else', 'while', 'return']
@@ -102,15 +105,25 @@ def jackTokenizerConstructor(sourceFile, outFilename, outFilename2):
     # Process main Parser file
     processFile(sourceFile)
     
+    
     # Close tokenizer ref file
     outFile2.write("</tokens>\n") # Write footer
-    outFile2.write("\n<!-- \nEND OF FILE\n-->")
+    outFile2.write("\n<!-- \nEND OF FILE\n-->\n\n")
+    outFile2.write("<!-- \nCLASS SCOPE SYMBOL TABLE: \n") # Write class scope symbol table comment
+    outFile2.write(str(classScopeSymbolTable))
+    outFile2.write("\n-->\n\n")
     outFile2.close()
 
     # Close main Parser File
-    outFile.write("\n<!-- \nEND OF FILE\n-->")
+    outFile.write("\n<!-- \nEND OF FILE\n-->\n\n")
+    outFile.write("<!-- \nCLASS SCOPE SYMBOL TABLE: \n")
+    outFile.write(str(classScopeSymbolTable))
+    outFile.write("\n-->\n\n")
     outFile.close()
-
+    
+    print "-----------------------\nGenerating Class Scope Symbol Table:"
+    print classScopeSymbolTable
+    print "\n"
     print "Closing files:\n" + outFilename + "\n"+ outFilename2 + "\n-----------------------\n"
 
     return
@@ -131,7 +144,7 @@ def processFile(sourceFile):
     print tokenizedSource
     print "\n--------------------------------------------\n"
     
-    # Create the Class scope symbol table
+    # Create the class scope symbol table
     symbolTableConstructor()
     
     # Write tokenizer ref file header
@@ -471,6 +484,7 @@ def compileClassVarDec():
     if ((currentTokenType == "KEYWORD") & ((currentToken == "static") | (currentToken == "field"))):
         stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
         outFile.write(stringToExport)
+        currentKind = str(currentToken).upper()
         
         performBasicCheck()
         
@@ -478,11 +492,15 @@ def compileClassVarDec():
         if ((currentTokenType == "KEYWORD") & ((currentToken == "int") | (currentToken == "char") | (currentToken == "boolean"))):
             stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
             outFile.write(stringToExport)
+
+            currentType = currentToken # Use for Class Scope Symbol Table
         
         elif ((currentTokenType == "IDENTIFIER")):
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
-        
+
+            currentType = currentToken # Use for Class Scope Symbol Table
+
         else:
             print "E6"
             error()
@@ -493,6 +511,10 @@ def compileClassVarDec():
         if ((currentTokenType == "IDENTIFIER")):
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
+
+            currentName = currentToken # Use for Class Scope Symbol Table
+            define(currentName, currentType, currentKind) # Add to Class Scope Symbol Table
+
 
         else:
             print "E7"
@@ -511,6 +533,9 @@ def compileClassVarDec():
             if ((currentTokenType == "IDENTIFIER")):
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
+            
+                currentName = currentToken # Use for Class Scope Symbol Table
+                define(currentName, currentType, currentKind) # Add to Class Scope Symbol Table
             
             else:
                 print "E8"
@@ -543,6 +568,9 @@ def compileClassVarDec():
 def compileSubroutine():
     
     print "compileSubroutine()\n"
+    
+    # Construct a new subroutine scope symbol table
+    startSubroutine()
     
     # Write subroutineDec header
     stringToExport = tabInsert() + "<subroutineDec>\n"
@@ -1512,64 +1540,20 @@ def symbolTableConstructor():
     currentFieldIndex = 0
     currentStaticIndex = 0
     
-    # Iterate through the tokenizedSource list...
-    i = 0
-    while (i < len(tokenizedSource)):
-        
-        # Found a Field/Static variable declaration
-        if ((tokenizedSource[i] == "field") | (tokenizedSource[i] == "static")):
-            currentKind = tokenizedSource[i].upper()
-            
-            # Increment position to get the current variable type
-            i = i + 1
-            currentType = tokenizedSource[i]
-
-            # Increment position to get the current variable name
-            i = i + 1
-            currentName = tokenizedSource[i]
-            
-            # Test if the currentName is a duplicate
-            for e in classScopeSymbolTable:
-                if (e == currentName):
-                    print "E60"
-        
-            define(currentName, currentType, currentKind) # Add to the classScopeSymbolTable
-            
-            i = i + 1
-            # Check for multiple variable assignments
-            while tokenizedSource[i] == ",":
-                
-                # Increment to get additional variable names
-                i = i + 1
-                currentName = tokenizedSource[i]
-                
-                # Test if the currentName is a duplicate
-                for e in classScopeSymbolTable:
-                    if (e == currentName):
-                        print "E61"
-                
-                define(currentName, currentType, currentKind) # Add to the classScopeSymbolTable
-    
-                i = i + 1
-    
-        else:
-            i = i + 1
-
-    # Write headers into outFile(s)
-    outFile.write("<!-- \nCLASS SCOPE SYMBOL TABLE: \n")
-    outFile.write(str(classScopeSymbolTable))
-    outFile.write("\n-->\n\n")
-    outFile2.write("<!-- \nCLASS SCOPE SYMBOL TABLE: \n")
-    outFile2.write(str(classScopeSymbolTable))
-    outFile2.write("\n-->\n\n")
-
-    print "-----------------------\nGenerating Class Scope Symbol Table:"
-    print classScopeSymbolTable
-    
     return
+
 
 def startSubroutine():
+    
+    global subroutineScopeSymbolTable, currentVarIndex, currentArgIndex
+    
+    # Reset method scope variables
+    subroutineScopeSymbolTable = {}
+    currentVarIndex = 0
+    currentArgIndex = 0
+    
     return
+
 
 def define(name, type, kind):
     
@@ -1584,6 +1568,7 @@ def define(name, type, kind):
         currentStaticIndex = currentStaticIndex + 1
     
     return
+
 
 def varCount(kind):
     
