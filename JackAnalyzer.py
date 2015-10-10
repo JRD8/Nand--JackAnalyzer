@@ -18,7 +18,7 @@ outFile2 = ""
 tokenizedSource = []
 tabLevel = 0
 
-classScopeSymbolTable = {'y': ['int', 'FIELD', 1], 'x': ['boolean', 'FIELD', 0], 'size': ['char', 'FIELD', 2]}
+classScopeSymbolTable = {'y': ['int', 'FIELD', 1], 'x': ['boolean', 'FIELD', 0], 'size': ['char', 'FIELD', 2], 'w': ['char', 'STATIC', 0]}
 subroutineScopeSymbolTable = {'a': ['int', 'VAR', 1], 'c': ['boolean', 'VAR', 3], 'b': ['int', 'VAR', 2], 'Asize': ['int', 'ARG', 2], 'Ay': ['int', 'ARG', 1], 'Ax': ['int', 'ARG', 0], 'z': ['int', 'VAR', 0]}
 currentFieldIndex = 0
 currentStaticIndex = 0
@@ -133,6 +133,16 @@ def jackTokenizerConstructor(sourceFile, outFilename, outFilename2):
     print "varCount FIELD: " + str(varCount("FIELD"))
     print "varCount ARG: " + str(varCount("ARG"))
     print "varCount VAR: " + str(varCount("VAR"))
+    
+    print "kindOf x: " + str(kindOf("x"))
+    print "kindOf y: " + str(kindOf("y"))
+    print "kindOf size: " + str(kindOf("size"))
+    print "kindOf a: " + str(kindOf("a"))
+    print "kindOf z: " + str(kindOf("z"))
+    print "kindOf Ax: " + str(kindOf("Ax"))
+    print "kindOf Ay: " + str(kindOf("Ay"))
+    print "kindOf w: " + str(kindOf("w"))
+
     
 
     return
@@ -1677,7 +1687,6 @@ def varCount(kind):
     print currentScope
     varCount = 0
     i = 0
-
     for e in currentScope:
         temp = currentScope[e]
         if temp[1] == kind: # Match the kind element of the value pair, which is indexed to 1
@@ -1689,7 +1698,21 @@ def varCount(kind):
 
 
 def kindOf(name):
-    return result
+    
+    # First, check subroutine scope symbol table
+    for e in subroutineScopeSymbolTable:
+        if (name == e):
+            temp = subroutineScopeSymbolTable[e]
+            return temp[1] # Match the kind element of the value pair, which is indexed to 1
+
+    # Then, if no match, check class scope symbol table
+    for e in classScopeSymbolTable:
+        if (name == e):
+            temp = classScopeSymbolTable[e]
+            return temp[1] # Match the kind element of the value pair, which is indexed to 1
+
+    return "NONE" # Return NONE if no matches found
+
 
 def typeOf(name):
     return result
