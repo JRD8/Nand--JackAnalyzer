@@ -129,11 +129,18 @@ def jackTokenizerConstructor(sourceFile, outFilename, outFilename2):
     print "\n"
     print "Closing files:\n" + outFilename + "\n"+ outFilename2 + "\n-----------------------\n"
     
+    # UNIT TESTING TO DELETE
+    
+    print "Class Scope: "
+    print classScopeSymbolTable
+    print "Subroutine Scope: "
+    print subroutineScopeSymbolTable
+    
     print "varCount STATIC: " + str(varCount("STATIC"))
     print "varCount FIELD: " + str(varCount("FIELD"))
     print "varCount ARG: " + str(varCount("ARG"))
     print "varCount VAR: " + str(varCount("VAR"))
-    
+    print "\n"
     print "kindOf x: " + str(kindOf("x"))
     print "kindOf y: " + str(kindOf("y"))
     print "kindOf size: " + str(kindOf("size"))
@@ -143,7 +150,7 @@ def jackTokenizerConstructor(sourceFile, outFilename, outFilename2):
     print "kindOf Ay: " + str(kindOf("Ay"))
     print "kindOf w: " + str(kindOf("w"))
     print "kindOf v: " + str(kindOf("v"))
-    
+    print "\n"
     print "typeOf x: " + str(typeOf("x"))
     print "typeOf y: " + str(typeOf("y"))
     print "typeOf size: " + str(typeOf("size"))
@@ -153,7 +160,7 @@ def jackTokenizerConstructor(sourceFile, outFilename, outFilename2):
     print "typeOf Ay: " + str(typeOf("Ay"))
     print "typeOf w: " + str(typeOf("w"))
     print "typeOf v: " + str(typeOf("v"))
-    
+    print "\n"
     print "indexOf x: " + str(indexOf("x"))
     print "indexOf y: " + str(indexOf("y"))
     print "indexOf size: " + str(indexOf("size"))
@@ -616,7 +623,7 @@ def compileSubroutine():
     outFile.write(stringToExport)
     
     # Construct a new subroutine scope symbol table
-    startSubroutine()
+    #startSubroutine()
     
     incrementTab()
     
@@ -1651,12 +1658,12 @@ def compileExpressionList():
 
 def symbolTableConstructor():
     
-    #global classScopeSymbolTable, currentFieldIndex, currentStaticIndex
+    global classScopeSymbolTable, currentFieldIndex, currentStaticIndex
     
     # Reset class scope variables
-    #classScopeSymbolTable = {}
-    #currentFieldIndex = 0
-    #currentStaticIndex = 0
+    classScopeSymbolTable = {}
+    currentFieldIndex = 0
+    currentStaticIndex = 0
     
     return
 
@@ -1666,16 +1673,16 @@ def startSubroutine():
     global subroutineScopeSymbolTable, currentVarIndex, currentArgIndex
     
     # Reset subroutine scope variables
-    #subroutineScopeSymbolTable = {}
-    #currentVarIndex = 0
-    #currentArgIndex = 0
+    subroutineScopeSymbolTable = {}
+    currentVarIndex = 0
+    currentArgIndex = 0
     
     return
 
 
 def define(name, type, kind):
     
-    global classScopeSymbolTable, currentFieldIndex, currentStaticIndex, currentVarIndex, currentArgIndex
+    global classScopeSymbolTable, subroutineScopeSymbolTable, currentFieldIndex, currentStaticIndex, currentVarIndex, currentArgIndex
 
     if kind == "FIELD":
         classScopeSymbolTable[name] = [type, kind, currentFieldIndex]
@@ -1703,14 +1710,11 @@ def varCount(kind):
     elif ((kind == "ARG") | (kind == "VAR")):
         currentScope = subroutineScopeSymbolTable
 
-    print currentScope
     varCount = 0
-    i = 0
     for e in currentScope:
         temp = currentScope[e]
         if temp[1] == kind: # Match the kind element of the value pair, which is indexed to 1
             varCount = varCount + 1
-        i = i + 1
            
     return varCount
 
