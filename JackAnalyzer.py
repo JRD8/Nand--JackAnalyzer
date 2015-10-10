@@ -19,7 +19,7 @@ tokenizedSource = []
 tabLevel = 0
 
 classScopeSymbolTable = {'y': ['int', 'FIELD', 1], 'x': ['boolean', 'FIELD', 0], 'size': ['char', 'FIELD', 2], 'w': ['char', 'STATIC', 0]}
-subroutineScopeSymbolTable = {'a': ['int', 'VAR', 1], 'c': ['boolean', 'VAR', 3], 'b': ['int', 'VAR', 2], 'Asize': ['int', 'ARG', 2], 'Ay': ['int', 'ARG', 1], 'Ax': ['int', 'ARG', 0], 'z': ['int', 'VAR', 0]}
+subroutineScopeSymbolTable = {'a': ['testClass', 'VAR', 1], 'c': ['boolean', 'VAR', 3], 'b': ['int', 'VAR', 2], 'Asize': ['int', 'ARG', 2], 'Ay': ['int', 'ARG', 1], 'Ax': ['int', 'ARG', 0], 'z': ['int', 'VAR', 0]}
 currentFieldIndex = 0
 currentStaticIndex = 0
 currentVarIndex = 0
@@ -142,8 +142,18 @@ def jackTokenizerConstructor(sourceFile, outFilename, outFilename2):
     print "kindOf Ax: " + str(kindOf("Ax"))
     print "kindOf Ay: " + str(kindOf("Ay"))
     print "kindOf w: " + str(kindOf("w"))
-
+    print "kindOf v: " + str(kindOf("v"))
     
+    print "typeOf x: " + str(typeOf("x"))
+    print "typeOf y: " + str(typeOf("y"))
+    print "typeOf size: " + str(typeOf("size"))
+    print "typeOf a: " + str(typeOf("a"))
+    print "typeOf z: " + str(typeOf("z"))
+    print "typeOf Ax: " + str(typeOf("Ax"))
+    print "typeOf Ay: " + str(typeOf("Ay"))
+    print "typeOf w: " + str(typeOf("w"))
+    print "typeOf v: " + str(typeOf("v"))
+
 
     return
 
@@ -1715,7 +1725,20 @@ def kindOf(name):
 
 
 def typeOf(name):
-    return result
+    
+    # First, check subroutine scope symbol table
+    for e in subroutineScopeSymbolTable:
+        if (name == e):
+            temp = subroutineScopeSymbolTable[e]
+            return temp[0] # Match the type element of the value pair, which is indexed to 0
+
+    # Then, if no match, check class scope symbol table
+    for e in classScopeSymbolTable:
+        if (name == e):
+            temp = classScopeSymbolTable[e]
+            return temp[0] # Match the type element of the value pair, which is indexed to 0
+
+    return "ERROR - NO TYPE"
 
 def indexOf(name):
     return index
