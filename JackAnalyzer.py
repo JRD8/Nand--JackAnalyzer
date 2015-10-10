@@ -153,7 +153,16 @@ def jackTokenizerConstructor(sourceFile, outFilename, outFilename2):
     print "typeOf Ay: " + str(typeOf("Ay"))
     print "typeOf w: " + str(typeOf("w"))
     print "typeOf v: " + str(typeOf("v"))
-
+    
+    print "indexOf x: " + str(indexOf("x"))
+    print "indexOf y: " + str(indexOf("y"))
+    print "indexOf size: " + str(indexOf("size"))
+    print "indexOf a: " + str(indexOf("a"))
+    print "indexOf z: " + str(indexOf("z"))
+    print "indexOf Ax: " + str(indexOf("Ax"))
+    print "indexOf Ay: " + str(indexOf("Ay"))
+    print "indexOf w: " + str(indexOf("w"))
+    print "indexOf v: " + str(indexOf("v"))
 
     return
 
@@ -1738,10 +1747,24 @@ def typeOf(name):
             temp = classScopeSymbolTable[e]
             return temp[0] # Match the type element of the value pair, which is indexed to 0
 
-    return "ERROR - NO TYPE"
+    return "ERROR - NO TYPE/NO IDENTIFIER FOUND"
 
 def indexOf(name):
-    return index
+    
+    # First, check subroutine scope symbol table
+    for e in subroutineScopeSymbolTable:
+        if (name == e):
+            temp = subroutineScopeSymbolTable[e]
+            return temp[2] # Match the running index element of the value pair, which is indexed to 2
+
+    # Then, if no match, check class scope symbol table
+    for e in classScopeSymbolTable:
+        if (name == e):
+            temp = classScopeSymbolTable[e]
+            return temp[2] # Match the running index element of the value pair, which is indexed to 2
+
+    return "ERROR - NO RUNNING INDEX/NO IDENTIFIER FOUND"
+
 
 
 ## HELPER ROUTINES ##
