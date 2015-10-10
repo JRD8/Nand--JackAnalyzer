@@ -2,6 +2,9 @@
 ####### JRD JACK ANALYZER ######
 ################################
 
+# var, arg, static, field, class, subroutine
+# def, used
+
 ## JACK TOKENIZER MODULE ##
 
 # Global variable declarations
@@ -15,8 +18,8 @@ outFile2 = ""
 tokenizedSource = []
 tabLevel = 0
 
-classScopeSymbolTable = {}
-subroutineScopeSymbolTable = {}
+classScopeSymbolTable = {'y': ['int', 'FIELD', 1], 'x': ['boolean', 'FIELD', 0], 'size': ['char', 'FIELD', 2]}
+subroutineScopeSymbolTable = {'a': ['int', 'VAR', 1], 'c': ['boolean', 'VAR', 3], 'b': ['int', 'VAR', 2], 'Asize': ['int', 'ARG', 2], 'Ay': ['int', 'ARG', 1], 'Ax': ['int', 'ARG', 0], 'z': ['int', 'VAR', 0]}
 currentFieldIndex = 0
 currentStaticIndex = 0
 currentVarIndex = 0
@@ -125,6 +128,12 @@ def jackTokenizerConstructor(sourceFile, outFilename, outFilename2):
     print classScopeSymbolTable
     print "\n"
     print "Closing files:\n" + outFilename + "\n"+ outFilename2 + "\n-----------------------\n"
+    
+    print "varCount STATIC: " + str(varCount("STATIC"))
+    print "varCount FIELD: " + str(varCount("FIELD"))
+    print "varCount ARG: " + str(varCount("ARG"))
+    print "varCount VAR: " + str(varCount("VAR"))
+    
 
     return
 
@@ -145,7 +154,7 @@ def processFile(sourceFile):
     print "\n--------------------------------------------\n"
     
     # Create the class scope symbol table
-    symbolTableConstructor()
+    #symbolTableConstructor()
     
     # Write tokenizer ref file header
     outFile2.write("<tokens>\n")
@@ -417,6 +426,7 @@ def compileClass():
         if currentTokenType == "IDENTIFIER":
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
+            # identifier = class, used
 
             performBasicCheck()
             
@@ -498,6 +508,7 @@ def compileClassVarDec():
         elif ((currentTokenType == "IDENTIFIER")):
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
+            # identifier = ??? name of an object, used
 
             currentType = currentToken # Use for Class Scope Symbol Table
 
@@ -511,9 +522,10 @@ def compileClassVarDec():
         if ((currentTokenType == "IDENTIFIER")):
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
+            # identifier = static OR field, used
 
             currentName = currentToken # Use for Class Scope Symbol Table
-            define(currentName, currentType, currentKind) # Add to Class Scope Symbol Table
+            #define(currentName, currentType, currentKind) # Add to Class Scope Symbol Table
 
 
         else:
@@ -533,9 +545,10 @@ def compileClassVarDec():
             if ((currentTokenType == "IDENTIFIER")):
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
+                # identifier = static OR field, used
             
                 currentName = currentToken # Use for Class Scope Symbol Table
-                define(currentName, currentType, currentKind) # Add to Class Scope Symbol Table
+                #define(currentName, currentType, currentKind) # Add to Class Scope Symbol Table
             
             else:
                 print "E8"
@@ -590,7 +603,7 @@ def compileSubroutine():
                     temp = tokenizedSource[i + 1]
                 i = i + 1
             
-            define ("this", temp, "ARG")
+            #define ("this", temp, "ARG")
     
         performBasicCheck()
     
@@ -602,6 +615,7 @@ def compileSubroutine():
         elif ((currentTokenType == "IDENTIFIER")):
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
+            # identifier = ??? name of an object, used
 
         else:
             print "E11"
@@ -613,6 +627,7 @@ def compileSubroutine():
         if ((currentTokenType == "IDENTIFIER")):
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
+            # identifier = subroutine, used
   
         else:
             print "E12"
@@ -736,15 +751,14 @@ def compileParameterList():
             incrementTab()
             stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
             outFile.write(stringToExport)
-        
+            
             currentType = currentToken # Use for subroutine scope symbol table
         
-        
-
         elif ((currentTokenType == "IDENTIFIER")):
             incrementTab()
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
+            # identifier = ??? name of an object, used
         
             currentType = currentToken # Use for subroutine scope symbol table
 
@@ -758,9 +772,10 @@ def compileParameterList():
         if ((currentTokenType == "IDENTIFIER")):
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
+            # identifier = arg, used
         
             currentName = currentToken # Use for subroutine scope symbol table
-            define (currentName, currentType, currentKind) # Write a subroutine scope arg symbol
+            #define (currentName, currentType, currentKind) # Write a subroutine scope arg symbol
 
         else:
             print "E20"
@@ -786,6 +801,7 @@ def compileParameterList():
             elif ((currentTokenType == "IDENTIFIER")):
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
+                # identifier = ??? name of an object, used
 
                 currentType = currentToken # Use for subroutine scope symbol table
 
@@ -799,9 +815,10 @@ def compileParameterList():
             if ((currentTokenType == "IDENTIFIER")):
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
+                # identifier = arg, used
 
                 currentName = currentToken # Use for subroutine scope symbol table
-                define (currentName, currentType, currentKind) # Write a subroutine scope arg symbol
+                #define (currentName, currentType, currentKind) # Write a subroutine scope arg symbol
 
             else:
                 print "E22"
@@ -844,6 +861,7 @@ def compileVarDec():
         elif ((currentTokenType == "IDENTIFIER")):
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
+            # identifier = ??? name of an object, used
         
             currentType = currentToken # Use for subroutine scope symbol table
 
@@ -857,9 +875,10 @@ def compileVarDec():
         if ((currentTokenType == "IDENTIFIER")):
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
+            # identifier = var, used
         
             currentName = currentToken # Use for subroutine scope symbol table
-            define (currentName, currentType, currentKind) # Write a subroutine scope var symbol
+            #define (currentName, currentType, currentKind) # Write a subroutine scope var symbol
         
         else:
             print "E24"
@@ -878,9 +897,10 @@ def compileVarDec():
             if ((currentTokenType == "IDENTIFIER")):
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
+                # identifier = var, used
             
                 currentName = currentToken # Use for method-scope symbol table
-                define (currentName, currentType, currentKind) # Write a method scope var symbol
+                #define (currentName, currentType, currentKind) # Write a method scope var symbol
             
             else:
                 print "E25"
@@ -967,8 +987,11 @@ def compileDo():
             # Writing a subroutineName/className/varName
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
+                # identifier = subroutine, used
             
                 performBasicCheck()
+                
+                # if current token != . and next current token == (, this is a method subroutine call (i.e., do whatever(x) ) // method:  push this; push x; call MyClass.whatever 2
 
                 # Write a . symbol
                 if ((currentTokenType == "SYMBOL") & (currentToken == ".")):
@@ -980,10 +1003,14 @@ def compileDo():
                     # Write a subroutineName
                     stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                     outFile.write(stringToExport)
+                    # identifier = subroutine, used
                 
                     performBasicCheck()
-        
-        
+                
+                    # if here... subroutine method call (do foo.bar(x); // method:  push foo; push x; call Foo.bar 2)
+                    # or could be....subroutine function call (do Sys.error(x); // function:  push x; call Sys.error 1)
+                
+               
                 # Writing ( symbol
                 if ((currentTokenType == "SYMBOL") & (currentToken == "(")):
                     stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
@@ -1057,6 +1084,7 @@ def compileLet():
         if (currentTokenType == "IDENTIFIER"):
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
+            #identifier = var, used
         
             performBasicCheck()
             
@@ -1431,6 +1459,7 @@ def compileTerm():
             # Writing the varName
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
+            # identifier = var, def
         
             performBasicCheck()
         
@@ -1466,6 +1495,7 @@ def compileTerm():
             # Writing a subroutineName/className/varName
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
+            # identifier = subroutine, class or var, def or used?
 
             performBasicCheck()
             
@@ -1479,8 +1509,11 @@ def compileTerm():
                 # Write a subroutineName
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
+                # identifier = subroutine, def or used?
             
                 performBasicCheck()
+            
+                # if here and currenttoken = "new", then we're at a constructor call (let foo = Foo.new(x);  // constructor:  push x; call Foo.new 1)
             
 
             # Writing ( symbol
@@ -1512,6 +1545,7 @@ def compileTerm():
         elif ((lookAhead != "(") & (lookAhead != ".")):
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
+            # identifier = var, def or used?
         
             performBasicCheck()
 
@@ -1588,12 +1622,12 @@ def compileExpressionList():
 
 def symbolTableConstructor():
     
-    global classScopeSymbolTable, currentFieldIndex, currentStaticIndex
+    #global classScopeSymbolTable, currentFieldIndex, currentStaticIndex
     
     # Reset class scope variables
-    classScopeSymbolTable = {}
-    currentFieldIndex = 0
-    currentStaticIndex = 0
+    #classScopeSymbolTable = {}
+    #currentFieldIndex = 0
+    #currentStaticIndex = 0
     
     return
 
@@ -1602,10 +1636,10 @@ def startSubroutine():
     
     global subroutineScopeSymbolTable, currentVarIndex, currentArgIndex
     
-    # Reset method scope variables
-    subroutineScopeSymbolTable = {}
-    currentVarIndex = 0
-    currentArgIndex = 0
+    # Reset subroutine scope variables
+    #subroutineScopeSymbolTable = {}
+    #currentVarIndex = 0
+    #currentArgIndex = 0
     
     return
 
@@ -1635,11 +1669,23 @@ def define(name, type, kind):
 
 def varCount(kind):
     
-    if kind == "FIELD":
-        return currentFieldIndex
-    
-    elif kind == "STATIC":
-        return currentStaticIndex
+    if ((kind == "FIELD") | (kind == "STATIC")):
+        currentScope = classScopeSymbolTable
+    elif ((kind == "ARG") | (kind == "VAR")):
+        currentScope = subroutineScopeSymbolTable
+
+    print currentScope
+    varCount = 0
+    i = 0
+
+    for e in currentScope:
+        temp = currentScope[e]
+        if temp[1] == kind: # Match the kind element of the value pair, which is indexed to 1
+            varCount = varCount + 1
+        i = i + 1
+           
+    return varCount
+
 
 
 def kindOf(name):
