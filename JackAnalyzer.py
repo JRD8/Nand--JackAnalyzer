@@ -846,7 +846,7 @@ def compileParameterList():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
 
-            outFile.write(tabInsert() + "<!-- Identifier = arg, def, " + str(currentArgIndex) + "-->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier = arg, def, " + str(indexOf(currentToken))+ "-->\n") # Chap 11, Stage 1 Comment
 
         else:
             print "E20"
@@ -885,7 +885,7 @@ def compileParameterList():
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
                 
-                outFile.write(tabInsert() + "<!-- Identifier = arg, def, " + str(currentArgIndex) + "-->\n") # Chap 11, Stage 1 Comment
+                outFile.write(tabInsert() + "<!-- Identifier = arg, def, " + str(indexOf(currentToken)) + "-->\n") # Chap 11, Stage 1 Comment
 
             else:
                 print "E22"
@@ -939,7 +939,7 @@ def compileVarDec():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
 
-            outFile.write(tabInsert() + "<!-- Identifier = var, def, " + str(currentVarIndex) + "-->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier = var, def, " + str(indexOf(currentToken)) + "-->\n") # Chap 11, Stage 1 Comment
 
         else:
             print "E24"
@@ -959,7 +959,7 @@ def compileVarDec():
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
             
-                outFile.write(tabInsert() + "<!-- Identifier = var, def, " + str(currentVarIndex) + "-->\n") # Chap 11, Stage 1 Comment
+                outFile.write(tabInsert() + "<!-- Identifier = var, def, " + str(indexOf(currentToken)) + "-->\n") # Chap 11, Stage 1 Comment
         
             else:
                 print "E25"
@@ -1038,37 +1038,20 @@ def compileDo():
     
         performBasicCheck()
     
-        # Found a subroutineCall
+        # Found a method subroutineCall
         if (currentTokenType == "IDENTIFIER"):
             lookAhead = tokenizedSource[currentPos] # Not currentPos + 1 due to advance() counting...
     
-            if ((lookAhead == "(") | (lookAhead == ".")):
-            # Writing a subroutineName/className/varName
+            # Found a method subroutine (i.e., do whatever(x) ) // in class MyClass, method:  push this; push x; call MyClass.whatever 2)
+            if (lookAhead == "("):
+                
+                # Writing a subroutineName
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
-                # identifier = subroutine, used
+                
+                outFile.write(tabInsert() + "<!-- Identifier = subroutine, used, not-->\n") # Chap 11, Stage 1 Comment
             
                 performBasicCheck()
-                
-                # if current token != . and next current token == (, this is a method subroutine call (i.e., do whatever(x) ) // method:  push this; push x; call MyClass.whatever 2
-
-                # Write a . symbol
-                if ((currentTokenType == "SYMBOL") & (currentToken == ".")):
-                    stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
-                    outFile.write(stringToExport)
-                
-                    performBasicCheck()
-                
-                    # Write a subroutineName
-                    stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
-                    outFile.write(stringToExport)
-                    # identifier = subroutine, used
-                
-                    performBasicCheck()
-                
-                    # if here... subroutine method call (do foo.bar(x); // method:  push foo; push x; call Foo.bar 2)
-                    # or could be....subroutine function call (do Sys.error(x); // function:  push x; call Sys.error 1)
-                
                
                 # Writing ( symbol
                 if ((currentTokenType == "SYMBOL") & (currentToken == "(")):
@@ -1095,23 +1078,86 @@ def compileDo():
                             performBasicCheck()
                 
                         else:
-                            print "E29"
+                            print "E29A"
                             error()
                     else:
-                        print "E30"
+                        print "E30B"
                         error()
                 else:
-                    print "E31"
+                    print "E31B"
+                    error()
+
+            # Found a class/var name
+            elif (lookAhead == "."):
+                
+                # Writing a class/var name
+                stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
+                outFile.write(stringToExport)
+                
+                outFile.write(tabInsert() + "<!-- Identifier = class/var, used, not-->\n") # Chap 11, Stage 1 Comment
+                
+                # if here... subroutine method call (do foo.bar(x); // method:  push foo; push x; call Foo.bar 2)
+                # or could be....subroutine function call (do Sys.error(x); // function:  push x; call Sys.error 1)
+                
+                performBasicCheck()
+                
+                # Write a . symbol
+                if ((currentTokenType == "SYMBOL") & (currentToken == ".")):
+                    stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
+                    outFile.write(stringToExport)
+                    
+                    performBasicCheck()
+                    
+                    # Write a subroutineName
+                    stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
+                    outFile.write(stringToExport)
+                    
+                    outFile.write(tabInsert() + "<!-- Identifier = subroutine, used, not-->\n") # Chap 11, Stage 1 Comment
+                    
+                    performBasicCheck()
+            
+                    # Writing ( symbol
+                    if ((currentTokenType == "SYMBOL") & (currentToken == "(")):
+                        stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
+                        outFile.write(stringToExport)
+                    
+                        performBasicCheck()
+                    
+                        # Write expressionList
+                        compileExpressionList()
+                    
+                        # Write ) symbol
+                        if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
+                            stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
+                            outFile.write(stringToExport)
+                        
+                            performBasicCheck()
+                        
+                            # Write ; end of statement
+                            if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
+                                stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
+                                outFile.write(stringToExport)
+                            
+                                performBasicCheck()
+
+                            else:
+                                print "E29B"
+                                error()
+                        else:
+                            print "E30B"
+                            error()
+                    else:
+                        print "E34"
+                        error()
+                else:
+                    print "E35"
                     error()
             else:
-                print "E32"
+                print "E36"
                 error()
         else:
-            print "E33"
+            print "E37"
             error()
-    else:
-        print "E34"
-        error()
 
     decrementTab()
     
