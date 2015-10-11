@@ -465,7 +465,7 @@ def compileClass():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
             
-            outFile.write(tabInsert() + "<!-- Identifier = class, def, not-->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
 
             performBasicCheck()
             
@@ -547,7 +547,7 @@ def compileClassVarDec():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
 
-            outFile.write(tabInsert() + "<!-- Identifier = class, def, not-->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
 
         else:
             print "E6a"
@@ -560,7 +560,7 @@ def compileClassVarDec():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
             
-            outFile.write(tabInsert() + "<!-- Identifier = static, def, " + str(currentStaticIndex) + "-->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: static, def, " + str(currentStaticIndex) + " -->\n") # Chap 11, Stage 1 Comment
 
         else:
             print "E7a"
@@ -580,7 +580,7 @@ def compileClassVarDec():
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
             
-                outFile.write(tabInsert() + "<!-- Identifier = static, def, " + str(currentStaticIndex) + "-->\n") # Chap 11, Stage 1 Comment
+                outFile.write(tabInsert() + "<!-- Identifier: static, def, " + str(currentStaticIndex) + " -->\n") # Chap 11, Stage 1 Comment
             
             else:
                 print "E8a"
@@ -606,7 +606,7 @@ def compileClassVarDec():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
             
-            outFile.write(tabInsert() + "<!-- Identifier = class, def, not-->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
         
         else:
             print "E6b"
@@ -619,7 +619,7 @@ def compileClassVarDec():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
             
-            outFile.write(tabInsert() + "<!-- Identifier = field, def, " + str(currentFieldIndex) + "-->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: field, def, " + str(currentFieldIndex) + " -->\n") # Chap 11, Stage 1 Comment
 
         else:
             print "E7b"
@@ -639,7 +639,7 @@ def compileClassVarDec():
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
                 
-                outFile.write(tabInsert() + "<!-- Identifier = field, def, " + str(currentFieldIndex) + "-->\n") # Chap 11, Stage 1 Comment
+                outFile.write(tabInsert() + "<!-- Identifier: field, def, " + str(currentFieldIndex) + " -->\n") # Chap 11, Stage 1 Comment
 
             else:
                 print "E8b"
@@ -705,7 +705,7 @@ def compileSubroutine():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
         
-            outFile.write(tabInsert() + "<!-- Identifier = class, def, not-->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
 
         else:
             print "E11"
@@ -718,7 +718,7 @@ def compileSubroutine():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
         
-            outFile.write(tabInsert() + "<!-- Identifier = subroutine, def, not-->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: subroutine, def, not -->\n") # Chap 11, Stage 1 Comment
   
         else:
             print "E12"
@@ -833,7 +833,7 @@ def compileParameterList():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
 
-            outFile.write(tabInsert() + "<!-- Identifier = class, def, not-->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
 
         else:
             print "E19"
@@ -846,7 +846,7 @@ def compileParameterList():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
 
-            outFile.write(tabInsert() + "<!-- Identifier = arg, def, " + str(indexOf(currentToken))+ "-->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: arg, def, " + str(indexOf(currentToken))+ " -->\n") # Chap 11, Stage 1 Comment
 
         else:
             print "E20"
@@ -872,7 +872,7 @@ def compileParameterList():
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
                 
-                outFile.write(tabInsert() + "<!-- Identifier = class, def, not-->\n") # Chap 11, Stage 1 Comment
+                outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
 
             else:
                 print "E21"
@@ -885,7 +885,7 @@ def compileParameterList():
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
                 
-                outFile.write(tabInsert() + "<!-- Identifier = arg, def, " + str(indexOf(currentToken)) + "-->\n") # Chap 11, Stage 1 Comment
+                outFile.write(tabInsert() + "<!-- Identifier: arg, def, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
 
             else:
                 print "E22"
@@ -926,7 +926,7 @@ def compileVarDec():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
 
-            outFile.write(tabInsert() + "<!-- Identifier = class, def, not-->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
 
         else:
             print "E23"
@@ -939,7 +939,7 @@ def compileVarDec():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
 
-            outFile.write(tabInsert() + "<!-- Identifier = var, def, " + str(indexOf(currentToken)) + "-->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: var, def, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
 
         else:
             print "E24"
@@ -959,7 +959,7 @@ def compileVarDec():
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
             
-                outFile.write(tabInsert() + "<!-- Identifier = var, def, " + str(indexOf(currentToken)) + "-->\n") # Chap 11, Stage 1 Comment
+                outFile.write(tabInsert() + "<!-- Identifier: var, def, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
         
             else:
                 print "E25"
@@ -1038,7 +1038,7 @@ def compileDo():
     
         performBasicCheck()
     
-        # Found a method subroutineCall
+        # Found a method subroutine call
         if (currentTokenType == "IDENTIFIER"):
             lookAhead = tokenizedSource[currentPos] # Not currentPos + 1 due to advance() counting...
     
@@ -1049,7 +1049,7 @@ def compileDo():
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
                 
-                outFile.write(tabInsert() + "<!-- Identifier = subroutine, used, not-->\n") # Chap 11, Stage 1 Comment
+                outFile.write(tabInsert() + "<!-- Identifier: subroutine, used, not -->\n") # Chap 11, Stage 1 Comment
             
                 performBasicCheck()
                
@@ -1087,14 +1087,15 @@ def compileDo():
                     print "E31B"
                     error()
 
-            # Found a class/var name
+            # Found a class/var name subroutine call
             elif (lookAhead == "."):
                 
                 # Writing a class/var name
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
                 
-                outFile.write(tabInsert() + "<!-- Identifier = class/var, used, not-->\n") # Chap 11, Stage 1 Comment
+                # TODO
+                outFile.write(tabInsert() + "<!-- Identifier: class/var, used, not -->\n") # Chap 11, Stage 1 Comment
                 
                 # if here... subroutine method call (do foo.bar(x); // method:  push foo; push x; call Foo.bar 2)
                 # or could be....subroutine function call (do Sys.error(x); // function:  push x; call Sys.error 1)
@@ -1112,7 +1113,7 @@ def compileDo():
                     stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                     outFile.write(stringToExport)
                     
-                    outFile.write(tabInsert() + "<!-- Identifier = subroutine, used, not-->\n") # Chap 11, Stage 1 Comment
+                    outFile.write(tabInsert() + "<!-- Identifier: subroutine, used, not -->\n") # Chap 11, Stage 1 Comment
                     
                     performBasicCheck()
             
@@ -1190,7 +1191,7 @@ def compileLet():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
             
-            outFile.write(tabInsert() + "<!-- Identifier = var, used, not-->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: var, used, not -->\n") # Chap 11, Stage 1 Comment
         
             performBasicCheck()
             
@@ -1567,7 +1568,7 @@ def compileTerm():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
             
-            outFile.write(tabInsert() + "<!-- Identifier = var, used -->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: var, used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
         
             performBasicCheck()
         
@@ -1598,34 +1599,17 @@ def compileTerm():
                 print "E53"
                 error()
 
-        # Found a subroutineCall
-        elif ((lookAhead == "(") | (lookAhead == ".")):
-            # Writing a subroutineName/className/varName
+        # Found a method subroutine call
+        elif (lookAhead == "("):
+            
+            # Writing a subroutineName
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
             
-            outFile.write(tabInsert() + "<!-- Identifier = ?????, used, not-->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: subroutine, used, not -->\n") # Chap 11, Stage 1 Comment
 
             performBasicCheck()
             
-            # Write a . symbol
-            if ((currentTokenType == "SYMBOL") & (currentToken == ".")):
-                stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
-                outFile.write(stringToExport)
-            
-                performBasicCheck()
-            
-                # Write a subroutineName
-                stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
-                outFile.write(stringToExport)
-                
-                outFile.write(tabInsert() + "<!-- Identifier = subroutine, used, not-->\n") # Chap 11, Stage 1 Comment
-            
-                performBasicCheck()
-            
-                # if here and currenttoken = "new", then we're at a constructor call (let foo = Foo.new(x);  // constructor:  push x; call Foo.new 1)
-            
-
             # Writing ( symbol
             if ((currentTokenType == "SYMBOL") & (currentToken == "(")):
                 stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
@@ -1650,13 +1634,68 @@ def compileTerm():
                 print "E55"
                 error()
 
+        # Found a class/var name subroutine call
+        elif (lookAhead == "."):
+        
+            # Writing a class/var name
+            stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
+            outFile.write(stringToExport)
+            
+            # TODO
+            outFile.write(tabInsert() + "<!-- Identifier: class/var, used, not -->\n") # Chap 11, Stage 1 Comment
+            
+            performBasicCheck()
+            
+            # Write a . symbol
+            if ((currentTokenType == "SYMBOL") & (currentToken == ".")):
+                stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
+                outFile.write(stringToExport)
+                
+                performBasicCheck()
+                
+                # Write a subroutineName
+                stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
+                outFile.write(stringToExport)
+                
+                outFile.write(tabInsert() + "<!-- Identifier: subroutine, used, not -->\n") # Chap 11, Stage 1 Comment
+                
+                performBasicCheck()
+            
+                # Writing ( symbol
+                if ((currentTokenType == "SYMBOL") & (currentToken == "(")):
+                    stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
+                    outFile.write(stringToExport)
+                
+                    performBasicCheck()
+                
+                    # Write expressionList
+                    compileExpressionList()
+                
+                    # Writing ) symbol
+                    if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
+                        stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
+                        outFile.write(stringToExport)
+                    
+                        performBasicCheck()
+                
+                    else:
+                        print "E54"
+                        error()
+        
+                else:
+                    print "E55"
+                    error()
+            else:
+                print "E55"
+                error()
+
 
         # Found a varName
         elif ((lookAhead != "(") & (lookAhead != ".")):
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
             
-            outFile.write(tabInsert() + "<!-- Identifier = var, used, not-->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: var, used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
         
             performBasicCheck()
 
