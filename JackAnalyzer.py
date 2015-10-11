@@ -2,8 +2,6 @@
 ####### JRD JACK ANALYZER ######
 ################################
 
-# var, arg, static, field, class, subroutine
-# def, used
 
 ## JACK TOKENIZER MODULE ##
 
@@ -82,7 +80,7 @@ def main():
         jackTokenizerConstructor(sourceFile, outFilename, outFilename2)
     
     else:
-        print "E60"
+        print "E1"
         error()
 
     print "\n----------------------------\n** JACK ANALYZER Complete **"
@@ -487,7 +485,7 @@ def compileClass():
                     elif ((currentTokenType == "KEYWORD") & ((currentToken == "static") | (currentToken == "field"))):
                         compileClassVarDec()
                     else:
-                        print "E1"
+                        print "E2"
                         error()
                         
                     performBasicCheck()
@@ -498,13 +496,13 @@ def compileClass():
                     outFile.write(stringToExport)
 
                 else:
-                    print "E2"
+                    print "E3"
                     error()
             else:
-                print "E3"
+                print "E4"
                 error()
         else:
-            print "E4"
+            print "E5"
             error()
 
         decrementTab()
@@ -514,7 +512,7 @@ def compileClass():
         outFile.write(stringToExport)
 
     else:
-        print "E5"
+        print "E6"
         error()
 
     return
@@ -550,7 +548,7 @@ def compileClassVarDec():
             outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
 
         else:
-            print "E6a"
+            print "E7"
             error()
     
         performBasicCheck()
@@ -563,7 +561,7 @@ def compileClassVarDec():
             outFile.write(tabInsert() + "<!-- Identifier: static, def, " + str(currentStaticIndex) + " -->\n") # Chap 11, Stage 1 Comment
 
         else:
-            print "E7a"
+            print "E8"
             error()
         
         performBasicCheck()
@@ -583,7 +581,7 @@ def compileClassVarDec():
                 outFile.write(tabInsert() + "<!-- Identifier: static, def, " + str(currentStaticIndex) + " -->\n") # Chap 11, Stage 1 Comment
             
             else:
-                print "E8a"
+                print "E9"
                 error()
                     
             performBasicCheck()
@@ -609,7 +607,7 @@ def compileClassVarDec():
             outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
         
         else:
-            print "E6b"
+            print "E10"
             error()
 
         performBasicCheck()
@@ -622,7 +620,7 @@ def compileClassVarDec():
             outFile.write(tabInsert() + "<!-- Identifier: field, def, " + str(currentFieldIndex) + " -->\n") # Chap 11, Stage 1 Comment
 
         else:
-            print "E7b"
+            print "E11"
             error()
         
         performBasicCheck()
@@ -642,7 +640,7 @@ def compileClassVarDec():
                 outFile.write(tabInsert() + "<!-- Identifier: field, def, " + str(currentFieldIndex) + " -->\n") # Chap 11, Stage 1 Comment
 
             else:
-                print "E8b"
+                print "E12"
                 error()
             
             performBasicCheck()
@@ -654,7 +652,7 @@ def compileClassVarDec():
         outFile.write(stringToExport)
 
     else:
-        print "E9"
+        print "E13"
         error()
 
     decrementTab()
@@ -708,7 +706,7 @@ def compileSubroutine():
             outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
 
         else:
-            print "E11"
+            print "E14"
             error()
                 
         performBasicCheck()
@@ -721,7 +719,7 @@ def compileSubroutine():
             outFile.write(tabInsert() + "<!-- Identifier: subroutine, def, not -->\n") # Chap 11, Stage 1 Comment
   
         else:
-            print "E12"
+            print "E15"
             error()
                 
         performBasicCheck()
@@ -762,7 +760,7 @@ def compileSubroutine():
                         elif ((currentTokenType == "KEYWORD") & ((currentToken == "let") | (currentToken == "if") | (currentToken == "while") | (currentToken == "do") | (currentToken == "return"))):
                             compileStatements()
                         else:
-                            print "E13"
+                            print "E16"
                             error()
                                 
                         performBasicCheck ()
@@ -778,19 +776,19 @@ def compileSubroutine():
                         outFile.write(stringToExport)
 
                     else:
-                        print "E14"
+                        print "E17"
                         error()
                 else:
-                    print "E15"
+                    print "E18"
                     error()
             else:
-                print "E16"
+                print "E19"
                 error()
         else:
-            print "E17"
+            print "E20"
             error()
     else:
-        print "E18"
+        print "E21"
         error()
     
     decrementTab()
@@ -836,7 +834,7 @@ def compileParameterList():
             outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
 
         else:
-            print "E19"
+            print "E22"
             error()
 
         performBasicCheck()
@@ -849,7 +847,7 @@ def compileParameterList():
             outFile.write(tabInsert() + "<!-- Identifier: arg, def, " + str(indexOf(currentToken))+ " -->\n") # Chap 11, Stage 1 Comment
 
         else:
-            print "E20"
+            print "E23"
             error()
 
         performBasicCheck()
@@ -875,7 +873,7 @@ def compileParameterList():
                 outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
 
             else:
-                print "E21"
+                print "E24"
                 error()
                     
             performBasicCheck()
@@ -888,7 +886,7 @@ def compileParameterList():
                 outFile.write(tabInsert() + "<!-- Identifier: arg, def, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
 
             else:
-                print "E22"
+                print "E25"
                 error()
             
             performBasicCheck()
@@ -929,7 +927,7 @@ def compileVarDec():
             outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
 
         else:
-            print "E23"
+            print "E26"
             error()
         
         performBasicCheck()
@@ -942,7 +940,7 @@ def compileVarDec():
             outFile.write(tabInsert() + "<!-- Identifier: var, def, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
 
         else:
-            print "E24"
+            print "E27"
             error()
     
         performBasicCheck()
@@ -962,7 +960,7 @@ def compileVarDec():
                 outFile.write(tabInsert() + "<!-- Identifier: var, def, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
         
             else:
-                print "E25"
+                print "E28"
                 error()
             
             performBasicCheck()
@@ -972,10 +970,10 @@ def compileVarDec():
             stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
             outFile.write(stringToExport)
         else:
-            print "E26"
+            print "E29"
             error()
     else:
-        print "E27"
+        print "E30"
         error()
     
     # Write varDec footer
@@ -1009,7 +1007,7 @@ def compileStatements():
         elif ((currentTokenType == "KEYWORD") & (currentToken == "return")):
             compileReturn()
         else:
-            print "E28"
+            print "E31"
             error()
 
     decrementTab()
@@ -1078,13 +1076,13 @@ def compileDo():
                             performBasicCheck()
                 
                         else:
-                            print "E29A"
+                            print "E32"
                             error()
                     else:
-                        print "E30B"
+                        print "E33"
                         error()
                 else:
-                    print "E31B"
+                    print "E34"
                     error()
 
             # Found a class/var name subroutine call
@@ -1142,22 +1140,22 @@ def compileDo():
                                 performBasicCheck()
 
                             else:
-                                print "E29B"
+                                print "E35"
                                 error()
                         else:
-                            print "E30B"
+                            print "E36"
                             error()
                     else:
-                        print "E34"
+                        print "E37"
                         error()
                 else:
-                    print "E35"
+                    print "E38"
                     error()
             else:
-                print "E36"
+                print "E39"
                 error()
         else:
-            print "E37"
+            print "E40"
             error()
 
     decrementTab()
@@ -1231,16 +1229,16 @@ def compileLet():
                     performBasicCheck()
 
                 else:
-                    print "E35"
+                    print "E41"
                     error()
             else:
-                print "E36"
+                print "E42"
                 error()
         else:
-            print "E37"
+            print "E43"
             error()
     else:
-        print "E38"
+        print "E44"
         error()
     
     
@@ -1305,19 +1303,19 @@ def compileWhile():
                         performBasicCheck()
 
                     else:
-                        print "E39"
+                        print "E45"
                         error()
                 else:
-                    print "E40"
+                    print "E46"
                     error()
             else:
-                print "E41"
+                print "E47"
                 error()
         else:
-            print "E42"
+            print "E48"
             error()
     else:
-        print "E43"
+        print "E49"
         error()
 
 
@@ -1356,7 +1354,7 @@ def compileReturn():
         outFile.write(stringToExport)
         
     else:
-        print "E44"
+        print "E50"
         error()
 
     # Write compileReturn footer
@@ -1443,26 +1441,25 @@ def compileIf():
                                     performBasicCheck()
                                         
                                 else:
-                                    print "E45"
+                                    print "E51"
                                     error()
                             else:
-                                print "E46"
+                                print "E52"
                                 error()
-                    
                     else:
-                        print "E47"
+                        print "E53"
                         error()
                 else:
-                    print "E48"
+                    print "E54"
                     error()
             else:
-                print "E49"
+                print "E55"
                 error()
         else:
-            print "E50"
+            print "E56"
             error()
     else:
-        print "E51"
+        print "E57"
         error()
 
 
@@ -1593,10 +1590,10 @@ def compileTerm():
                     performBasicCheck()
 
                 else:
-                    print "E52"
+                    print "E58"
                     error()
             else:
-                print "E53"
+                print "E59"
                 error()
 
         # Found a method subroutine call
@@ -1628,10 +1625,10 @@ def compileTerm():
                     performBasicCheck()
                 
                 else:
-                    print "E54"
+                    print "E60"
                     error()
             else:
-                print "E55"
+                print "E61"
                 error()
 
         # Found a class/var name subroutine call
@@ -1679,14 +1676,13 @@ def compileTerm():
                         performBasicCheck()
                 
                     else:
-                        print "E54"
+                        print "E62"
                         error()
-        
                 else:
-                    print "E55"
+                    print "E63"
                     error()
             else:
-                print "E55"
+                print "E64"
                 error()
 
 
@@ -1700,7 +1696,7 @@ def compileTerm():
             performBasicCheck()
 
         else:
-            print "E56"
+            print "E65"
             error()
 
 
@@ -1720,10 +1716,10 @@ def compileTerm():
             performBasicCheck()
         
         else:
-            print "E57"
+            print "E66"
             error()
     else:
-        print "E58"
+        print "E67"
         error()
     
     decrementTab()
@@ -1897,7 +1893,7 @@ def performBasicCheck():
     elif not hasMoreTokens() & ((currentPos + 1) == len(tokenizedSource)): # At end of tokenizedSource elements
         return
     else:
-        print "E59"
+        print "E68"
         error()
     
     return
