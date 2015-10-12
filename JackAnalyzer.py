@@ -17,7 +17,7 @@ tokenizedSource = []
 tabLevel = 0
 
 #TODO
-classScopeSymbolTable = {'y': ['int', 'FIELD', 1], 'x': ['boolean', 'FIELD', 0], 'size': ['char', 'FIELD', 2], 'w': ['char', 'STATIC', 0]} # These will revert back to initializing blank
+classScopeSymbolTable = {}
 subroutineScopeSymbolTable = {'a': ['testClass', 'VAR', 1], 'c': ['boolean', 'VAR', 3], 'b': ['int', 'VAR', 2], 'Asize': ['int', 'ARG', 2], 'Ay': ['int', 'ARG', 1], 'Ax': ['int', 'ARG', 0], 'z': ['int', 'VAR', 0]} # These will revert back to initializing blank
 
 currentFieldIndex = 0
@@ -444,6 +444,9 @@ def compileClass():
     
     print "compileClass()\n"
     
+    # Initialize class scope symbol table
+    symbolTableConstructor()
+    
     performBasicCheck()
     
     # Write class header
@@ -481,9 +484,11 @@ def compileClass():
                     # Found a subroutineDec
                     if ((currentTokenType == "KEYWORD") & ((currentToken == "function") | (currentToken == "method") | (currentToken == "constructor"))):
                         compileSubroutine()
+                    
                     # Found a ClassVarDec
                     elif ((currentTokenType == "KEYWORD") & ((currentToken == "static") | (currentToken == "field"))):
                         compileClassVarDec()
+
                     else:
                         print "E2"
                         error()
@@ -540,10 +545,14 @@ def compileClassVarDec():
             stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
             outFile.write(stringToExport)
         
+            currentType = currentToken
+        
         # Write object type
         elif ((currentTokenType == "IDENTIFIER")):
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
+            
+            currentType = currentToken
 
             outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
 
@@ -558,7 +567,10 @@ def compileClassVarDec():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
             
-            outFile.write(tabInsert() + "<!-- Identifier: static, def, " + str(currentStaticIndex) + " -->\n") # Chap 11, Stage 1 Comment
+            # Add STATIC variable to class scope symbol table
+            define(currentToken, currentType, "STATIC")
+            
+            outFile.write(tabInsert() + "<!-- Identifier: static, def, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
 
         else:
             print "E8"
@@ -577,8 +589,11 @@ def compileClassVarDec():
             if ((currentTokenType == "IDENTIFIER")):
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
+                
+                # Add STATIC variable to class scope symbol table
+                define(currentToken, currentType, "STATIC")
             
-                outFile.write(tabInsert() + "<!-- Identifier: static, def, " + str(currentStaticIndex) + " -->\n") # Chap 11, Stage 1 Comment
+                outFile.write(tabInsert() + "<!-- Identifier: static, def, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
             
             else:
                 print "E9"
@@ -598,11 +613,15 @@ def compileClassVarDec():
         if ((currentTokenType == "KEYWORD") & ((currentToken == "int") | (currentToken == "char") | (currentToken == "boolean"))):
             stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
             outFile.write(stringToExport)
+        
+            currentType = currentToken
 
         # Write object type
         elif ((currentTokenType == "IDENTIFIER")):
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
+            
+            currentType = currentToken
             
             outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
         
@@ -617,7 +636,10 @@ def compileClassVarDec():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
             
-            outFile.write(tabInsert() + "<!-- Identifier: field, def, " + str(currentFieldIndex) + " -->\n") # Chap 11, Stage 1 Comment
+            # Add FIELD variable to class scope symbol table
+            define(currentToken, currentType, "FIELD")
+            
+            outFile.write(tabInsert() + "<!-- Identifier: field, def, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
 
         else:
             print "E11"
@@ -637,7 +659,10 @@ def compileClassVarDec():
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
                 
-                outFile.write(tabInsert() + "<!-- Identifier: field, def, " + str(currentFieldIndex) + " -->\n") # Chap 11, Stage 1 Comment
+                # Add FIELD variable to class scope symbol table
+                define(currentToken, currentType, "FIELD")
+
+                outFile.write(tabInsert() + "<!-- Identifier: field, def, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
 
             else:
                 print "E12"
