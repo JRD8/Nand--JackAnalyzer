@@ -16,10 +16,8 @@ outFile2 = ""
 tokenizedSource = []
 tabLevel = 0
 
-#TODO
 classScopeSymbolTable = {}
 subroutineScopeSymbolTable = {}
-#subroutineScopeSymbolTable = {'a': ['testClass', 'VAR', 1], 'c': ['boolean', 'VAR', 3], 'b': ['int', 'VAR', 2], 'Asize': ['int', 'ARG', 2], 'Ay': ['int', 'ARG', 1], 'Ax': ['int', 'ARG', 0], 'z': ['int', 'VAR', 0]} # These will revert back to initializing blank
 
 currentFieldIndex = 0
 currentStaticIndex = 0
