@@ -18,7 +18,8 @@ tabLevel = 0
 
 #TODO
 classScopeSymbolTable = {}
-subroutineScopeSymbolTable = {'a': ['testClass', 'VAR', 1], 'c': ['boolean', 'VAR', 3], 'b': ['int', 'VAR', 2], 'Asize': ['int', 'ARG', 2], 'Ay': ['int', 'ARG', 1], 'Ax': ['int', 'ARG', 0], 'z': ['int', 'VAR', 0]} # These will revert back to initializing blank
+subroutineScopeSymbolTable = {}
+#subroutineScopeSymbolTable = {'a': ['testClass', 'VAR', 1], 'c': ['boolean', 'VAR', 3], 'b': ['int', 'VAR', 2], 'Asize': ['int', 'ARG', 2], 'Ay': ['int', 'ARG', 1], 'Ax': ['int', 'ARG', 0], 'z': ['int', 'VAR', 0]} # These will revert back to initializing blank
 
 currentFieldIndex = 0
 currentStaticIndex = 0
@@ -112,9 +113,6 @@ def jackTokenizerConstructor(sourceFile, outFilename, outFilename2):
     # Close tokenizer ref file
     outFile2.write("</tokens>\n") # Write footer
     outFile2.write("\n<!-- \nEND OF FILE\n-->\n\n")
-    outFile2.write("<!-- \nCLASS SCOPE SYMBOL TABLE: \n") # Write class scope symbol table comment
-    outFile2.write(str(classScopeSymbolTable))
-    outFile2.write("\n-->\n\n")
     outFile2.close()
 
     # Close main Parser File
@@ -129,48 +127,12 @@ def jackTokenizerConstructor(sourceFile, outFilename, outFilename2):
     print "\n"
     print "Closing files:\n" + outFilename + "\n"+ outFilename2 + "\n-----------------------\n"
     
+    # TODO
     # UNIT TESTING TO DELETE
     
     print "Class Scope: "
     print classScopeSymbolTable
-    print "Subroutine Scope: "
-    print subroutineScopeSymbolTable
     
-    print "varCount STATIC: " + str(varCount("STATIC"))
-    print "varCount FIELD: " + str(varCount("FIELD"))
-    print "varCount ARG: " + str(varCount("ARG"))
-    print "varCount VAR: " + str(varCount("VAR"))
-    print "\n"
-    print "kindOf x: " + str(kindOf("x"))
-    print "kindOf y: " + str(kindOf("y"))
-    print "kindOf size: " + str(kindOf("size"))
-    print "kindOf a: " + str(kindOf("a"))
-    print "kindOf z: " + str(kindOf("z"))
-    print "kindOf Ax: " + str(kindOf("Ax"))
-    print "kindOf Ay: " + str(kindOf("Ay"))
-    print "kindOf w: " + str(kindOf("w"))
-    print "kindOf v: " + str(kindOf("v"))
-    print "\n"
-    print "typeOf x: " + str(typeOf("x"))
-    print "typeOf y: " + str(typeOf("y"))
-    print "typeOf size: " + str(typeOf("size"))
-    print "typeOf a: " + str(typeOf("a"))
-    print "typeOf z: " + str(typeOf("z"))
-    print "typeOf Ax: " + str(typeOf("Ax"))
-    print "typeOf Ay: " + str(typeOf("Ay"))
-    print "typeOf w: " + str(typeOf("w"))
-    print "typeOf v: " + str(typeOf("v"))
-    print "\n"
-    print "indexOf x: " + str(indexOf("x"))
-    print "indexOf y: " + str(indexOf("y"))
-    print "indexOf size: " + str(indexOf("size"))
-    print "indexOf a: " + str(indexOf("a"))
-    print "indexOf z: " + str(indexOf("z"))
-    print "indexOf Ax: " + str(indexOf("Ax"))
-    print "indexOf Ay: " + str(indexOf("Ay"))
-    print "indexOf w: " + str(indexOf("w"))
-    print "indexOf v: " + str(indexOf("v"))
-
     return
 
 
@@ -697,8 +659,8 @@ def compileSubroutine():
     stringToExport = tabInsert() + "<subroutineDec>\n"
     outFile.write(stringToExport)
     
-    # Construct a new subroutine scope symbol table
-    #startSubroutine()
+    # Initialize a new subroutine scope symbol table
+    startSubroutine()
     
     incrementTab()
     
@@ -706,15 +668,16 @@ def compileSubroutine():
         stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
         outFile.write(stringToExport)
         
-        #if (currentToken == "method"):
+        # Additional routine to add "this" as ARG 0 for a method subroutine call
+        if (currentToken == "method"):
             
-            #i = 0
-            #while (i < len(tokenizedSource)):
-            #if (tokenizedSource[i] == "class"):
-            #temp = tokenizedSource[i + 1]
-            #i = i + 1
+            i = 0
+            while (i < len(tokenizedSource)):
+                if (tokenizedSource[i] == "class"):
+                    temp = tokenizedSource[i + 1]
+                i = i + 1
             
-            #define ("this", temp, "ARG")
+            define ("this", temp, "ARG")
     
         performBasicCheck()
     
@@ -723,10 +686,14 @@ def compileSubroutine():
             stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
             outFile.write(stringToExport)
         
+            currentType = currentToken
+        
         # Write object return type
         elif ((currentTokenType == "IDENTIFIER")):
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
+            
+            currentType = currentToken
         
             outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
 
@@ -817,7 +784,13 @@ def compileSubroutine():
         error()
     
     decrementTab()
-    
+
+    # Write subroutine scope symbol table
+    outFile.write(tabInsert() + "<!-- SUBROUTINE SCOPE SYMBOL TABLE: ")
+    outFile.write(str(subroutineScopeSymbolTable))
+    outFile.write(" -->\n")
+
+
     # Write subroutineDec footer
     stringToExport = tabInsert() + "</subroutineDec>\n"
     outFile.write(stringToExport)
@@ -849,12 +822,16 @@ def compileParameterList():
             incrementTab()
             stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
             outFile.write(stringToExport)
+        
+            currentType = currentToken
     
         # Write object type parameter
         elif ((currentTokenType == "IDENTIFIER")):
             incrementTab()
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
+            
+            currentType = currentToken
 
             outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
 
@@ -868,6 +845,8 @@ def compileParameterList():
         if ((currentTokenType == "IDENTIFIER")):
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
+            
+            define(currentToken, currentType, "ARG")
 
             outFile.write(tabInsert() + "<!-- Identifier: arg, def, " + str(indexOf(currentToken))+ " -->\n") # Chap 11, Stage 1 Comment
 
@@ -889,11 +868,15 @@ def compileParameterList():
             if ((currentTokenType == "KEYWORD") & ((currentToken == "int") | (currentToken == "char") | (currentToken == "boolean"))):
                 stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
                 outFile.write(stringToExport)
+            
+                currentType = currentToken
 
             # Write object type parameter
             elif ((currentTokenType == "IDENTIFIER")):
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
+                
+                currentType = currentToken
                 
                 outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
 
@@ -907,6 +890,8 @@ def compileParameterList():
             if ((currentTokenType == "IDENTIFIER")):
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
+                
+                define(currentToken, currentType, "ARG")
                 
                 outFile.write(tabInsert() + "<!-- Identifier: arg, def, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
 
@@ -943,11 +928,15 @@ def compileVarDec():
         if ((currentTokenType == "KEYWORD") & ((currentToken == "int") | (currentToken == "char") | (currentToken == "boolean"))):
             stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
             outFile.write(stringToExport)
+        
+            currentType = currentToken
 
         # Write object type varDec
         elif ((currentTokenType == "IDENTIFIER")):
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
+            
+            currentType = currentToken
 
             outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
 
@@ -961,6 +950,8 @@ def compileVarDec():
         if ((currentTokenType == "IDENTIFIER")):
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
+            
+            define(currentToken, currentType, "VAR")
 
             outFile.write(tabInsert() + "<!-- Identifier: var, def, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
 
@@ -981,6 +972,8 @@ def compileVarDec():
             if ((currentTokenType == "IDENTIFIER")):
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
+                
+                define(currentToken, currentType, "VAR")
             
                 outFile.write(tabInsert() + "<!-- Identifier: var, def, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
         
