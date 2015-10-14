@@ -675,6 +675,7 @@ def compileSubroutine():
                     temp = tokenizedSource[i + 1]
                 i = i + 1
             
+            # Add ARG variable to class scope symbol table
             define ("this", temp, "ARG")
     
         performBasicCheck()
@@ -844,6 +845,7 @@ def compileParameterList():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
             
+            # Add ARG variable to class scope symbol table
             define(currentToken, currentType, "ARG")
 
             outFile.write(tabInsert() + "<!-- Identifier: arg, def, " + str(indexOf(currentToken))+ " -->\n") # Chap 11, Stage 1 Comment
@@ -889,6 +891,7 @@ def compileParameterList():
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
                 
+                # Add ARG variable to class scope symbol table
                 define(currentToken, currentType, "ARG")
                 
                 outFile.write(tabInsert() + "<!-- Identifier: arg, def, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
@@ -949,6 +952,7 @@ def compileVarDec():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
             
+            # Add VAR variable to class scope symbol table
             define(currentToken, currentType, "VAR")
 
             outFile.write(tabInsert() + "<!-- Identifier: var, def, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
@@ -971,6 +975,7 @@ def compileVarDec():
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
                 
+                # Add VAR variable to class scope symbol table
                 define(currentToken, currentType, "VAR")
             
                 outFile.write(tabInsert() + "<!-- Identifier: var, def, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
@@ -1101,18 +1106,22 @@ def compileDo():
                     print "E34"
                     error()
 
-            # Found a class/var name subroutine call
+            # Found a function/constructor (class) or method (var)subroutine call
             elif (lookAhead == "."):
                 
                 # Writing a class/var name
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
                 
-                # TODO
-                outFile.write(tabInsert() + "<!-- Identifier: class/var, used, not -->\n") # Chap 11, Stage 1 Comment
-                
-                # if here... subroutine method call (do foo.bar(x); // method:  push foo; push x; call Foo.bar 2)
-                # or could be....subroutine function call (do Sys.error(x); // function:  push x; call Sys.error 1)
+                # Found a method call
+                if (kindOf(currentToken) == "VAR"):
+                    outFile.write(tabInsert() + "<!-- Identifier: var, used, not -->\n") # Chap 11, Stage 1 Comment
+                    #subroutine method call (do foo.bar(x); // method:  push foo; push x; call Foo.bar 2)
+               
+                # Found a function/constuctor call
+                elif (kindOf(currentToken) == "NONE"):
+                    outFile.write(tabInsert() + "<!-- Identifier: class, used, not -->\n") # Chap 11, Stage 1 Comment
+                    #subroutine function call (do Sys.error(x); // function:  push x; call Sys.error 1)
                 
                 performBasicCheck()
                 
@@ -1647,16 +1656,24 @@ def compileTerm():
                 print "E61"
                 error()
 
-        # Found a class/var name subroutine call
+        # Found a function/constructor (class) or method (var)subroutine call
         elif (lookAhead == "."):
         
             # Writing a class/var name
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
             
-            # TODO
-            outFile.write(tabInsert() + "<!-- Identifier: class/var, used, not -->\n") # Chap 11, Stage 1 Comment
-            
+            # Found a method call
+            if (kindOf(currentToken) == "VAR"):
+                outFile.write(tabInsert() + "<!-- Identifier: var, used, not -->\n") # Chap 11, Stage 1 Comment
+                #subroutine method call (do foo.bar(x); // method:  push foo; push x; call Foo.bar 2)
+                
+            # Found a function/constuctor call
+            elif (kindOf(currentToken) == "NONE"):
+                outFile.write(tabInsert() + "<!-- Identifier: class, used, not -->\n") # Chap 11, Stage 1 Comment
+                #subroutine function call (do Sys.error(x); // function:  push x; call Sys.error 1)
+
+
             performBasicCheck()
             
             # Write a . symbol
