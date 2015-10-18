@@ -1106,7 +1106,11 @@ def compileDo():
                 
                 # Found a method call
                 if (kindOf(currentToken) == "VAR"):
-                    outFile.write(tabInsert() + "<!-- Identifier: var, used, no index -->\n") # Chap 11, Stage 1 Comment
+                    outFile.write(tabInsert() + "<!-- Identifier: var, used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
+                    #subroutine method call (do foo.bar(x); // method:  push foo; push x; call Foo.bar 2)
+                    
+                elif (kindOf(currentToken) == "FIELD"):
+                    outFile.write(tabInsert() + "<!-- Identifier: field, used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
                     #subroutine method call (do foo.bar(x); // method:  push foo; push x; call Foo.bar 2)
                
                 # Found a function/constuctor call
@@ -1205,7 +1209,7 @@ def compileLet():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
             
-            outFile.write(tabInsert() + "<!-- Identifier: var, used, no index -->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: " + str(kindOf(currentToken)).lower() + ", used, " + str(indexOf(currentToken))+ " -->\n") # Chap 11, Stage 1 Comment
         
             performBasicCheck()
             
@@ -1581,7 +1585,7 @@ def compileTerm():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
             
-            outFile.write(tabInsert() + "<!-- Identifier: var, used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: " + str(kindOf(currentToken)).lower() + ", used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
         
             performBasicCheck()
         
@@ -1656,9 +1660,14 @@ def compileTerm():
             
             # Found a method call
             if (kindOf(currentToken) == "VAR"):
-                outFile.write(tabInsert() + "<!-- Identifier: var, used, no index -->\n") # Chap 11, Stage 1 Comment
+                outFile.write(tabInsert() + "<!-- Identifier: var, used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
                 #subroutine method call (do foo.bar(x); // method:  push foo; push x; call Foo.bar 2)
                 
+            elif (kindOf(currentToken) == "FIELD"):
+                outFile.write(tabInsert() + "<!-- Identifier: field, used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
+                #subroutine method call (do foo.bar(x); // method:  push foo; push x; call Foo.bar 2)
+
+
             # Found a function/constuctor call
             elif (kindOf(currentToken) == "NONE"):
                 outFile.write(tabInsert() + "<!-- Identifier: class, used, no index -->\n") # Chap 11, Stage 1 Comment
@@ -1715,7 +1724,7 @@ def compileTerm():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
             
-            outFile.write(tabInsert() + "<!-- Identifier: var, used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: " + str(kindOf(currentToken)).lower() + ", used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
         
             performBasicCheck()
 
