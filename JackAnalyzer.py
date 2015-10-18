@@ -37,8 +37,8 @@ def main():
     print "Enter the Source Jack File (.jack) or Source Jack Directory (within this path) to be analyzed:"
     
     # Input options?
-    #userInput = raw_input(">") # Prompt for user input...
-    userInput = "square.jack" # Test without user input
+    userInput = raw_input(">") # Prompt for user input...
+    #userInput = "square.jack" # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
@@ -125,12 +125,6 @@ def jackTokenizerConstructor(sourceFile, outFilename, outFilename2):
     print "\n"
     print "Closing files:\n" + outFilename + "\n"+ outFilename2 + "\n-----------------------\n"
     
-    # TODO
-    # UNIT TESTING TO DELETE
-    
-    print "Class Scope: "
-    print classScopeSymbolTable
-    
     return
 
 
@@ -148,9 +142,6 @@ def processFile(sourceFile):
     print "Tokenized Source Code: \n"
     print tokenizedSource
     print "\n--------------------------------------------\n"
-    
-    # Create the class scope symbol table
-    #symbolTableConstructor()
     
     # Write tokenizer ref file header
     outFile2.write("<tokens>\n")
@@ -426,7 +417,7 @@ def compileClass():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
             
-            outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: class, def, no index -->\n") # Chap 11, Stage 1 Comment
 
             performBasicCheck()
             
@@ -514,7 +505,7 @@ def compileClassVarDec():
             
             currentType = currentToken
 
-            outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: class, def, no index -->\n") # Chap 11, Stage 1 Comment
 
         else:
             print "E7"
@@ -583,7 +574,7 @@ def compileClassVarDec():
             
             currentType = currentToken
             
-            outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: class, def, no index -->\n") # Chap 11, Stage 1 Comment
         
         else:
             print "E10"
@@ -694,7 +685,7 @@ def compileSubroutine():
             
             currentType = currentToken
         
-            outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: class, def, no index -->\n") # Chap 11, Stage 1 Comment
 
         else:
             print "E14"
@@ -707,7 +698,7 @@ def compileSubroutine():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
         
-            outFile.write(tabInsert() + "<!-- Identifier: subroutine, def, not -->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: subroutine, def, no index -->\n") # Chap 11, Stage 1 Comment
   
         else:
             print "E15"
@@ -832,7 +823,7 @@ def compileParameterList():
             
             currentType = currentToken
 
-            outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: class, def, no index -->\n") # Chap 11, Stage 1 Comment
 
         else:
             print "E22"
@@ -878,7 +869,7 @@ def compileParameterList():
                 
                 currentType = currentToken
                 
-                outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
+                outFile.write(tabInsert() + "<!-- Identifier: class, def, no index -->\n") # Chap 11, Stage 1 Comment
 
             else:
                 print "E24"
@@ -939,7 +930,7 @@ def compileVarDec():
             
             currentType = currentToken
 
-            outFile.write(tabInsert() + "<!-- Identifier: class, def, not -->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: class, def, no index -->\n") # Chap 11, Stage 1 Comment
 
         else:
             print "E26"
@@ -1068,7 +1059,7 @@ def compileDo():
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
                 
-                outFile.write(tabInsert() + "<!-- Identifier: subroutine, used, not -->\n") # Chap 11, Stage 1 Comment
+                outFile.write(tabInsert() + "<!-- Identifier: subroutine, used, no index -->\n") # Chap 11, Stage 1 Comment
             
                 performBasicCheck()
                
@@ -1115,12 +1106,12 @@ def compileDo():
                 
                 # Found a method call
                 if (kindOf(currentToken) == "VAR"):
-                    outFile.write(tabInsert() + "<!-- Identifier: var, used, not -->\n") # Chap 11, Stage 1 Comment
+                    outFile.write(tabInsert() + "<!-- Identifier: var, used, no index -->\n") # Chap 11, Stage 1 Comment
                     #subroutine method call (do foo.bar(x); // method:  push foo; push x; call Foo.bar 2)
                
                 # Found a function/constuctor call
                 elif (kindOf(currentToken) == "NONE"):
-                    outFile.write(tabInsert() + "<!-- Identifier: class, used, not -->\n") # Chap 11, Stage 1 Comment
+                    outFile.write(tabInsert() + "<!-- Identifier: class, used, no index -->\n") # Chap 11, Stage 1 Comment
                     #subroutine function call (do Sys.error(x); // function:  push x; call Sys.error 1)
                 
                 performBasicCheck()
@@ -1136,7 +1127,7 @@ def compileDo():
                     stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                     outFile.write(stringToExport)
                     
-                    outFile.write(tabInsert() + "<!-- Identifier: subroutine, used, not -->\n") # Chap 11, Stage 1 Comment
+                    outFile.write(tabInsert() + "<!-- Identifier: subroutine, used, no index -->\n") # Chap 11, Stage 1 Comment
                     
                     performBasicCheck()
             
@@ -1214,7 +1205,7 @@ def compileLet():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
             
-            outFile.write(tabInsert() + "<!-- Identifier: var, used, not -->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: var, used, no index -->\n") # Chap 11, Stage 1 Comment
         
             performBasicCheck()
             
@@ -1628,7 +1619,7 @@ def compileTerm():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
             
-            outFile.write(tabInsert() + "<!-- Identifier: subroutine, used, not -->\n") # Chap 11, Stage 1 Comment
+            outFile.write(tabInsert() + "<!-- Identifier: subroutine, used, no index -->\n") # Chap 11, Stage 1 Comment
 
             performBasicCheck()
             
@@ -1665,12 +1656,12 @@ def compileTerm():
             
             # Found a method call
             if (kindOf(currentToken) == "VAR"):
-                outFile.write(tabInsert() + "<!-- Identifier: var, used, not -->\n") # Chap 11, Stage 1 Comment
+                outFile.write(tabInsert() + "<!-- Identifier: var, used, no index -->\n") # Chap 11, Stage 1 Comment
                 #subroutine method call (do foo.bar(x); // method:  push foo; push x; call Foo.bar 2)
                 
             # Found a function/constuctor call
             elif (kindOf(currentToken) == "NONE"):
-                outFile.write(tabInsert() + "<!-- Identifier: class, used, not -->\n") # Chap 11, Stage 1 Comment
+                outFile.write(tabInsert() + "<!-- Identifier: class, used, no index -->\n") # Chap 11, Stage 1 Comment
                 #subroutine function call (do Sys.error(x); // function:  push x; call Sys.error 1)
 
 
@@ -1687,7 +1678,7 @@ def compileTerm():
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
                 
-                outFile.write(tabInsert() + "<!-- Identifier: subroutine, used, not -->\n") # Chap 11, Stage 1 Comment
+                outFile.write(tabInsert() + "<!-- Identifier: subroutine, used, no index -->\n") # Chap 11, Stage 1 Comment
                 
                 performBasicCheck()
             
