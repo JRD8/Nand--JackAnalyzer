@@ -37,8 +37,8 @@ def main():
     print "Enter the Source Jack File (.jack) or Source Jack Directory (within this path) to be analyzed:"
     
     # Input options?
-    userInput = raw_input(">") # Prompt for user input...
-    #userInput = "square.jack" # Test without user input
+    #userInput = raw_input(">") # Prompt for user input...
+    userInput = "complexarrays" # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
@@ -733,7 +733,7 @@ def compileSubroutine():
                     outFile.write(stringToExport)
             
                     performBasicCheck()
-            
+                    
                     # Loop to find either a varDec or a Statement initial keyword
                     while (currentToken != "}"):
                         
@@ -744,8 +744,12 @@ def compileSubroutine():
                         else:
                             print "E16"
                             error()
-                                
-                        performBasicCheck ()
+                        
+                        if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
+                            
+                            ## TODO
+                            print "NEEDED THIS"
+                            performBasicCheck ()
                     
                     # Write }
                     if ((currentTokenType == "SYMBOL") & (currentToken == "}")):
@@ -981,6 +985,9 @@ def compileVarDec():
         if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
             stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
             outFile.write(stringToExport)
+        
+            performBasicCheck()
+        
         else:
             print "E29"
             error()
@@ -1370,8 +1377,11 @@ def compileReturn():
 
     # Write ; end of statement
     if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
+        
         stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
         outFile.write(stringToExport)
+
+        performBasicCheck()
         
     else:
         print "E50"
@@ -1381,7 +1391,7 @@ def compileReturn():
     decrementTab()
     stringToExport = tabInsert() + "</returnStatement>\n"
     outFile.write(stringToExport)
-    
+
     return
 
 
@@ -1466,6 +1476,7 @@ def compileIf():
                             else:
                                 print "E52"
                                 error()
+                
                     else:
                         print "E53"
                         error()
