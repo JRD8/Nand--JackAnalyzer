@@ -37,8 +37,8 @@ def main():
     print "Enter the Source Jack File (.jack) or Source Jack Directory (within this path) to be analyzed:"
     
     # Input options?
-    #userInput = raw_input(">") # Prompt for user input...
-    userInput = "complexarrays" # Test without user input
+    userInput = raw_input(">") # Prompt for user input...
+    #userInput = "complexarrays" # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
@@ -744,12 +744,6 @@ def compileSubroutine():
                         else:
                             print "E16"
                             error()
-                        
-                        if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
-                            
-                            ## TODO
-                            print "NEEDED THIS"
-                            performBasicCheck ()
                     
                     # Write }
                     if ((currentTokenType == "SYMBOL") & (currentToken == "}")):
@@ -1515,7 +1509,7 @@ def compileExpression():
     compileTerm()
     
     # Write an Op
-    if ((currentTokenType == "SYMBOL") & ((currentToken == "+") | (currentToken == "-") | (currentToken == "*") | (currentToken == "/") | (currentToken == "&") | (currentToken == "|") | (currentToken == "<") | (currentToken == ">") | (currentToken == "="))):
+    while ((currentTokenType == "SYMBOL") & ((currentToken == "+") | (currentToken == "-") | (currentToken == "*") | (currentToken == "/") | (currentToken == "&") | (currentToken == "|") | (currentToken == "<") | (currentToken == ">") | (currentToken == "="))):
         # Account for the 3 op XML exceptions, <,>,&
         if currentToken == "<":
             stringToExport = tabInsert() + "<symbol> &lt; </symbol>\n"
@@ -1531,10 +1525,10 @@ def compileExpression():
             outFile.write(stringToExport)
                 
         performBasicCheck()
-        
-        # Write a second term
+
         compileTerm()
-    
+
+
     decrementTab()
 
     # Write compileExpression footer
@@ -1586,6 +1580,25 @@ def compileTerm():
 
         compileTerm()
 
+    # Found an (expression)...
+    elif ((currentTokenType == "SYMBOL") & (currentToken == "(")):
+        stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
+        outFile.write(stringToExport)
+        
+        performBasicCheck()
+        
+        compileExpression()
+        
+        if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
+            stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
+            outFile.write(stringToExport)
+            
+            performBasicCheck()
+        
+        else:
+            print "E66"
+            error()
+
     # Found an Identifier...
     elif (currentTokenType == "IDENTIFIER"):
         lookAhead = tokenizedSource[currentPos] # Not currentPos + 1 due to advance() counting...
@@ -1610,7 +1623,9 @@ def compileTerm():
                 
                 # Writing the expression...
                 incrementTab()
+                
                 compileExpression()
+
                 decrementTab()
                 
                 if ((currentTokenType == "SYMBOL") & (currentToken == "]")):
@@ -1741,26 +1756,6 @@ def compileTerm():
 
         else:
             print "E65"
-            error()
-
-
-    # Found an (expression)...
-    elif ((currentTokenType == "SYMBOL") & (currentToken == "(")):
-        stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
-        outFile.write(stringToExport)
-
-        performBasicCheck()
-
-        compileExpression()
-        
-        if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
-            stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
-            outFile.write(stringToExport)
-        
-            performBasicCheck()
-        
-        else:
-            print "E66"
             error()
     else:
         print "E67"
