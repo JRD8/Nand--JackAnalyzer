@@ -1919,6 +1919,62 @@ def indexOf(name):
     return "ERROR - NO RUNNING INDEX/NO IDENTIFIER FOUND"
 
 
+## VMWRITER MODULE ##
+
+def vmwriterConstructor():
+
+    return
+
+
+def writePush(segment, index):
+
+    return
+
+
+def writePop(segment, index):
+    
+    return
+
+
+def writeArithmetic(command):
+    
+    return
+
+
+def writeLabel(label):
+    
+    return
+
+
+def writeGoto(label):
+    
+    return
+
+
+def writeIf(label):
+    
+    return
+
+
+def writeCall(name, nArgs):
+    
+    return
+
+
+def writeFunction(name, nLocals):
+    
+    return
+
+
+def writeReturn():
+    
+    return
+
+
+def vmwriterClose():
+    
+    return
+
 
 ## HELPER ROUTINES ##
 
