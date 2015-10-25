@@ -10,8 +10,9 @@ currentPos = 0
 currentToken = ""
 currentTokenType = ""
 
-outFile = ""
-outFile2 = ""
+outFile = "" # Main Parser File **.xml
+outFile2 = "" # Tokenizer Ref File **T.xml
+outFile3 = "" # VM Code Writer File **.vm
 
 tokenizedSource = []
 tabLevel = 0
@@ -37,8 +38,8 @@ def main():
     print "Enter the Source Jack File (.jack) or Source Jack Directory (within this path) to be analyzed:"
     
     # Input options?
-    userInput = raw_input(">") # Prompt for user input...
-    #userInput = "complexarrays" # Test without user input
+    #userInput = raw_input(">") # Prompt for user input...
+    userInput = "square" # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
@@ -57,12 +58,13 @@ def main():
                 
                 outFilename = sourcePath + sourceFile[0:sourceFile.find(".")] + ".xml" # Creates **.xml for main parser file
                 outFilename2 = sourcePath + sourceFile[0:sourceFile.find(".")] + "T.xml" # Creates **T.xml for tokenizer ref file
+                outFilename3 = sourcePath + sourceFile[0:sourceFile.find(".")] + ".vm" # Creates **.vm for code writer file
                 
                 sourceFile = sourcePath + sourceFile
                 
                 print "Processing Source File: " + sourceFile + "\n"
             
-                jackTokenizerConstructor(sourceFile, outFilename, outFilename2)
+                jackTokenizerConstructor(sourceFile, outFilename, outFilename2, outFilename3)
 
 
     elif userInput.find(".jack") != -1: # File input
@@ -75,9 +77,10 @@ def main():
 
         outFilename = sourceFile[0:sourceFile.find(".")] + ".xml" # Creates **.xml for main parser file
         outFilename2 = sourceFile[0:sourceFile.find(".")] + "T.xml" # Creates **T.xml for tokenizer ref file
+        outFilename3 = sourceFile[0:sourceFile.find(".")] + ".vm" # Creates **.vm for code writer file
         
-        jackTokenizerConstructor(sourceFile, outFilename, outFilename2)
-    
+        jackTokenizerConstructor(sourceFile, outFilename, outFilename2, outFilename3)
+
     else:
         print "E1"
         error()
@@ -87,14 +90,17 @@ def main():
     return
 
 
-def jackTokenizerConstructor(sourceFile, outFilename, outFilename2):
+def jackTokenizerConstructor(sourceFile, outFilename, outFilename2, outFilename3):
     
-    global outFile, outFile2
+    global outFile, outFile2, outFile3
 
     # Open the outFile(s)
     outFile = open(outFilename, 'w') # Opens the main parser file
     outFile2 = open(outFilename2, 'w') # Opens the tokenizer ref file
-    print "Writing the Destination Parser File (*.xml): " + outFilename + "\nWriting Tokenizer Ref File (*T.xml): " + outFilename2 + "\n"
+    print "Writing the Destination Parser File (*.xml): " + outFilename + "\nWriting Tokenizer Ref File (*T.xml): " + outFilename2
+    
+    # Contruct the VM Code Writer
+    vmwriterConstructor(outFilename3)
 
     # Get date/time stamp
     from time import localtime, strftime
@@ -103,17 +109,20 @@ def jackTokenizerConstructor(sourceFile, outFilename, outFilename2):
     # Write headers into outFile(s)
     outFile.write("<!-- \nJACK ANALYZED\nSOURCE CODE FROM: " + sourceFile + "\nON: " + temp + "\n-->\n\n")
     outFile2.write("<!-- \nJACK ANALYZED\nSOURCE CODE FROM: " + sourceFile + "\nON: " + temp + "\n-->\n\n") # tokenizer ref file
+    outFile3.write("<!-- \nJACK ANALYZED\nSOURCE CODE FROM: " + sourceFile + "\nON: " + temp + "\n-->\n\n") # VM code writer file
     
     # Process main Parser file
     processFile(sourceFile)
-    
     
     # Close tokenizer ref file
     outFile2.write("</tokens>\n") # Write footer
     outFile2.write("\n<!-- \nEND OF FILE\n-->\n\n")
     outFile2.close()
+    
+    # Close VM code writer file
+    vmwriterClose()
 
-    # Close main Parser File
+    # Close main parser File
     outFile.write("\n<!-- \nEND OF FILE\n-->\n\n")
     outFile.write("<!-- \nCLASS SCOPE SYMBOL TABLE: \n")
     outFile.write(str(classScopeSymbolTable))
@@ -123,7 +132,7 @@ def jackTokenizerConstructor(sourceFile, outFilename, outFilename2):
     print "-----------------------\nGenerating Class Scope Symbol Table:"
     print classScopeSymbolTable
     print "\n"
-    print "Closing files:\n" + outFilename + "\n"+ outFilename2 + "\n-----------------------\n"
+    print "Closing files:\n" + outFilename + "\n"+ outFilename2 + "\n" + outFilename3 + "\n-----------------------\n"
     
     return
 
@@ -193,7 +202,7 @@ def processFile(sourceFile):
     if not hasMoreTokens():
         currentPos = 0
         compilationEngineConstructor()
-    
+
     return
 
 def tokenizeFile(source_file):
@@ -1921,58 +1930,116 @@ def indexOf(name):
 
 ## VMWRITER MODULE ##
 
-def vmwriterConstructor():
+def vmwriterConstructor(outFilename3):
+    
+    global outFile3
+    
+    outFile3 = open(outFilename3, 'w') # Opens the VM code writer file
+    print "Writing the Destination VM Code Writer file (*.vm): " + outFilename3
 
     return
 
 
 def writePush(segment, index):
+    
+    global outFile3
+    
+    if (segment == "CONST"):
+        insertString = "constant"
+    elif (segment == "ARG"):
+        insertString = "argument"
+    else:
+        insertString = str(segment.lower())
+    
+    outFile3.write("\tpush " + insertString + " " + str(index) + "\n")
 
     return
 
 
 def writePop(segment, index):
     
+    global outFile3
+    
+    if (segment == "CONST"):
+        insertString = "constant"
+    elif (segment == "ARG"):
+        insertString = "argument"
+    else:
+        insertString = str(segment.lower())
+    
+    outFile3.write("\tpop " + insertString + " " + str(index) + "\n")
+    
     return
 
 
 def writeArithmetic(command):
+    
+    global outFile3
+    
+    outFile3.write("\t" + str(command.lower()) + "\n")
     
     return
 
 
 def writeLabel(label):
     
+    global outFile3
+    
+    outFile3.write("label " + str(label.lower()) + "\n")
+
     return
 
 
 def writeGoto(label):
+    
+    global outFile3
+    
+    outFile3.write("\tgoto " + str(label.lower()) + "\n")
     
     return
 
 
 def writeIf(label):
     
+    global outFile3
+    
+    outFile3.write("\tif-goto " + str(label.lower()) + "\n")
+    
     return
 
 
 def writeCall(name, nArgs):
     
+    global outFile3
+    
+    outFile3.write("\tcall " + str(name.lower()) + " " + str(nArgs) + "\n")
+
     return
 
 
 def writeFunction(name, nLocals):
+    
+    global outFile3
+    
+    outFile3.write("function " + str(name.lower()) + " " + str(nLocals) + "\n")
     
     return
 
 
 def writeReturn():
     
+    outFile3.write("\treturn\n")
+    
     return
 
 
 def vmwriterClose():
     
+    global outFile3
+
+    outFile3.write("\n<!-- \nEND OF FILE\n-->\n\n")
+    outFile3.close()
+
     return
 
 
