@@ -9,6 +9,7 @@
 currentPos = 0
 currentToken = ""
 currentTokenType = ""
+currentClass = ""
 
 outFile = "" # Main Parser File **.xml
 outFile2 = "" # Tokenizer Ref File **T.xml
@@ -39,7 +40,7 @@ def main():
     
     # Input options?
     #userInput = raw_input(">") # Prompt for user input...
-    userInput = "square" # Test without user input
+    userInput = "seven" # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
@@ -109,7 +110,7 @@ def jackTokenizerConstructor(sourceFile, outFilename, outFilename2, outFilename3
     # Write headers into outFile(s)
     outFile.write("<!-- \nJACK ANALYZED\nSOURCE CODE FROM: " + sourceFile + "\nON: " + temp + "\n-->\n\n")
     outFile2.write("<!-- \nJACK ANALYZED\nSOURCE CODE FROM: " + sourceFile + "\nON: " + temp + "\n-->\n\n") # tokenizer ref file
-    outFile3.write("<!-- \nJACK ANALYZED\nSOURCE CODE FROM: " + sourceFile + "\nON: " + temp + "\n-->\n\n") # VM code writer file
+    outFile3.write("// JACK ANALYZED\n// SOURCE CODE FROM: " + sourceFile + "\n// ON: " + temp + "\n\n") # VM code writer file
     
     # Process main Parser file
     processFile(sourceFile)
@@ -400,7 +401,7 @@ def compilationEngineConstructor():
 
 def compileClass():
     
-    global currentToken, currentTokenType
+    global currentToken, currentTokenType, currentClass
     
     print "compileClass()\n"
     
@@ -427,6 +428,8 @@ def compileClass():
             outFile.write(stringToExport)
             
             outFile.write(tabInsert() + "<!-- Identifier: class, def, no index -->\n") # Chap 11, Stage 1 Comment
+            
+            currentClass = currentToken
 
             performBasicCheck()
             
@@ -708,6 +711,8 @@ def compileSubroutine():
             outFile.write(stringToExport)
         
             outFile.write(tabInsert() + "<!-- Identifier: subroutine, def, no index -->\n") # Chap 11, Stage 1 Comment
+        
+            outFile3.write("function " + currentClass + "$" + currentToken + " \n")
   
         else:
             print "E15"
@@ -1373,6 +1378,8 @@ def compileReturn():
         stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
         outFile.write(stringToExport)
     
+        outFile3.write(currentToken + "\n")
+    
     performBasicCheck()
 
     while not currentToken == ";":
@@ -2037,7 +2044,7 @@ def vmwriterClose():
     
     global outFile3
 
-    outFile3.write("\n<!-- \nEND OF FILE\n-->\n\n")
+    outFile3.write("\n// END OF FILE\n")
     outFile3.close()
 
     return
