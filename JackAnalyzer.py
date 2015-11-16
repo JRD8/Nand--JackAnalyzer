@@ -668,6 +668,7 @@ def compileSubroutine():
     if ((currentTokenType == "KEYWORD") & ((currentToken == "function") | (currentToken == "method") | (currentToken == "constructor"))):
         stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
         outFile.write(stringToExport)
+        outFile3.write("function " + currentClass + ".")
         
         # Additional routine to add "this" as ARG 0 for a method subroutine call
         if (currentToken == "method"):
@@ -712,7 +713,7 @@ def compileSubroutine():
         
             outFile.write(tabInsert() + "<!-- Identifier: subroutine, def, no index -->\n") # Chap 11, Stage 1 Comment
         
-            outFile3.write("function " + currentClass + "$" + currentToken + " \n")
+            outFile3.write(currentToken + " \n")
   
         else:
             print "E15"
@@ -1060,6 +1061,7 @@ def compileDo():
     if ((currentTokenType == "KEYWORD") & (currentToken == "do")):
         stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
         outFile.write(stringToExport)
+        outFile3.write("call ")
     
         performBasicCheck()
     
@@ -1119,6 +1121,8 @@ def compileDo():
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
                 
+                outFile.write(currentToken + ".")
+                
                 # Found a method call
                 if (kindOf(currentToken) == "VAR"):
                     outFile.write(tabInsert() + "<!-- Identifier: var, used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
@@ -1132,6 +1136,8 @@ def compileDo():
                 elif (kindOf(currentToken) == "NONE"):
                     outFile.write(tabInsert() + "<!-- Identifier: class, used, no index -->\n") # Chap 11, Stage 1 Comment
                     #subroutine function call (do Sys.error(x); // function:  push x; call Sys.error 1)
+                    outFile3.write(currentToken)
+
                 
                 performBasicCheck()
                 
@@ -1139,12 +1145,14 @@ def compileDo():
                 if ((currentTokenType == "SYMBOL") & (currentToken == ".")):
                     stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                     outFile.write(stringToExport)
+                    outFile3.write(".")
                     
                     performBasicCheck()
                     
                     # Write a subroutineName
                     stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                     outFile.write(stringToExport)
+                    outFile3.write(currentToken + "\n")
                     
                     outFile.write(tabInsert() + "<!-- Identifier: subroutine, used, no index -->\n") # Chap 11, Stage 1 Comment
                     
