@@ -9,7 +9,7 @@
 currentPos = 0
 currentToken = ""
 currentTokenType = ""
-currentClass = ""
+classToCall = ""
 
 outFile = "" # Main Parser File **.xml
 outFile2 = "" # Tokenizer Ref File **T.xml
@@ -401,7 +401,7 @@ def compilationEngineConstructor():
 
 def compileClass():
     
-    global currentToken, currentTokenType, currentClass
+    global currentToken, currentTokenType, classToCall
     
     print "compileClass()\n"
     
@@ -429,7 +429,7 @@ def compileClass():
             
             outFile.write(tabInsert() + "<!-- Identifier: class, def, no index -->\n") # Chap 11, Stage 1 Comment
             
-            currentClass = currentToken
+            classToCall = currentToken
 
             performBasicCheck()
             
@@ -668,7 +668,7 @@ def compileSubroutine():
     if ((currentTokenType == "KEYWORD") & ((currentToken == "function") | (currentToken == "method") | (currentToken == "constructor"))):
         stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
         outFile.write(stringToExport)
-        outFile3.write("function " + currentClass + ".")
+        
         
         # Additional routine to add "this" as ARG 0 for a method subroutine call
         if (currentToken == "method"):
@@ -713,7 +713,7 @@ def compileSubroutine():
         
             outFile.write(tabInsert() + "<!-- Identifier: subroutine, def, no index -->\n") # Chap 11, Stage 1 Comment
         
-            outFile3.write(currentToken + " \n")
+            writeFunction(classToCall + "." + currentToken, varCount("VAR"))
   
         else:
             print "E15"
@@ -1049,6 +1049,8 @@ def compileStatements():
 
 def compileDo():
     
+    global classToCall
+    
     print "compileDo()\n"
     
     # Write compileDo header
@@ -1061,7 +1063,6 @@ def compileDo():
     if ((currentTokenType == "KEYWORD") & (currentToken == "do")):
         stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
         outFile.write(stringToExport)
-        outFile3.write("call ")
     
         performBasicCheck()
     
@@ -1121,8 +1122,6 @@ def compileDo():
                 stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                 outFile.write(stringToExport)
                 
-                outFile.write(currentToken + ".")
-                
                 # Found a method call
                 if (kindOf(currentToken) == "VAR"):
                     outFile.write(tabInsert() + "<!-- Identifier: var, used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
@@ -1136,7 +1135,8 @@ def compileDo():
                 elif (kindOf(currentToken) == "NONE"):
                     outFile.write(tabInsert() + "<!-- Identifier: class, used, no index -->\n") # Chap 11, Stage 1 Comment
                     #subroutine function call (do Sys.error(x); // function:  push x; call Sys.error 1)
-                    outFile3.write(currentToken)
+                    
+                    classToCall = currentToken
 
                 
                 performBasicCheck()
@@ -1145,14 +1145,14 @@ def compileDo():
                 if ((currentTokenType == "SYMBOL") & (currentToken == ".")):
                     stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                     outFile.write(stringToExport)
-                    outFile3.write(".")
                     
                     performBasicCheck()
                     
                     # Write a subroutineName
                     stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                     outFile.write(stringToExport)
-                    outFile3.write(currentToken + "\n")
+                    
+                    writeCall(classToCall + "." + currentToken, varCount("ARG"))
                     
                     outFile.write(tabInsert() + "<!-- Identifier: subroutine, used, no index -->\n") # Chap 11, Stage 1 Comment
                     
@@ -1386,7 +1386,7 @@ def compileReturn():
         stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
         outFile.write(stringToExport)
     
-        outFile3.write(currentToken + "\n")
+        writeReturn()
     
     performBasicCheck()
 
@@ -2027,7 +2027,7 @@ def writeCall(name, nArgs):
     
     global outFile3
     
-    outFile3.write("\tcall " + str(name.lower()) + " " + str(nArgs) + "\n")
+    outFile3.write("call " + name + " " + str(nArgs) + "\n")
 
     return
 
@@ -2036,14 +2036,14 @@ def writeFunction(name, nLocals):
     
     global outFile3
     
-    outFile3.write("function " + str(name.lower()) + " " + str(nLocals) + "\n")
+    outFile3.write("function " + name + " " + str(nLocals) + "\n")
     
     return
 
 
 def writeReturn():
     
-    outFile3.write("\treturn\n")
+    outFile3.write("return\n")
     
     return
 
