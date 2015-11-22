@@ -9,7 +9,9 @@
 currentPos = 0
 currentToken = ""
 currentTokenType = ""
+
 classToCall = ""
+typeForReturnValue = ""
 
 outFile = "" # Main Parser File **.xml
 outFile2 = "" # Tokenizer Ref File **T.xml
@@ -654,6 +656,8 @@ def compileClassVarDec():
 
 def compileSubroutine():
     
+    global typeForReturnValue
+    
     print "compileSubroutine()\n"
     
     # Write subroutineDec header
@@ -691,6 +695,11 @@ def compileSubroutine():
         
             currentType = currentToken
         
+            # If void function/method, flag this for future return value
+            if (currentToken == "void"):
+                typeForReturnValue = "void"
+                
+        
         # Write object return type
         elif ((currentTokenType == "IDENTIFIER")):
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
@@ -713,6 +722,7 @@ def compileSubroutine():
         
             outFile.write(tabInsert() + "<!-- Identifier: subroutine, def, no index -->\n") # Chap 11, Stage 1 Comment
         
+            # CodeGen
             writeFunction(classToCall + "." + currentToken, varCount("VAR"))
   
         else:
@@ -1134,9 +1144,12 @@ def compileDo():
                 # Found a function/constuctor call
                 elif (kindOf(currentToken) == "NONE"):
                     outFile.write(tabInsert() + "<!-- Identifier: class, used, no index -->\n") # Chap 11, Stage 1 Comment
+                    
                     #subroutine function call (do Sys.error(x); // function:  push x; call Sys.error 1)
                     
+                    # CodeGen
                     classToCall = currentToken
+                    numberOfCallArgs = 1
 
                 
                 performBasicCheck()
@@ -1152,9 +1165,10 @@ def compileDo():
                     stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
                     outFile.write(stringToExport)
                     
-                    writeCall(classToCall + "." + currentToken, varCount("ARG"))
-                    
                     outFile.write(tabInsert() + "<!-- Identifier: subroutine, used, no index -->\n") # Chap 11, Stage 1 Comment
+                    
+                    # CodeGen
+                    subroutineToCall = currentToken
                     
                     performBasicCheck()
             
@@ -1172,6 +1186,12 @@ def compileDo():
                         if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
                             stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                             outFile.write(stringToExport)
+                            
+                            # CodeGen
+                            writeCall(classToCall + "." + subroutineToCall, numberOfCallArgs)
+                            
+                            # CodeGen p. 235 to pop and ignore the returned value
+                            writePop("TEMP", 0)
                         
                             performBasicCheck()
                         
@@ -1547,11 +1567,30 @@ def compileExpression():
         else:
             stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
             outFile.write(stringToExport)
-                
+        
+            # Flag the arithmatic Op to use for later RPN
+            if (currentToken == "+"):
+                temp = "+"
+            elif (currentToken == "-"):
+                temp = "-"
+            elif (currentToken == "*"):
+                temp = "*"
+            elif (currentToken == "/"):
+                temp = "/"
+
         performBasicCheck()
 
         compileTerm()
 
+    # Output the Op for RPN notation
+    if (temp == "+"):
+        writeArithmetic("ADD")
+    elif (temp == "-"):
+        writeArithmetic("SUB")
+    elif (temp == "*"):
+        outFile3.write("call Math.multiply 2\n")
+    elif (temp == "/"):
+        outFile3.write("call Math.divide 2\n")
 
     decrementTab()
 
@@ -1578,6 +1617,8 @@ def compileTerm():
     if currentTokenType == "INT_CONST":
         stringToExport = tabInsert() + "<integerConstant> " + currentToken + " </integerConstant>\n"
         outFile.write(stringToExport)
+        
+        writePush("CONST", currentToken)
     
         performBasicCheck()
 
@@ -1966,7 +2007,7 @@ def writePush(segment, index):
     else:
         insertString = str(segment.lower())
     
-    outFile3.write("\tpush " + insertString + " " + str(index) + "\n")
+    outFile3.write("push " + insertString + " " + str(index) + "\n")
 
     return
 
@@ -1982,7 +2023,7 @@ def writePop(segment, index):
     else:
         insertString = str(segment.lower())
     
-    outFile3.write("\tpop " + insertString + " " + str(index) + "\n")
+    outFile3.write("pop " + insertString + " " + str(index) + "\n")
     
     return
 
@@ -1991,7 +2032,7 @@ def writeArithmetic(command):
     
     global outFile3
     
-    outFile3.write("\t" + str(command.lower()) + "\n")
+    outFile3.write(str(command.lower()) + "\n")
     
     return
 
@@ -2042,6 +2083,10 @@ def writeFunction(name, nLocals):
 
 
 def writeReturn():
+    
+    if (typeForReturnValue == "void"):
+        writePush("CONST", 0)
+    # elif, need to push a different return value
     
     outFile3.write("return\n")
     
