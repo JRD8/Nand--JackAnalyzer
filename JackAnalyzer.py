@@ -10,8 +10,10 @@ currentPos = 0
 currentToken = ""
 currentTokenType = ""
 
-classToCall = ""
+currentClass = ""
 typeForReturnValue = ""
+nArgsToCall = 0
+nParsForFunction = 0
 
 outFile = "" # Main Parser File **.xml
 outFile2 = "" # Tokenizer Ref File **T.xml
@@ -42,7 +44,7 @@ def main():
     
     # Input options?
     #userInput = raw_input(">") # Prompt for user input...
-    userInput = "seven" # Test without user input
+    userInput = "convertToBin" # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
@@ -403,7 +405,7 @@ def compilationEngineConstructor():
 
 def compileClass():
     
-    global currentToken, currentTokenType, classToCall
+    global currentToken, currentTokenType, currentClass
     
     print "compileClass()\n"
     
@@ -431,7 +433,7 @@ def compileClass():
             
             outFile.write(tabInsert() + "<!-- Identifier: class, def, no index -->\n") # Chap 11, Stage 1 Comment
             
-            classToCall = currentToken
+            currentClass = currentToken
 
             performBasicCheck()
             
@@ -658,6 +660,8 @@ def compileSubroutine():
     
     global typeForReturnValue
     
+    currentSubroutineName = ""
+    
     print "compileSubroutine()\n"
     
     # Write subroutineDec header
@@ -722,8 +726,7 @@ def compileSubroutine():
         
             outFile.write(tabInsert() + "<!-- Identifier: subroutine, def, no index -->\n") # Chap 11, Stage 1 Comment
         
-            # CodeGen
-            writeFunction(classToCall + "." + currentToken, varCount("VAR"))
+            currentSubroutineName = currentToken
   
         else:
             print "E15"
@@ -762,14 +765,23 @@ def compileSubroutine():
                     # Loop to find either a varDec or a Statement initial keyword
                     while (currentToken != "}"):
                         
-                        if ((currentTokenType == "KEYWORD") & (currentToken == "var")):
+                        while ((currentTokenType == "KEYWORD") & (currentToken == "var")):
                             compileVarDec()
-                        elif ((currentTokenType == "KEYWORD") & ((currentToken == "let") | (currentToken == "if") | (currentToken == "while") | (currentToken == "do") | (currentToken == "return"))):
+                        
+                        # CodeGen
+                        writeFunction(currentClass + "." + currentSubroutineName, varCount("VAR"))
+                        i = 0
+                        while (i < varCount("VAR")):
+                            writePush("CONST", 0)
+                            writePop("LOCAL", i)
+                            i = i + 1
+                        
+                        if ((currentTokenType == "KEYWORD") & ((currentToken == "let") | (currentToken == "if") | (currentToken == "while") | (currentToken == "do") | (currentToken == "return"))):
                             compileStatements()
                         else:
                             print "E16"
                             error()
-                    
+                
                     # Write }
                     if ((currentTokenType == "SYMBOL") & (currentToken == "}")):
                         stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
@@ -813,7 +825,11 @@ def compileSubroutine():
 
 def compileParameterList():
     
+    global nParsForFunction
+    
     print "compileParameterList()\n"
+    
+    nParsForFunction = 0
 
     # Write parameterList header
     stringToExport = tabInsert() + "<parameterList>\n"
@@ -863,6 +879,8 @@ def compileParameterList():
             define(currentToken, currentType, "ARG")
 
             outFile.write(tabInsert() + "<!-- Identifier: arg, def, " + str(indexOf(currentToken))+ " -->\n") # Chap 11, Stage 1 Comment
+
+            nParsForFunction = nParsForFunction + 1
 
         else:
             print "E23"
@@ -945,7 +963,7 @@ def compileVarDec():
             outFile.write(stringToExport)
         
             currentType = currentToken
-
+        
         # Write object type varDec
         elif ((currentTokenType == "IDENTIFIER")):
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
@@ -993,7 +1011,7 @@ def compileVarDec():
                 define(currentToken, currentType, "VAR")
             
                 outFile.write(tabInsert() + "<!-- Identifier: var, def, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
-        
+
             else:
                 print "E28"
                 error()
@@ -1149,9 +1167,7 @@ def compileDo():
                     
                     # CodeGen
                     classToCall = currentToken
-                    numberOfCallArgs = 1
 
-                
                 performBasicCheck()
                 
                 # Write a . symbol
@@ -1181,17 +1197,17 @@ def compileDo():
                     
                         # Write expressionList
                         compileExpressionList()
+                        
+                        # CodeGen
+                        writeCall(classToCall + "." + subroutineToCall, nArgsToCall)
+                            
+                        # CodeGen p. 235 to pop and ignore the returned value
+                        writePop("TEMP", 0)
                     
                         # Write ) symbol
                         if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
                             stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                             outFile.write(stringToExport)
-                            
-                            # CodeGen
-                            writeCall(classToCall + "." + subroutineToCall, numberOfCallArgs)
-                            
-                            # CodeGen p. 235 to pop and ignore the returned value
-                            writePop("TEMP", 0)
                         
                             performBasicCheck()
                         
@@ -1544,6 +1560,8 @@ def compileExpression():
     
     print "compileExpression()\n"
     
+    temp = ""
+    
     # Write compileExpression header
     stringToExport = tabInsert() + "<expression>\n"
     outFile.write(stringToExport)
@@ -1837,7 +1855,11 @@ def compileTerm():
 
 def compileExpressionList():
     
+    global nArgsToCall
+    
     print "compileExpressionList()\n"
+    
+    nArgsToCall = 0
     
     # Write expressionList header
     stringToExport = tabInsert() + "<expressionList>\n"
@@ -1848,6 +1870,8 @@ def compileExpressionList():
     if not ((currentTokenType == "SYMBOL") & (currentToken == ")")):
         
         compileExpression()
+        
+        nArgsToCall = nArgsToCall + 1
     
         # Loop to write multiple expressions
         while ((currentTokenType == "SYMBOL") & (currentToken == ",")):
@@ -1858,6 +1882,8 @@ def compileExpressionList():
             performBasicCheck()
             
             compileExpression()
+
+            nArgsToCall = nArgsToCall + 1
 
     decrementTab()
 
