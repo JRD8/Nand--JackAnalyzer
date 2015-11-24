@@ -1269,6 +1269,9 @@ def compileLet():
             outFile.write(stringToExport)
             
             outFile.write(tabInsert() + "<!-- Identifier: " + str(kindOf(currentToken)).lower() + ", used, " + str(indexOf(currentToken))+ " -->\n") # Chap 11, Stage 1 Comment
+            
+            # CodeGen
+            variableToAssign = currentToken
         
             performBasicCheck()
             
@@ -1299,6 +1302,12 @@ def compileLet():
             
                 # Compile expression
                 compileExpression()
+                
+                # CodeGen
+                if (kindOf(variableToAssign) == "VAR"):
+                    writePop("LOCAL", indexOf(variableToAssign))
+                elif (kindOf(variableToAssign) == "ARG"):
+                    writePop("ARG", indexOf(variableToAssign))
             
                 # Write ; end of statement
                 if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
@@ -1560,7 +1569,7 @@ def compileExpression():
     
     print "compileExpression()\n"
     
-    temp = ""
+    opToCall = ""
     
     # Write compileExpression header
     stringToExport = tabInsert() + "<expression>\n"
@@ -1588,26 +1597,26 @@ def compileExpression():
         
             # Flag the arithmatic Op to use for later RPN
             if (currentToken == "+"):
-                temp = "+"
+                opToCall = "+"
             elif (currentToken == "-"):
-                temp = "-"
+                opToCall = "-"
             elif (currentToken == "*"):
-                temp = "*"
+                opToCall = "*"
             elif (currentToken == "/"):
-                temp = "/"
+                opToCall = "/"
 
         performBasicCheck()
 
         compileTerm()
 
     # Output the Op for RPN notation
-    if (temp == "+"):
+    if (opToCall == "+"):
         writeArithmetic("ADD")
-    elif (temp == "-"):
+    elif (opToCall == "-"):
         writeArithmetic("SUB")
-    elif (temp == "*"):
+    elif (opToCall == "*"):
         outFile3.write("call Math.multiply 2\n")
-    elif (temp == "/"):
+    elif (opToCall == "/"):
         outFile3.write("call Math.divide 2\n")
 
     decrementTab()
@@ -1651,6 +1660,13 @@ def compileTerm():
     elif ((currentTokenType == "KEYWORD") & ((currentToken == "true") | (currentToken == "false") | (currentToken == "null") | (currentToken == "this"))):
         stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
         outFile.write(stringToExport)
+        
+        # CodeGen
+        if (currentToken == "true"):
+            writePush("CONST", 1)
+            writeArithmetic("NEG")
+        if (currentToken == "false"):
+            writePush("CONST", 0)
 
         performBasicCheck()
 
@@ -1658,10 +1674,20 @@ def compileTerm():
     elif ((currentTokenType == "SYMBOL") & ((currentToken == "-") | (currentToken == "~"))):
         stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
         outFile.write(stringToExport)
+        
+        # CodeGen
+        opToCall = currentToken
 
         performBasicCheck()
 
         compileTerm()
+    
+        # CodeGen
+        if (opToCall == "-"):
+            writeArithmetic("NEG")
+        if (opToCall == "~"):
+            writeArithmetic("NOT")
+
 
     # Found an (expression)...
     elif ((currentTokenType == "SYMBOL") & (currentToken == "(")):
@@ -1745,7 +1771,7 @@ def compileTerm():
                 
                 # Write expressionList
                 compileExpressionList()
-
+                
                 # Writing ) symbol
                 if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
                     stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
@@ -1766,6 +1792,9 @@ def compileTerm():
             # Writing a class/var name
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
+            
+            # CodeGen
+            classToCall = currentToken
             
             # Found a method call
             if (kindOf(currentToken) == "VAR"):
@@ -1798,6 +1827,9 @@ def compileTerm():
                 
                 outFile.write(tabInsert() + "<!-- Identifier: subroutine, used, no index -->\n") # Chap 11, Stage 1 Comment
                 
+                # CodeGen
+                subroutineToCall = currentToken
+                
                 performBasicCheck()
             
                 # Writing ( symbol
@@ -1809,7 +1841,10 @@ def compileTerm():
                 
                     # Write expressionList
                     compileExpressionList()
-                
+                    
+                    # CodeGen
+                    writeCall(classToCall + "." + subroutineToCall, nArgsToCall)
+
                     # Writing ) symbol
                     if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
                         stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
@@ -1834,6 +1869,12 @@ def compileTerm():
             outFile.write(stringToExport)
             
             outFile.write(tabInsert() + "<!-- Identifier: " + str(kindOf(currentToken)).lower() + ", used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
+            
+            # CodeGen
+            if (kindOf(currentToken) == "VAR"):
+                writePush("LOCAL", indexOf(currentToken))
+            elif (kindOf(currentToken) == "ARG"):
+                writePush("ARG", indexOf(currentToken))
         
             performBasicCheck()
 
