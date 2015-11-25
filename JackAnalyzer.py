@@ -11,6 +11,7 @@ currentToken = ""
 currentTokenType = ""
 
 currentClass = ""
+currentSubroutineName = ""
 typeForReturnValue = ""
 nArgsToCall = 0
 nParsForFunction = 0
@@ -658,7 +659,7 @@ def compileClassVarDec():
 
 def compileSubroutine():
     
-    global typeForReturnValue
+    global typeForReturnValue, currentSubroutineName
     
     currentSubroutineName = ""
     
@@ -1485,6 +1486,11 @@ def compileIf():
             # Write expression
             compileExpression()
             
+            # CodeGen
+            writeArithmetic("NOT")
+            writeIf(currentSubroutineName + "$L1")
+            
+            
             # Write ) symbol
             if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
                 stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
@@ -1507,6 +1513,9 @@ def compileIf():
                         stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                         outFile.write(stringToExport)
                         
+                        # CodeGen
+                        writeGoto(currentSubroutineName + "$L2")
+                        
                         performBasicCheck()
                     
                         # Check if there's an additional else statement...
@@ -1515,6 +1524,9 @@ def compileIf():
                             outFile.write(stringToExport)
                         
                             performBasicCheck()
+                            
+                            # CodeGen
+                            writeLabel(currentSubroutineName + "$L1")
                         
                             # Write { symbol
                             if ((currentTokenType == "SYMBOL") & (currentToken == "{")):
@@ -1532,7 +1544,10 @@ def compileIf():
                                     outFile.write(stringToExport)
                         
                                     performBasicCheck()
-                                        
+                                
+                                    # CodeGen
+                                    writeLabel(currentSubroutineName + "$L2")
+                                
                                 else:
                                     print "E51"
                                     error()
@@ -1604,6 +1619,8 @@ def compileExpression():
                 opToCall = "*"
             elif (currentToken == "/"):
                 opToCall = "/"
+            elif (currentToken == "="):
+                opToCall = "="
 
         performBasicCheck()
 
@@ -1618,6 +1635,8 @@ def compileExpression():
         outFile3.write("call Math.multiply 2\n")
     elif (opToCall == "/"):
         outFile3.write("call Math.divide 2\n")
+    elif (opToCall == "="):
+        writeArithmetic("EQ")
 
     decrementTab()
 
@@ -2117,7 +2136,7 @@ def writeGoto(label):
     
     global outFile3
     
-    outFile3.write("\tgoto " + str(label.lower()) + "\n")
+    outFile3.write("goto " + str(label.lower()) + "\n")
     
     return
 
@@ -2126,7 +2145,7 @@ def writeIf(label):
     
     global outFile3
     
-    outFile3.write("\tif-goto " + str(label.lower()) + "\n")
+    outFile3.write("if-goto " + str(label.lower()) + "\n")
     
     return
 
