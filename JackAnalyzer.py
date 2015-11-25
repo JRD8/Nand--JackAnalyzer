@@ -12,7 +12,7 @@ currentTokenType = ""
 
 currentClass = ""
 currentSubroutineName = ""
-typeForReturnValue = ""
+currentLabelIndex = 0
 nArgsToCall = 0
 nParsForFunction = 0
 
@@ -659,9 +659,11 @@ def compileClassVarDec():
 
 def compileSubroutine():
     
-    global typeForReturnValue, currentSubroutineName
+    global currentSubroutineName, currentLabelIndex
     
+    # CodeGen
     currentSubroutineName = ""
+    currentLabelIndex = 1
     
     print "compileSubroutine()\n"
     
@@ -699,10 +701,6 @@ def compileSubroutine():
             outFile.write(stringToExport)
         
             currentType = currentToken
-        
-            # If void function/method, flag this for future return value
-            if (currentToken == "void"):
-                typeForReturnValue = "void"
                 
         
         # Write object return type
@@ -1432,12 +1430,18 @@ def compileReturn():
         stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
         outFile.write(stringToExport)
     
-        writeReturn()
-    
-    performBasicCheck()
+        performBasicCheck()
 
-    while not currentToken == ";":
-        compileExpression()
+        voidReturn = True
+
+        while not currentToken == ";":
+            compileExpression()
+            voidReturn = False
+
+        if voidReturn:
+            writePush("CONST", 0)
+        
+        writeReturn()
 
     # Write ; end of statement
     if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
@@ -1460,6 +1464,8 @@ def compileReturn():
 
 
 def compileIf():
+    
+    global currentLabelIndex
 
     print "compileIf()\n"
     
@@ -1488,7 +1494,8 @@ def compileIf():
             
             # CodeGen
             writeArithmetic("NOT")
-            writeIf(currentSubroutineName + "$L1")
+            writeIf(currentSubroutineName + "$L" + str(currentLabelIndex))
+            currentLabelIndex = currentLabelIndex + 1 # Increment the currentLabelIndex for next label
             
             
             # Write ) symbol
@@ -1514,7 +1521,8 @@ def compileIf():
                         outFile.write(stringToExport)
                         
                         # CodeGen
-                        writeGoto(currentSubroutineName + "$L2")
+                        writeGoto(currentSubroutineName + "$L" + str(currentLabelIndex))
+                        currentLabelIndex = currentLabelIndex + 1 # Increment the currentLabelIndex for next label
                         
                         performBasicCheck()
                     
@@ -1526,8 +1534,8 @@ def compileIf():
                             performBasicCheck()
                             
                             # CodeGen
-                            writeLabel(currentSubroutineName + "$L1")
-                        
+                            writeLabel(currentSubroutineName + "$L" + str(currentLabelIndex - 2)) # Calculating back to get correct label index
+
                             # Write { symbol
                             if ((currentTokenType == "SYMBOL") & (currentToken == "{")):
                                 stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
@@ -1546,7 +1554,7 @@ def compileIf():
                                     performBasicCheck()
                                 
                                     # CodeGen
-                                    writeLabel(currentSubroutineName + "$L2")
+                                    writeLabel(currentSubroutineName + "$L" + str(currentLabelIndex - 1)) # Calculating back to get correct label index
                                 
                                 else:
                                     print "E51"
@@ -2169,10 +2177,6 @@ def writeFunction(name, nLocals):
 
 
 def writeReturn():
-    
-    if (typeForReturnValue == "void"):
-        writePush("CONST", 0)
-    # elif, need to push a different return value
     
     outFile3.write("return\n")
     
