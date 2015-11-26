@@ -1343,6 +1343,11 @@ def compileWhile():
     global currentLabelIndex
 
     print "compileWhile()\n"
+    
+    # Process function label indexes
+    L1 = currentLabelIndex
+    L2 = currentLabelIndex + 1
+    currentLabelIndex = currentLabelIndex + 2
 
     # Write compileWhile header
     stringToExport = tabInsert() + "<whileStatement>\n"
@@ -1358,8 +1363,7 @@ def compileWhile():
         performBasicCheck()
         
         # CodeGen
-        writeLabel(currentSubroutineName + "$L" + str(currentLabelIndex))
-        currentLabelIndex = currentLabelIndex + 1 # Increment the currentLabelIndex for next label
+        writeLabel(currentSubroutineName + "$L" + str(L1))
     
         # Write ( symbol
         if ((currentTokenType == "SYMBOL") & (currentToken == "(")):
@@ -1373,7 +1377,7 @@ def compileWhile():
             
             # CodeGen
             writeArithmetic("NOT")
-            writeIf(currentSubroutineName + "$L" + str(currentLabelIndex))
+            writeIf(currentSubroutineName + "$L" + str(L2))
         
             # Write ) symbol
             if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
@@ -1393,7 +1397,7 @@ def compileWhile():
                     compileStatements()
                     
                     # CodeGen
-                    writeGoto(currentSubroutineName + "$L" + str(currentLabelIndex - 1))
+                    writeGoto(currentSubroutineName + "$L" + str(L1))
                 
                     # Write } symbol
                     if ((currentTokenType == "SYMBOL") & (currentToken == "}")):
@@ -1401,8 +1405,7 @@ def compileWhile():
                         outFile.write(stringToExport)
                         
                         # CodeGen
-                        writeLabel(currentSubroutineName + "$L" + str(currentLabelIndex))
-                        currentLabelIndex = currentLabelIndex + 1 # Increment the currentLabelIndex for next label
+                        writeLabel(currentSubroutineName + "$L" + str(L2))
                     
                         performBasicCheck()
 
@@ -1486,6 +1489,11 @@ def compileIf():
 
     print "compileIf()\n"
     
+    # Process function label indexes
+    L1 = currentLabelIndex
+    L2 = currentLabelIndex + 1
+    currentLabelIndex = currentLabelIndex + 2
+    
     # Write compileIf header
     stringToExport = tabInsert() + "<ifStatement>\n"
     outFile.write(stringToExport)
@@ -1511,7 +1519,7 @@ def compileIf():
             
             # CodeGen
             writeArithmetic("NOT")
-            writeIf(currentSubroutineName + "$L" + str(currentLabelIndex))
+            writeIf(currentSubroutineName + "$L" + str(L1))
             
             
             # Write ) symbol
@@ -1537,7 +1545,7 @@ def compileIf():
                         outFile.write(stringToExport)
                         
                         # CodeGen
-                        writeGoto(currentSubroutineName + "$L" + str(currentLabelIndex + 1))
+                        writeGoto(currentSubroutineName + "$L" + str(L2))
                         
                         performBasicCheck()
                     
@@ -1549,8 +1557,7 @@ def compileIf():
                             performBasicCheck()
                             
                             # CodeGen
-                            writeLabel(currentSubroutineName + "$L" + str(currentLabelIndex)) # Calculating back to get correct label index
-                            currentLabelIndex = currentLabelIndex + 1 # Increment the currentLabelIndex for next label
+                            writeLabel(currentSubroutineName + "$L" + str(L1))
 
                             # Write { symbol
                             if ((currentTokenType == "SYMBOL") & (currentToken == "{")):
@@ -1570,8 +1577,7 @@ def compileIf():
                                     performBasicCheck()
                                 
                                     # CodeGen
-                                    writeLabel(currentSubroutineName + "$L" + str(currentLabelIndex))
-                                    currentLabelIndex = currentLabelIndex + 1
+                                    writeLabel(currentSubroutineName + "$L" + str(L2))
                                 
                                 else:
                                     print "E51"
@@ -1634,26 +1640,26 @@ def compileExpression():
         else:
             stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
             outFile.write(stringToExport)
-        
-            # Flag the arithmatic Op to use for later RPN
-            if (currentToken == "+"):
-                opToCall = "+"
-            elif (currentToken == "-"):
-                opToCall = "-"
-            elif (currentToken == "*"):
-                opToCall = "*"
-            elif (currentToken == "/"):
-                opToCall = "/"
-            elif (currentToken == "="):
-                opToCall = "="
-            elif (currentToken == ">"):
-                opToCall = ">"
-            elif (currentToken == "<"):
-                opToCall = "<"
-            elif (currentToken == "&"):
-                opToCall = "&"
-            elif (currentToken == "|"):
-                opToCall = "|"
+            
+        # Flag the arithmatic Op to use for later RPN
+        if (currentToken == "+"):
+            opToCall = "+"
+        elif (currentToken == "-"):
+            opToCall = "-"
+        elif (currentToken == "*"):
+            opToCall = "*"
+        elif (currentToken == "/"):
+            opToCall = "/"
+        elif (currentToken == "="):
+            opToCall = "="
+        elif (currentToken == ">"):
+            opToCall = ">"
+        elif (currentToken == "<"):
+            opToCall = "<"
+        elif (currentToken == "&"):
+            opToCall = "&"
+        elif (currentToken == "|"):
+            opToCall = "|"
 
         performBasicCheck()
 
