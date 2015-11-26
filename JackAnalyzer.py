@@ -1199,9 +1199,7 @@ def compileDo():
                         
                         # CodeGen
                         writeCall(classToCall + "." + subroutineToCall, nArgsToCall)
-                            
-                        # CodeGen p. 235 to pop and ignore the returned value
-                        writePop("TEMP", 0)
+                        writePop("TEMP", 0) # Need to pop and ignore stack for a void/function subroutine
                     
                         # Write ) symbol
                         if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
@@ -1877,7 +1875,6 @@ def compileTerm():
                 outFile.write(tabInsert() + "<!-- Identifier: class, used, no index -->\n") # Chap 11, Stage 1 Comment
                 #subroutine function call (do Sys.error(x); // function:  push x; call Sys.error 1)
 
-
             performBasicCheck()
             
             # Write a . symbol
@@ -1910,6 +1907,7 @@ def compileTerm():
                     
                     # CodeGen
                     writeCall(classToCall + "." + subroutineToCall, nArgsToCall)
+                    writePop("TEMP", 0) # Need to pop and ignore stack for a void/function subroutine
 
                     # Writing ) symbol
                     if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
