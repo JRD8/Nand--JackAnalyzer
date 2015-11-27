@@ -45,7 +45,7 @@ def main():
     
     # Input options?
     #userInput = raw_input(">") # Prompt for user input...
-    userInput = "convertToBin" # Test without user input
+    userInput = "converttobin" # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
@@ -769,11 +769,6 @@ def compileSubroutine():
                         
                         # CodeGen
                         writeFunction(currentClass + "." + currentSubroutineName, varCount("VAR"))
-                        i = 0
-                        while (i < varCount("VAR")):
-                            writePush("CONST", 0)
-                            writePop("LOCAL", i)
-                            i = i + 1
                         
                         if ((currentTokenType == "KEYWORD") & ((currentToken == "let") | (currentToken == "if") | (currentToken == "while") | (currentToken == "do") | (currentToken == "return"))):
                             compileStatements()
@@ -1490,7 +1485,8 @@ def compileIf():
     # Process function label indexes
     L1 = currentLabelIndex
     L2 = currentLabelIndex + 1
-    currentLabelIndex = currentLabelIndex + 2
+    L3 = currentLabelIndex + 2
+    currentLabelIndex = currentLabelIndex + 3
     
     # Write compileIf header
     stringToExport = tabInsert() + "<ifStatement>\n"
@@ -1516,8 +1512,9 @@ def compileIf():
             compileExpression()
             
             # CodeGen
-            writeArithmetic("NOT")
+            # writeArithmetic("NOT")
             writeIf(currentSubroutineName + "$L" + str(L1))
+            writeGoto(currentSubroutineName + "$L" + str(L2))
             
             
             # Write ) symbol
@@ -1534,6 +1531,9 @@ def compileIf():
                     
                     performBasicCheck()
                     
+                    # CodeGen
+                    writeLabel(currentSubroutineName + "$L" + str(L1))
+                    
                     # Write statement(s)
                     compileStatements()
                     
@@ -1543,7 +1543,7 @@ def compileIf():
                         outFile.write(stringToExport)
                         
                         # CodeGen
-                        writeGoto(currentSubroutineName + "$L" + str(L2))
+                        writeGoto(currentSubroutineName + "$L" + str(L3))
                         
                         performBasicCheck()
                     
@@ -1553,9 +1553,6 @@ def compileIf():
                             outFile.write(stringToExport)
                         
                             performBasicCheck()
-                            
-                            # CodeGen
-                            writeLabel(currentSubroutineName + "$L" + str(L1))
 
                             # Write { symbol
                             if ((currentTokenType == "SYMBOL") & (currentToken == "{")):
@@ -1563,6 +1560,9 @@ def compileIf():
                                 outFile.write(stringToExport)
         
                                 performBasicCheck()
+                                
+                                # CodeGen
+                                writeLabel(currentSubroutineName + "$L" + str(L2))
                 
                                 # Write statement(s)
                                 compileStatements()
@@ -1575,7 +1575,7 @@ def compileIf():
                                     performBasicCheck()
                                 
                                     # CodeGen
-                                    writeLabel(currentSubroutineName + "$L" + str(L2))
+                                    writeLabel(currentSubroutineName + "$L" + str(L3))
                                 
                                 else:
                                     print "E51"
@@ -1727,8 +1727,8 @@ def compileTerm():
         
         # CodeGen
         if (currentToken == "true"):
-            writePush("CONST", 1)
-            writeArithmetic("NEG")
+            writePush("CONST", 0)
+            writeArithmetic("NOT")
         if (currentToken == "false"):
             writePush("CONST", 0)
 
