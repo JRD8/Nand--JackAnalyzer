@@ -1907,7 +1907,6 @@ def compileTerm():
                     
                     # CodeGen
                     writeCall(classToCall + "." + subroutineToCall, nArgsToCall)
-                    writePop("TEMP", 0) # Need to pop and ignore stack for a void/function subroutine
 
                     # Writing ) symbol
                     if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
