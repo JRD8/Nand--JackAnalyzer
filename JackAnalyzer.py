@@ -1312,12 +1312,9 @@ def compileLet():
                     writePop("ARG", indexOf(variableToAssign))
                         
                 elif (kindOf(variableToAssign) == "FIELD"):
-                    writePush("CONST", indexOf(variableToAssign))
-                    writePush("POINTER", 0)
-                    writeArithmetic("add")
-                    writePush("TEMP", 0)
-                    writePop("TEMP", 0)
-            
+                    writePush("THIS", indexOf(variableToAssign))
+    
+    
                 # Write ; end of statement
                 if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
                     stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
@@ -1965,11 +1962,7 @@ def compileTerm():
             elif (kindOf(currentToken) == "ARG"):
                 writePush("ARG", indexOf(currentToken))
             elif (kindOf(currentToken) == "FIELD"):
-                writePush("CONST", indexOf(currentToken))
-                writePush("POINTER", 0)
-                writeArithmetic("add")
-                writePush("TEMP", 0)
-                writePop("TEMP", 0)
+                writePush("THIS", indexOf(currentToken))
         
             performBasicCheck()
 
@@ -2169,10 +2162,7 @@ def writePush(segment, index):
     else:
         insertString = str(segment.lower())
 
-    if ((segment == "THIS") | (segment == "THAT")):
-        outFile3.write("push " + insertString + "\n") # For this or that, no need for an index
-    else:
-        outFile3.write("push " + insertString + " " + str(index) + "\n") # For all else, include an index
+    outFile3.write("push " + insertString + " " + str(index) + "\n")
 
     return
 
