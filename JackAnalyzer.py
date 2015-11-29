@@ -45,7 +45,7 @@ def main():
     
     # Input options?
     #userInput = raw_input(">") # Prompt for user input...
-    userInput = "converttobin" # Test without user input
+    userInput = "square" # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
@@ -680,9 +680,10 @@ def compileSubroutine():
         stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
         outFile.write(stringToExport)
         
+        subroutineType = currentToken
         
         # Additional routine to add "this" as ARG 0 for a method subroutine call
-        if (currentToken == "method"):
+        if (subroutineType == "method"):
             
             i = 0
             while (i < len(tokenizedSource)):
@@ -1071,7 +1072,7 @@ def compileStatements():
 
 def compileDo():
     
-    global classToCall
+    global currentClass
     
     print "compileDo()\n"
     
@@ -1100,6 +1101,8 @@ def compileDo():
                 outFile.write(stringToExport)
                 
                 outFile.write(tabInsert() + "<!-- Identifier: subroutine, used, no index -->\n") # Chap 11, Stage 1 Comment
+                
+                currentSubroutineName = currentToken
             
                 performBasicCheck()
                
@@ -1109,9 +1112,15 @@ def compileDo():
                     outFile.write(stringToExport)
                 
                     performBasicCheck()
+                    
+                    # CodeGen
+                    writePush("THIS", 0)
                 
                     # Write expressionList
                     compileExpressionList()
+                    
+                    # CodeGen
+                    writeCall(currentClass + "." + currentSubroutineName, nArgsToCall + 1)
                 
                     # Write ) symbol
                     if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
@@ -1160,7 +1169,7 @@ def compileDo():
                     #subroutine function call (do Sys.error(x); // function:  push x; call Sys.error 1)
                     
                     # CodeGen
-                    classToCall = currentToken
+                    currentClass = currentToken
 
                 performBasicCheck()
                 
@@ -1193,7 +1202,7 @@ def compileDo():
                         compileExpressionList()
                         
                         # CodeGen
-                        writeCall(classToCall + "." + subroutineToCall, nArgsToCall)
+                        writeCall(currentClass + "." + subroutineToCall, nArgsToCall)
                         writePop("TEMP", 0) # Need to pop and ignore stack for a void/function subroutine
                     
                         # Write ) symbol
@@ -1298,8 +1307,16 @@ def compileLet():
                 # CodeGen
                 if (kindOf(variableToAssign) == "VAR"):
                     writePop("LOCAL", indexOf(variableToAssign))
+                
                 elif (kindOf(variableToAssign) == "ARG"):
                     writePop("ARG", indexOf(variableToAssign))
+                        
+                elif (kindOf(variableToAssign) == "FIELD"):
+                    writePush("CONST", indexOf(variableToAssign))
+                    writePush("POINTER", 0)
+                    writeArithmetic("add")
+                    writePush("TEMP", 0)
+                    writePop("TEMP", 0)
             
                 # Write ; end of statement
                 if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
@@ -1731,6 +1748,8 @@ def compileTerm():
             writeArithmetic("NOT")
         if (currentToken == "false"):
             writePush("CONST", 0)
+        if (currentToken == "this"):
+            writePush("THIS", 0)
 
         performBasicCheck()
 
@@ -1907,6 +1926,13 @@ def compileTerm():
                     
                     # CodeGen
                     writeCall(classToCall + "." + subroutineToCall, nArgsToCall)
+                    
+                    if (subroutineToCall == "new"): # A Constructor Call
+                        writePush("CONST", varCount("FIELD"))
+                        writeCall("Memory.alloc", 1)
+                        writePop("POINTER", 0)
+                        writePush("POINTER", 0)
+                        writeReturn()
 
                     # Writing ) symbol
                     if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
@@ -1938,6 +1964,12 @@ def compileTerm():
                 writePush("LOCAL", indexOf(currentToken))
             elif (kindOf(currentToken) == "ARG"):
                 writePush("ARG", indexOf(currentToken))
+            elif (kindOf(currentToken) == "FIELD"):
+                writePush("CONST", indexOf(currentToken))
+                writePush("POINTER", 0)
+                writeArithmetic("add")
+                writePush("TEMP", 0)
+                writePop("TEMP", 0)
         
             performBasicCheck()
 
@@ -2136,8 +2168,11 @@ def writePush(segment, index):
         insertString = "argument"
     else:
         insertString = str(segment.lower())
-    
-    outFile3.write("push " + insertString + " " + str(index) + "\n")
+
+    if ((segment == "THIS") | (segment == "THAT")):
+        outFile3.write("push " + insertString + "\n") # For this or that, no need for an index
+    else:
+        outFile3.write("push " + insertString + " " + str(index) + "\n") # For all else, include an index
 
     return
 
