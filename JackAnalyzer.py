@@ -770,6 +770,13 @@ def compileSubroutine():
                         
                         # CodeGen
                         writeFunction(currentClass + "." + currentSubroutineName, varCount("VAR"))
+                        if (currentSubroutineName == "new"): # Additional code for a Constructor
+                            writePush("CONST", varCount("FIELD"))
+                            writeCall("Memory.alloc", 1)
+                            writePop("POINTER", 0)
+                        if (subroutineType == "method"): # Additional code for a method subroutine to push THIS value and restore it to POINTER 0
+                            writePush("ARG", 0)
+                            writePop("POINTER", 0)
                         
                         if ((currentTokenType == "KEYWORD") & ((currentToken == "let") | (currentToken == "if") | (currentToken == "while") | (currentToken == "do") | (currentToken == "return"))):
                             compileStatements()
@@ -1114,7 +1121,7 @@ def compileDo():
                     performBasicCheck()
                     
                     # CodeGen
-                    writePush("THIS", 0)
+                    writePush("POINTER", 0)
                 
                     # Write expressionList
                     compileExpressionList()
@@ -1158,9 +1165,17 @@ def compileDo():
                     outFile.write(tabInsert() + "<!-- Identifier: var, used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
                     #subroutine method call (do foo.bar(x); // method:  push foo; push x; call Foo.bar 2)
                     
+                    # CodeGen
+                    writePush("LOCAL", indexOf(currentToken))
+                    currentClass = typeOf(currentToken)
+                    isMethod = True
+                                          
                 elif (kindOf(currentToken) == "FIELD"):
                     outFile.write(tabInsert() + "<!-- Identifier: field, used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
                     #subroutine method call (do foo.bar(x); // method:  push foo; push x; call Foo.bar 2)
+                    
+                    # CodeGen
+                    isMethod = True
                
                 # Found a function/constuctor call
                 elif (kindOf(currentToken) == "NONE"):
@@ -1170,6 +1185,7 @@ def compileDo():
                     
                     # CodeGen
                     currentClass = currentToken
+                    isMethod = False
 
                 performBasicCheck()
                 
@@ -1202,8 +1218,12 @@ def compileDo():
                         compileExpressionList()
                         
                         # CodeGen
-                        writeCall(currentClass + "." + subroutineToCall, nArgsToCall)
-                        writePop("TEMP", 0) # Need to pop and ignore stack for a void/function subroutine
+                        if (isMethod):
+                            writeCall(currentClass + "." + subroutineToCall, nArgsToCall + 1) # Methods operate on K + 1 arguments
+                        
+                        elif (~isMethod):
+                            writeCall(currentClass + "." + subroutineToCall, nArgsToCall) # Functions/Constructors operate on K arguments
+                            writePop("TEMP", 0) # Need to pop and ignore stack for a void/function subroutine
                     
                         # Write ) symbol
                         if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
@@ -1312,8 +1332,7 @@ def compileLet():
                     writePop("ARG", indexOf(variableToAssign))
                         
                 elif (kindOf(variableToAssign) == "FIELD"):
-                    writePush("THIS", indexOf(variableToAssign))
-    
+                    writePop("THIS", indexOf(variableToAssign))
     
                 # Write ; end of statement
                 if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
@@ -1746,7 +1765,7 @@ def compileTerm():
         if (currentToken == "false"):
             writePush("CONST", 0)
         if (currentToken == "this"):
-            writePush("THIS", 0)
+            writePush("POINTER", 0)
 
         performBasicCheck()
 
@@ -1923,13 +1942,6 @@ def compileTerm():
                     
                     # CodeGen
                     writeCall(classToCall + "." + subroutineToCall, nArgsToCall)
-                    
-                    if (subroutineToCall == "new"): # A Constructor Call
-                        writePush("CONST", varCount("FIELD"))
-                        writeCall("Memory.alloc", 1)
-                        writePop("POINTER", 0)
-                        writePush("POINTER", 0)
-                        writeReturn()
 
                     # Writing ) symbol
                     if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
