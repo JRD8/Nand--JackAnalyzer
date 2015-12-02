@@ -46,7 +46,7 @@ def main():
     
     # Input options?
     #userInput = raw_input(">") # Prompt for user input...
-    userInput = "square" # Test without user input
+    userInput = "average" # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
@@ -1829,6 +1829,9 @@ def compileTerm():
             outFile.write(stringToExport)
             
             outFile.write(tabInsert() + "<!-- Identifier: " + str(kindOf(currentToken)).lower() + ", used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
+            
+            # CodeGen
+            writePush("LOCAL", indexOf(currentToken))
         
             performBasicCheck()
         
@@ -1851,6 +1854,11 @@ def compileTerm():
                     # Writing ] symbol
                     stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                     outFile.write(stringToExport)
+                    
+                    # CodeGen
+                    writeArithmetic("ADD")
+                    writePop("POINTER", 1)
+                    writePush("THAT", 0)
                 
                     performBasicCheck()
 
