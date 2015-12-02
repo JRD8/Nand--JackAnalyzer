@@ -11,6 +11,7 @@ currentToken = ""
 currentTokenType = ""
 
 currentClass = ""
+classToCall = ""
 currentSubroutineName = ""
 currentLabelIndex = 0
 nArgsToCall = 0
@@ -245,7 +246,8 @@ def tokenizeFile(source_file):
                 fourthPass.append(e)
         else:
             fourthPass.append(e)
-    # Routine to remove // comments inline after statement
+    print fourthPass
+    # Routine to remove // comments inline after statement TODO PROBLEM HERE!!!!
     temp = []
     for e in fourthPass:
         if ((e.find("\r") != -1) & (e.find("//") == -1)):
@@ -257,6 +259,8 @@ def tokenizeFile(source_file):
             else:
                 temp.append(e)
     fourthPass = temp
+    print fourthPass
+
 
     # Fifth Pass: Remove \r and \t\r elements
     fifthPass = []
@@ -1079,7 +1083,7 @@ def compileStatements():
 
 def compileDo():
     
-    global currentClass
+    isVoid = True # This needs to be checked!!!!
     
     print "compileDo()\n"
     
@@ -1109,7 +1113,9 @@ def compileDo():
                 
                 outFile.write(tabInsert() + "<!-- Identifier: subroutine, used, no index -->\n") # Chap 11, Stage 1 Comment
                 
+                # CodeGen
                 currentSubroutineName = currentToken
+                classToCall = currentClass
             
                 performBasicCheck()
                
@@ -1127,8 +1133,10 @@ def compileDo():
                     compileExpressionList()
                     
                     # CodeGen
-                    writeCall(currentClass + "." + currentSubroutineName, nArgsToCall + 1)
-                
+                    writeCall(classToCall + "." + currentSubroutineName, nArgsToCall + 1)
+                    if (isVoid): # Need to pop and ignore stack for a void method subroutine
+                        writePop("TEMP", 0)
+        
                     # Write ) symbol
                     if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
                         stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
@@ -1167,7 +1175,7 @@ def compileDo():
                     
                     # CodeGen
                     writePush("LOCAL", indexOf(currentToken))
-                    currentClass = typeOf(currentToken)
+                    classToCall = typeOf(currentToken)
                     isMethod = True
                                           
                 elif (kindOf(currentToken) == "FIELD"):
@@ -1175,16 +1183,16 @@ def compileDo():
                     #subroutine method call (do foo.bar(x); // method:  push foo; push x; call Foo.bar 2)
                     
                     # CodeGen
+                    classToCall = typeOf(currentToken)
                     isMethod = True
                
                 # Found a function/constuctor call
                 elif (kindOf(currentToken) == "NONE"):
                     outFile.write(tabInsert() + "<!-- Identifier: class, used, no index -->\n") # Chap 11, Stage 1 Comment
-                    
                     #subroutine function call (do Sys.error(x); // function:  push x; call Sys.error 1)
                     
                     # CodeGen
-                    currentClass = currentToken
+                    classToCall = currentToken
                     isMethod = False
 
                 performBasicCheck()
@@ -1219,11 +1227,13 @@ def compileDo():
                         
                         # CodeGen
                         if (isMethod):
-                            writeCall(currentClass + "." + subroutineToCall, nArgsToCall + 1) # Methods operate on K + 1 arguments
-                        
+                            writePush("THIS", 0)
+                            writeCall(classToCall + "." + subroutineToCall, nArgsToCall + 1) # Methods operate on K + 1 arguments
                         elif (~isMethod):
-                            writeCall(currentClass + "." + subroutineToCall, nArgsToCall) # Functions/Constructors operate on K arguments
-                            writePop("TEMP", 0) # Need to pop and ignore stack for a void/function subroutine
+                            writeCall(classToCall + "." + subroutineToCall, nArgsToCall) # Functions/Constructors operate on K arguments
+
+                        if (isVoid): # Need to pop and ignore stack for a void function/method subroutine
+                            writePop("TEMP", 0)
                     
                         # Write ) symbol
                         if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
@@ -1545,7 +1555,6 @@ def compileIf():
             compileExpression()
             
             # CodeGen
-            # writeArithmetic("NOT")
             writeIf(currentSubroutineName + "$L" + str(L1))
             writeGoto(currentSubroutineName + "$L" + str(L2))
             
@@ -1575,16 +1584,17 @@ def compileIf():
                         stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                         outFile.write(stringToExport)
                         
-                        # CodeGen
-                        writeGoto(currentSubroutineName + "$L" + str(L3))
-                        
                         performBasicCheck()
                     
                         # Check if there's an additional else statement...
                         if ((currentTokenType == "KEYWORD") & (currentToken == "else")):
                             stringToExport = tabInsert() + "<keyword> " + currentToken + " </keyword>\n"
                             outFile.write(stringToExport)
-                        
+                            
+                            # CodeGen
+                            writeGoto(currentSubroutineName + "$L" + str(L3))
+                            writeLabel(currentSubroutineName + "$L" + str(L2))
+                            
                             performBasicCheck()
 
                             # Write { symbol
@@ -1593,9 +1603,6 @@ def compileIf():
                                 outFile.write(stringToExport)
         
                                 performBasicCheck()
-                                
-                                # CodeGen
-                                writeLabel(currentSubroutineName + "$L" + str(L2))
                 
                                 # Write statement(s)
                                 compileStatements()
@@ -1616,7 +1623,11 @@ def compileIf():
                             else:
                                 print "E52"
                                 error()
-                
+                        else:
+                            # No else statement/if only
+                            # CodeGen
+                            writeLabel(currentSubroutineName + "$L" + str(L2))
+                            
                     else:
                         print "E53"
                         error()
