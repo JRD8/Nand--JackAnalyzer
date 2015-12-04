@@ -46,7 +46,7 @@ def main():
     
     # Input options?
     #userInput = raw_input(">") # Prompt for user input...
-    userInput = "stringtest.jack" # Test without user input
+    userInput = "average" # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
@@ -1303,6 +1303,7 @@ def compileLet():
             
             # CodeGen
             variableToAssign = currentToken
+            isArray = False
         
             performBasicCheck()
             
@@ -1310,11 +1311,19 @@ def compileLet():
             if ((currentTokenType == "SYMBOL") & (currentToken == "[")):
                 stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
                 outFile.write(stringToExport)
+                
+                #CodeGen
+                isArray = True
             
                 performBasicCheck()
             
                 # Write expression
                 compileExpression()
+                
+                # CodeGen
+                writePush("LOCAL", indexOf(variableToAssign))
+                writeArithmetic("ADD")
+                writePop("POINTER", 1)
                 
                 # Write ] symbol
                 if ((currentTokenType == "SYMBOL") & (currentToken == "]")):
@@ -1336,7 +1345,10 @@ def compileLet():
                 
                 # CodeGen
                 if (kindOf(variableToAssign) == "VAR"):
-                    writePop("LOCAL", indexOf(variableToAssign))
+                    if isArray:
+                        writePop("THAT", 0)
+                    elif ~isArray:
+                        writePop("LOCAL", indexOf(variableToAssign))
                 
                 elif (kindOf(variableToAssign) == "ARG"):
                     writePop("ARG", indexOf(variableToAssign))
@@ -1846,6 +1858,7 @@ def compileTerm():
             
             outFile.write(tabInsert() + "<!-- Identifier: " + str(kindOf(currentToken)).lower() + ", used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
             
+
             # CodeGen
             writePush("LOCAL", indexOf(currentToken))
         
