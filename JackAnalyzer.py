@@ -46,7 +46,7 @@ def main():
     
     # Input options?
     #userInput = raw_input(">") # Prompt for user input...
-    userInput = "average" # Test without user input
+    userInput = "stringtest.jack" # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
@@ -1761,6 +1761,22 @@ def compileTerm():
     elif currentTokenType == "STRING_CONST":
         stringToExport = tabInsert() + "<stringConstant> " + currentToken.strip("\"") + " </stringConstant>\n"
         outFile.write(stringToExport)
+        
+        # Code Gen
+        stringToProcess = currentToken.strip("\"")
+        stringLength = len(stringToProcess)
+        writePush("CONST", stringLength)
+        writeCall("String.new", 1)
+        writePop("POINTER", 0)
+        
+        i = 0
+        while (i < stringLength):
+            writePush("POINTER", 0)
+            writePush("CONST", ord(stringToProcess[i]))
+            writeCall("String.appendChar", 2)
+            writePop("TEMP", 0)
+            i = i + 1
+        writePush("POINTER", 0)
 
         performBasicCheck()
     
