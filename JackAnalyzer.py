@@ -1779,16 +1779,12 @@ def compileTerm():
         stringLength = len(stringToProcess)
         writePush("CONST", stringLength)
         writeCall("String.new", 1)
-        writePop("POINTER", 0)
         
         i = 0
         while (i < stringLength):
-            writePush("POINTER", 0)
             writePush("CONST", ord(stringToProcess[i]))
             writeCall("String.appendChar", 2)
-            writePop("TEMP", 0)
             i = i + 1
-        writePush("POINTER", 0)
 
         performBasicCheck()
     
