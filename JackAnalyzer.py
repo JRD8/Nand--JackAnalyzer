@@ -1323,7 +1323,6 @@ def compileLet():
                 # CodeGen
                 writePush("LOCAL", indexOf(variableToAssign))
                 writeArithmetic("ADD")
-                writePop("POINTER", 1)
                 
                 # Write ] symbol
                 if ((currentTokenType == "SYMBOL") & (currentToken == "]")):
@@ -1346,6 +1345,9 @@ def compileLet():
                 # CodeGen
                 if (kindOf(variableToAssign) == "VAR"):
                     if isArray:
+                        writePop("TEMP", 0)
+                        writePop("POINTER", 1)
+                        writePush("TEMP", 0)
                         writePop("THAT", 0)
                     elif ~isArray:
                         writePop("LOCAL", indexOf(variableToAssign))
@@ -1854,9 +1856,8 @@ def compileTerm():
             
             outFile.write(tabInsert() + "<!-- Identifier: " + str(kindOf(currentToken)).lower() + ", used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
             
-
             # CodeGen
-            writePush("LOCAL", indexOf(currentToken))
+            variableToAssign = currentToken
         
             performBasicCheck()
         
@@ -1872,7 +1873,10 @@ def compileTerm():
                 incrementTab()
                 
                 compileExpression()
-
+                
+                # CodeGen
+                writePush("LOCAL", indexOf(variableToAssign))
+                
                 decrementTab()
                 
                 if ((currentTokenType == "SYMBOL") & (currentToken == "]")):
