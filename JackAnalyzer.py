@@ -46,7 +46,7 @@ def main():
     
     # Input options?
     #userInput = raw_input(">") # Prompt for user input...
-    userInput = "average" # Test without user input
+    userInput = "pong" # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
@@ -1227,7 +1227,7 @@ def compileDo():
                         
                         # CodeGen
                         if (isMethod):
-                            writePush("THIS", 0)
+                            #writePush("THIS", 0) DO NEED TO PUSH THIS SOMETIMES?  Did not need this on Pong Main.jack
                             writeCall(classToCall + "." + subroutineToCall, nArgsToCall + 1) # Methods operate on K + 1 arguments
                         elif (~isMethod):
                             writeCall(classToCall + "." + subroutineToCall, nArgsToCall) # Functions/Constructors operate on K arguments
