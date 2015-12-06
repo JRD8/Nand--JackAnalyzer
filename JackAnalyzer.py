@@ -1357,6 +1357,9 @@ def compileLet():
                         
                 elif (kindOf(variableToAssign) == "FIELD"):
                     writePop("THIS", indexOf(variableToAssign))
+                
+                elif (kindOf(variableToAssign) == "STATIC"):
+                    writePop("STATIC", indexOf(variableToAssign))
     
                 # Write ; end of statement
                 if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
@@ -2023,7 +2026,10 @@ def compileTerm():
                 writePush("ARG", indexOf(currentToken))
             elif (kindOf(currentToken) == "FIELD"):
                 writePush("THIS", indexOf(currentToken))
-        
+            elif (kindOf(currentToken) == "STATIC"):
+                writePush("STATIC", indexOf(currentToken))
+
+
             performBasicCheck()
 
         else:
