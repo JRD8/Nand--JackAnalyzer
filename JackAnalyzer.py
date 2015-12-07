@@ -1311,7 +1311,10 @@ def compileLet():
                 compileExpression()
                 
                 # CodeGen
-                writePush("LOCAL", indexOf(variableToAssign))
+                if (kindOf(variableToAssign) == "VAR"):
+                    writePush("LOCAL", indexOf(variableToAssign))
+                if (kindOf(variableToAssign) == "ARG"):
+                    writePush("ARG", indexOf(variableToAssign))
                 writeArithmetic("ADD")
                 
                 # Write ] symbol
@@ -1735,26 +1738,6 @@ def compileExpression():
         elif (currentOpToCall == "|"):
             writeArithmetic("OR")
 
-    # Output the Op for RPN notation
-#if (currentOpToCall == "+"):
-#       writeArithmetic("ADD")
-#    elif (currentOpToCall == "-"):
-#        writeArithmetic("SUB")
-#    elif (currentOpToCall == "*"):
-#        outFile3.write("call Math.multiply 2\n")
-#    elif (currentOpToCall == "/"):
-#        outFile3.write("call Math.divide 2\n")
-#elif (currentOpToCall == "="):
-#        writeArithmetic("EQ")
-#    elif (currentOpToCall == ">"):
-#        writeArithmetic("GT")
-#    elif (currentOpToCall == "<"):
-    #        writeArithmetic("LT")
-#    elif (currentOpToCall == "&"):
-#        writeArithmetic("AND")
-#    elif (currentOpToCall == "|"):
-#        writeArithmetic("OR")
-
     decrementTab()
 
     # Write compileExpression footer
@@ -1817,6 +1800,8 @@ def compileTerm():
             writePush("CONST", 0)
         if (currentToken == "this"):
             writePush("POINTER", 0)
+        if (currentToken == "null"):
+            writePush("CONST", 0)
 
         performBasicCheck()
 
