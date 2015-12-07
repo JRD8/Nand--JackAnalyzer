@@ -1346,7 +1346,13 @@ def compileLet():
                         writePop("LOCAL", indexOf(variableToAssign))
                 
                 elif (kindOf(variableToAssign) == "ARG"):
-                    writePop("ARG", indexOf(variableToAssign))
+                    if isArray:
+                        writePop("TEMP", 0)
+                        writePop("POINTER", 1)
+                        writePush("TEMP", 0)
+                        writePop("THAT", 0)
+                    elif ~isArray:
+                        writePop("ARG", indexOf(variableToAssign))
                         
                 elif (kindOf(variableToAssign) == "FIELD"):
                     writePop("THIS", indexOf(variableToAssign))
