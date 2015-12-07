@@ -46,7 +46,7 @@ def main():
     
     # Input options?
     #userInput = raw_input(">") # Prompt for user input...
-    userInput = "test" # Test without user input
+    userInput = "complexarrays" # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
