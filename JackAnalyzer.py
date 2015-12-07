@@ -236,8 +236,9 @@ def tokenizeFile(source_file):
 
     # Third Pass: Remove \n carriage returns
     thirdPass = secondPass.split("\n")
-    
-    # Fourth Pass: Remove // Comment lines
+
+    # Fourth Pass: Remove Comments
+    # Part 1: Remove // comment lines
     fourthPass = []
     for e in thirdPass:
         if e.find("//") != -1:
@@ -246,21 +247,12 @@ def tokenizeFile(source_file):
                 fourthPass.append(e)
         else:
             fourthPass.append(e)
-    print fourthPass
-    # Routine to remove // comments inline after statement TODO PROBLEM HERE!!!!
+    # Part 2 Remove // comments inline after statement
     temp = []
     for e in fourthPass:
-        if ((e.find("\r") != -1) & (e.find("//") == -1)):
-            temp.append(e)
-        else:
-            i = e.find("//")
-            if i != 1:
-                temp.append(e[0:i])
-            else:
-                temp.append(e)
+        eval = e.split("//")
+        temp.append(eval[0])
     fourthPass = temp
-    print fourthPass
-
 
     # Fifth Pass: Remove \r and \t\r elements
     fifthPass = []
@@ -1950,7 +1942,7 @@ def compileTerm():
                 #Code Gen
                 classToCall = typeOf(currentToken)
                 writePush("LOCAL", indexOf(currentToken))
-                isMethos = True
+                isMethod = True
             
             elif (kindOf(currentToken) == "FIELD"):
                 outFile.write(tabInsert() + "<!-- Identifier: field, used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
@@ -2000,7 +1992,6 @@ def compileTerm():
                     # Write expressionList
                     compileExpressionList()
                     
-                    # CodeGen
                     # CodeGen
                     if (isMethod):
                         #writePush("THIS", 0) DO NEED TO PUSH THIS SOMETIMES?  Did not need this on Pong Main.jack
