@@ -1171,25 +1171,23 @@ def compileDo():
                 # Found a method call
                 if (kindOf(currentToken) == "VAR"):
                     outFile.write(tabInsert() + "<!-- Identifier: var, used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
-                    #subroutine method call (do foo.bar(x); // method:  push foo; push x; call Foo.bar 2)
                     
                     # CodeGen
-                    writePush("LOCAL", indexOf(currentToken))
                     classToCall = typeOf(currentToken)
+                    writePush("LOCAL", indexOf(currentToken))
                     isMethod = True
                                           
                 elif (kindOf(currentToken) == "FIELD"):
                     outFile.write(tabInsert() + "<!-- Identifier: field, used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
-                    #subroutine method call (do foo.bar(x); // method:  push foo; push x; call Foo.bar 2)
                     
                     # CodeGen
                     classToCall = typeOf(currentToken)
+                    writePush("THIS", indexOf(currentToken))
                     isMethod = True
                
                 # Found a function/constuctor call
                 elif (kindOf(currentToken) == "NONE"):
                     outFile.write(tabInsert() + "<!-- Identifier: class, used, no index -->\n") # Chap 11, Stage 1 Comment
-                    #subroutine function call (do Sys.error(x); // function:  push x; call Sys.error 1)
                     
                     # CodeGen
                     classToCall = currentToken
@@ -1942,24 +1940,35 @@ def compileTerm():
             # Writing a class/var name
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
-            
-            # CodeGen
-            classToCall = currentToken
-            
+
+
             # Found a method call
             if (kindOf(currentToken) == "VAR"):
                 outFile.write(tabInsert() + "<!-- Identifier: var, used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
                 #subroutine method call (do foo.bar(x); // method:  push foo; push x; call Foo.bar 2)
-                
+
+                #Code Gen
+                classToCall = typeOf(currentToken)
+                writePush("LOCAL", indexOf(currentToken))
+                isMethos = True
+            
             elif (kindOf(currentToken) == "FIELD"):
                 outFile.write(tabInsert() + "<!-- Identifier: field, used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
                 #subroutine method call (do foo.bar(x); // method:  push foo; push x; call Foo.bar 2)
-
+                
+                #Code Gen
+                classToCall = typeOf(currentToken)
+                writePush("THIS", indexOf(currentToken))
+                isMethod = True
 
             # Found a function/constuctor call
             elif (kindOf(currentToken) == "NONE"):
                 outFile.write(tabInsert() + "<!-- Identifier: class, used, no index -->\n") # Chap 11, Stage 1 Comment
                 #subroutine function call (do Sys.error(x); // function:  push x; call Sys.error 1)
+
+                # CodeGen
+                classToCall = currentToken
+                isMethod = False
 
             performBasicCheck()
             
@@ -1992,7 +2001,12 @@ def compileTerm():
                     compileExpressionList()
                     
                     # CodeGen
-                    writeCall(classToCall + "." + subroutineToCall, nArgsToCall)
+                    # CodeGen
+                    if (isMethod):
+                        #writePush("THIS", 0) DO NEED TO PUSH THIS SOMETIMES?  Did not need this on Pong Main.jack
+                        writeCall(classToCall + "." + subroutineToCall, nArgsToCall + 1) # Methods operate on K + 1 arguments
+                    elif (~isMethod):
+                        writeCall(classToCall + "." + subroutineToCall, nArgsToCall) # Functions/Constructors operate on K arguments
 
                     # Writing ) symbol
                     if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
