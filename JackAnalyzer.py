@@ -46,7 +46,7 @@ def main():
     
     # Input options?
     #userInput = raw_input(">") # Prompt for user input...
-    userInput = "pong" # Test without user input
+    userInput = "test" # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
@@ -1664,7 +1664,7 @@ def compileExpression():
     
     print "compileExpression()\n"
     
-    opToCall = ""
+    currentOpToCall = ""
     
     # Write compileExpression header
     stringToExport = tabInsert() + "<expression>\n"
@@ -1676,6 +1676,7 @@ def compileExpression():
     
     # Write an Op
     while ((currentTokenType == "SYMBOL") & ((currentToken == "+") | (currentToken == "-") | (currentToken == "*") | (currentToken == "/") | (currentToken == "&") | (currentToken == "|") | (currentToken == "<") | (currentToken == ">") | (currentToken == "="))):
+       
         # Account for the 3 op XML exceptions, <,>,&
         if currentToken == "<":
             stringToExport = tabInsert() + "<symbol> &lt; </symbol>\n"
@@ -1692,47 +1693,67 @@ def compileExpression():
             
         # Flag the arithmatic Op to use for later RPN
         if (currentToken == "+"):
-            opToCall = "+"
+            currentOpToCall = "+"
         elif (currentToken == "-"):
-            opToCall = "-"
+            currentOpToCall = "-"
         elif (currentToken == "*"):
-            opToCall = "*"
+            currentOpToCall = "*"
         elif (currentToken == "/"):
-            opToCall = "/"
+            currentOpToCall = "/"
         elif (currentToken == "="):
-            opToCall = "="
+            currentOpToCall = "="
         elif (currentToken == ">"):
-            opToCall = ">"
+            currentOpToCall = ">"
         elif (currentToken == "<"):
-            opToCall = "<"
+            currentOpToCall = "<"
         elif (currentToken == "&"):
-            opToCall = "&"
+            currentOpToCall = "&"
         elif (currentToken == "|"):
-            opToCall = "|"
+            currentOpToCall = "|"
 
         performBasicCheck()
 
         compileTerm()
+        
+        # Output the Op for RPN notation
+        if (currentOpToCall == "+"):
+            writeArithmetic("ADD")
+        elif (currentOpToCall == "-"):
+            writeArithmetic("SUB")
+        elif (currentOpToCall == "*"):
+            outFile3.write("call Math.multiply 2\n")
+        elif (currentOpToCall == "/"):
+            outFile3.write("call Math.divide 2\n")
+        elif (currentOpToCall == "="):
+            writeArithmetic("EQ")
+        elif (currentOpToCall == ">"):
+            writeArithmetic("GT")
+        elif (currentOpToCall == "<"):
+            writeArithmetic("LT")
+        elif (currentOpToCall == "&"):
+            writeArithmetic("AND")
+        elif (currentOpToCall == "|"):
+            writeArithmetic("OR")
 
     # Output the Op for RPN notation
-    if (opToCall == "+"):
-        writeArithmetic("ADD")
-    elif (opToCall == "-"):
-        writeArithmetic("SUB")
-    elif (opToCall == "*"):
-        outFile3.write("call Math.multiply 2\n")
-    elif (opToCall == "/"):
-        outFile3.write("call Math.divide 2\n")
-    elif (opToCall == "="):
-        writeArithmetic("EQ")
-    elif (opToCall == ">"):
-        writeArithmetic("GT")
-    elif (opToCall == "<"):
-        writeArithmetic("LT")
-    elif (opToCall == "&"):
-        writeArithmetic("AND")
-    elif (opToCall == "|"):
-        writeArithmetic("OR")
+#if (currentOpToCall == "+"):
+#       writeArithmetic("ADD")
+#    elif (currentOpToCall == "-"):
+#        writeArithmetic("SUB")
+#    elif (currentOpToCall == "*"):
+#        outFile3.write("call Math.multiply 2\n")
+#    elif (currentOpToCall == "/"):
+#        outFile3.write("call Math.divide 2\n")
+#elif (currentOpToCall == "="):
+#        writeArithmetic("EQ")
+#    elif (currentOpToCall == ">"):
+#        writeArithmetic("GT")
+#    elif (currentOpToCall == "<"):
+    #        writeArithmetic("LT")
+#    elif (currentOpToCall == "&"):
+#        writeArithmetic("AND")
+#    elif (currentOpToCall == "|"):
+#        writeArithmetic("OR")
 
     decrementTab()
 
@@ -1805,16 +1826,16 @@ def compileTerm():
         outFile.write(stringToExport)
         
         # CodeGen
-        opToCall = currentToken
+        currentOpToCall = currentToken
 
         performBasicCheck()
 
         compileTerm()
     
         # CodeGen
-        if (opToCall == "-"):
+        if (currentOpToCall == "-"):
             writeArithmetic("NEG")
-        if (opToCall == "~"):
+        if (currentOpToCall == "~"):
             writeArithmetic("NOT")
 
 
