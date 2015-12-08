@@ -1075,7 +1075,7 @@ def compileStatements():
 
 def compileDo():
     
-    isVoid = True # This needs to be checked!!!!
+    isVoid = True
     
     print "compileDo()\n"
     
@@ -1217,7 +1217,6 @@ def compileDo():
                         
                         # CodeGen
                         if (isMethod):
-                            #writePush("THIS", 0) DO NEED TO PUSH THIS SOMETIMES?  Did not need this on Pong Main.jack
                             writeCall(classToCall + "." + subroutineToCall, nArgsToCall + 1) # Methods operate on K + 1 arguments
                         elif (~isMethod):
                             writeCall(classToCall + "." + subroutineToCall, nArgsToCall) # Functions/Constructors operate on K arguments
