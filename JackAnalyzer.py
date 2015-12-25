@@ -46,7 +46,7 @@ def main():
     
     # Input options?
     userInput = raw_input(">") # Prompt for user input...
-    #userInput = "complexarrays" # Test without user input
+    #userInput = "Test" # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
@@ -1126,8 +1126,10 @@ def compileDo():
                     
                     # CodeGen
                     writeCall(classToCall + "." + currentSubroutineName, nArgsToCall + 1)
+                    nArgsToCall = 0
                     if (isVoid): # Need to pop and ignore stack for a void method subroutine
                         writePop("TEMP", 0)
+                    
         
                     # Write ) symbol
                     if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
@@ -1220,6 +1222,7 @@ def compileDo():
                             writeCall(classToCall + "." + subroutineToCall, nArgsToCall + 1) # Methods operate on K + 1 arguments
                         elif (~isMethod):
                             writeCall(classToCall + "." + subroutineToCall, nArgsToCall) # Functions/Constructors operate on K arguments
+                        nArgsToCall = 0
 
                         if (isVoid): # Need to pop and ignore stack for a void function/method subroutine
                             writePop("TEMP", 0)
@@ -1314,6 +1317,8 @@ def compileLet():
                     writePush("LOCAL", indexOf(variableToAssign))
                 if (kindOf(variableToAssign) == "ARG"):
                     writePush("ARG", indexOf(variableToAssign))
+                if (kindOf(variableToAssign) == "STATIC"):
+                    writePush("STATIC", indexOf(variableToAssign))
                 writeArithmetic("ADD")
                 
                 # Write ] symbol
@@ -1352,12 +1357,18 @@ def compileLet():
                         writePop("THAT", 0)
                     elif ~isArray:
                         writePop("ARG", indexOf(variableToAssign))
-                        
-                elif (kindOf(variableToAssign) == "FIELD"):
-                    writePop("THIS", indexOf(variableToAssign))
                 
                 elif (kindOf(variableToAssign) == "STATIC"):
-                    writePop("STATIC", indexOf(variableToAssign))
+                    if isArray:
+                        writePop("TEMP", 0)
+                        writePop("POINTER", 1)
+                        writePush("TEMP", 0)
+                        writePop("THAT", 0)
+                    elif ~isArray:
+                        writePop("STATIC", indexOf(variableToAssign))
+                            
+                elif (kindOf(variableToAssign) == "FIELD"):
+                    writePop("THIS", indexOf(variableToAssign))
     
                 # Write ; end of statement
                 if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
@@ -1879,7 +1890,12 @@ def compileTerm():
                 compileExpression()
                 
                 # CodeGen
-                writePush("LOCAL", indexOf(variableToAssign))
+                if (kindOf(variableToAssign) == "VAR"):
+                    writePush("LOCAL", indexOf(variableToAssign))
+                if (kindOf(variableToAssign) == "ARG"):
+                    writePush("ARG", indexOf(variableToAssign))
+                if (kindOf(variableToAssign) == "STATIC"):
+                    writePush("STATIC", indexOf(variableToAssign))
                 
                 decrementTab()
                 
@@ -2009,6 +2025,7 @@ def compileTerm():
                         writeCall(classToCall + "." + subroutineToCall, nArgsToCall + 1) # Methods operate on K + 1 arguments
                     elif (~isMethod):
                         writeCall(classToCall + "." + subroutineToCall, nArgsToCall) # Functions/Constructors operate on K arguments
+                    nArgsToCall = 0
 
                     # Writing ) symbol
                     if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
