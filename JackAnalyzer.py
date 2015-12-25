@@ -46,7 +46,7 @@ def main():
     
     # Input options?
     userInput = raw_input(">") # Prompt for user input...
-    #userInput = "Test" # Test without user input
+    #userInput = "...." # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
@@ -1075,6 +1075,8 @@ def compileStatements():
 
 def compileDo():
     
+    global nArgsToCall
+    
     isVoid = True
     
     print "compileDo()\n"
@@ -1764,6 +1766,8 @@ def compileExpression():
 
 
 def compileTerm():
+    
+    global nArgsToCall
     
     print "compileTerm()\n"
     
