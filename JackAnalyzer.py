@@ -46,8 +46,8 @@ def main():
     print "Enter the Source Jack File (.jack) or Source Jack Directory (within this path) to be analyzed:"
     
     # Input options?
-    #userInput = raw_input(">") # Prompt for user input...
-    userInput = "String.jack" # Test without user input
+    userInput = raw_input(">") # Prompt for user input...
+    #userInput = "String.jack" # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
