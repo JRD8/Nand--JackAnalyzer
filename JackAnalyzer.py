@@ -46,8 +46,8 @@ def main():
     print "Enter the Source Jack File (.jack) or Source Jack Directory (within this path) to be analyzed:"
     
     # Input options?
-    userInput = raw_input(">") # Prompt for user input...
-    #userInput = "...." # Test without user input
+    #userInput = raw_input(">") # Prompt for user input...
+    userInput = "String.jack" # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
@@ -1322,6 +1322,9 @@ def compileLet():
                     writePush("ARG", indexOf(variableToAssign))
                 if (kindOf(variableToAssign) == "STATIC"):
                     writePush("STATIC", indexOf(variableToAssign))
+                if (kindOf(variableToAssign) == "FIELD"):
+                    if isArray:
+                        writePush("THIS", indexOf(variableToAssign))
                 writeArithmetic("ADD")
                 
                 # Write ] symbol
@@ -1371,7 +1374,13 @@ def compileLet():
                         writePop("STATIC", indexOf(variableToAssign))
                             
                 elif (kindOf(variableToAssign) == "FIELD"):
-                    writePop("THIS", indexOf(variableToAssign))
+                    if isArray:
+                        writePop("TEMP", 0)
+                        writePop("POINTER", 1)
+                        writePush("TEMP", 0)
+                        writePop("THAT", 0)
+                    elif ~ isArray:
+                        writePop("THIS", indexOf(variableToAssign))
     
                 # Write ; end of statement
                 if ((currentTokenType == "SYMBOL") & (currentToken == ";")):
@@ -1868,6 +1877,9 @@ def compileTerm():
     elif (currentTokenType == "IDENTIFIER"):
         lookAhead = tokenizedSource[currentPos] # Not currentPos + 1 due to advance() counting...
         
+        # CodeGen
+        isArray = False
+        
         # Found a varName[array]
         if lookAhead == "[":
             # Writing the varName
@@ -1878,6 +1890,7 @@ def compileTerm():
             
             # CodeGen
             variableToAssign = currentToken
+            isArray = True
         
             performBasicCheck()
         
@@ -1901,7 +1914,10 @@ def compileTerm():
                     writePush("ARG", indexOf(variableToAssign))
                 if (kindOf(variableToAssign) == "STATIC"):
                     writePush("STATIC", indexOf(variableToAssign))
-                
+                if (kindOf(variableToAssign) == "FIELD"):
+                    if isArray:
+                        writePush("THIS", indexOf(variableToAssign))
+
                 decrementTab()
                 
                 if ((currentTokenType == "SYMBOL") & (currentToken == "]")):
@@ -1930,6 +1946,10 @@ def compileTerm():
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
             
+            # CodeGen
+            subroutineToCall = currentToken
+            writePush("POINTER", 0)
+            
             outFile.write(tabInsert() + "<!-- Identifier: subroutine, used, no index -->\n") # Chap 11, Stage 1 Comment
 
             performBasicCheck()
@@ -1943,6 +1963,11 @@ def compileTerm():
                 
                 # Write expressionList
                 compileExpressionList()
+                
+                # CodeGen
+                writeCall(currentClass + "." + subroutineToCall, nArgsToCall + 1) # Methods operate on K + 1 arguments
+                nArgsToCall = 0
+                
                 
                 # Writing ) symbol
                 if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
@@ -2026,7 +2051,6 @@ def compileTerm():
                     
                     # CodeGen
                     if (isMethod):
-                        #writePush("THIS", 0) DO NEED TO PUSH THIS SOMETIMES?  Did not need this on Pong Main.jack
                         writeCall(classToCall + "." + subroutineToCall, nArgsToCall + 1) # Methods operate on K + 1 arguments
                     elif (~isMethod):
                         writeCall(classToCall + "." + subroutineToCall, nArgsToCall) # Functions/Constructors operate on K arguments
