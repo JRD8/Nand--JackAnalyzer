@@ -767,10 +767,11 @@ def compileSubroutine():
                         
                         # CodeGen
                         writeFunction(currentClass + "." + currentSubroutineName, varCount("VAR"))
-                        if (currentSubroutineName == "new"): # Additional code for a Constructor
+                        if (subroutineType == "constructor"): # Additional code for a constructor
                             writePush("CONST", varCount("FIELD"))
                             writeCall("Memory.alloc", 1)
                             writePop("POINTER", 0)
+
                         if (subroutineType == "method"): # Additional code for a method subroutine to push THIS value and restore it to POINTER 0
                             writePush("ARG", 0)
                             writePop("POINTER", 0)
