@@ -15,7 +15,6 @@ currentClass = ""
 classToCall = ""
 currentSubroutineName = ""
 currentLabelIndex = 0
-nArgsToCall = 0
 nParsForFunction = 0
 
 outFile = "" # Main Parser File **.xml
@@ -47,7 +46,7 @@ def main():
     
     # Input options?
     userInput = raw_input(">") # Prompt for user input...
-    #userInput = "String.jack" # Test without user input
+    #userInput = "ScreenTest" # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
@@ -1077,11 +1076,9 @@ def compileStatements():
 
 def compileDo():
     
-    global nArgsToCall
+    print "compileDo()\n"
     
     isVoid = True
-    
-    print "compileDo()\n"
     
     # Write compileDo header
     stringToExport = tabInsert() + "<doStatement>\n"
@@ -1126,11 +1123,10 @@ def compileDo():
                     writePush("POINTER", 0)
                 
                     # Write expressionList
-                    compileExpressionList()
+                    nArgsToCall = compileExpressionList()
                     
                     # CodeGen
                     writeCall(classToCall + "." + currentSubroutineName, nArgsToCall + 1)
-                    nArgsToCall = 0
                     if (isVoid): # Need to pop and ignore stack for a void method subroutine
                         writePop("TEMP", 0)
                     
@@ -1219,14 +1215,13 @@ def compileDo():
                         performBasicCheck()
                     
                         # Write expressionList
-                        compileExpressionList()
+                        nArgsToCall = compileExpressionList()
                         
                         # CodeGen
                         if (isMethod):
                             writeCall(classToCall + "." + subroutineToCall, nArgsToCall + 1) # Methods operate on K + 1 arguments
                         elif (~isMethod):
                             writeCall(classToCall + "." + subroutineToCall, nArgsToCall) # Functions/Constructors operate on K arguments
-                        nArgsToCall = 0
 
                         if (isVoid): # Need to pop and ignore stack for a void function/method subroutine
                             writePop("TEMP", 0)
@@ -1778,8 +1773,6 @@ def compileExpression():
 
 def compileTerm():
     
-    global nArgsToCall
-    
     print "compileTerm()\n"
     
     # Write compileTerm header
@@ -1963,12 +1956,10 @@ def compileTerm():
                 performBasicCheck()
                 
                 # Write expressionList
-                compileExpressionList()
+                nArgsToCall = compileExpressionList()
                 
                 # CodeGen
-                writeCall(currentClass + "." + subroutineToCall, nArgsToCall + 1) # Methods operate on K + 1 arguments
-                nArgsToCall = 0
-                
+                writeCall(currentClass + "." + subroutineToCall, nArgsToCall + 1) # Methods operate on K + 1 argument
                 
                 # Writing ) symbol
                 if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
@@ -2048,14 +2039,13 @@ def compileTerm():
                     performBasicCheck()
                 
                     # Write expressionList
-                    compileExpressionList()
+                    nArgsToCall = compileExpressionList()
                     
                     # CodeGen
                     if (isMethod):
                         writeCall(classToCall + "." + subroutineToCall, nArgsToCall + 1) # Methods operate on K + 1 arguments
                     elif (~isMethod):
                         writeCall(classToCall + "." + subroutineToCall, nArgsToCall) # Functions/Constructors operate on K arguments
-                    nArgsToCall = 0
 
                     # Writing ) symbol
                     if ((currentTokenType == "SYMBOL") & (currentToken == ")")):
@@ -2113,8 +2103,6 @@ def compileTerm():
 
 def compileExpressionList():
     
-    global nArgsToCall
-    
     print "compileExpressionList()\n"
     
     nArgsToCall = 0
@@ -2128,20 +2116,20 @@ def compileExpressionList():
     if not ((currentTokenType == "SYMBOL") & (currentToken == ")")):
         
         compileExpression()
-        
-        nArgsToCall = nArgsToCall + 1
+        nArgsToCall = nArgsToCall + 1 # increment argument counter
     
         # Loop to write multiple expressions
         while ((currentTokenType == "SYMBOL") & (currentToken == ",")):
-        
+            
+
             stringToExport = tabInsert() + "<symbol> " + currentToken + " </symbol>\n"
             outFile.write(stringToExport)
             
             performBasicCheck()
             
             compileExpression()
+            nArgsToCall = nArgsToCall + 1 # increment argument counter
 
-            nArgsToCall = nArgsToCall + 1
 
     decrementTab()
 
@@ -2149,7 +2137,7 @@ def compileExpressionList():
     stringToExport = tabInsert() + "</expressionList>\n"
     outFile.write(stringToExport)
     
-    return
+    return nArgsToCall
 
 
 ## SYMBOL TABLE MODULE ##
@@ -2440,6 +2428,7 @@ def decrementTab():
         tabLevel = 0
 
     return
+
 
 def tabInsert():
     
