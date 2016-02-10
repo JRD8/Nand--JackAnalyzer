@@ -45,8 +45,8 @@ def main():
     print "Enter the Source Jack File (.jack) or Source Jack Directory (within this path) to be analyzed:"
     
     # Input options?
-    userInput = raw_input(">") # Prompt for user input...
-    #userInput = "ScreenTest" # Test without user input
+    #userInput = raw_input(">") # Prompt for user input...
+    userInput = "OutputTest" # Test without user input
     
     print "\nThis is the Initial Source Input: " + userInput
     
@@ -227,7 +227,7 @@ def tokenizeFile(source_file):
     temp = list(firstPass)
     quoteOpen = 0
     while (i < len(temp)):
-        if temp[i] == "\"":
+        if ((temp[i] == "\"") & (temp[i-1] != "/") & (temp[i-2] != "/")) :
             quoteOpen = ~quoteOpen
         if ((temp[i] == " ") & (quoteOpen)):
             temp[i] = "\x00"
@@ -1079,6 +1079,7 @@ def compileDo():
     print "compileDo()\n"
     
     isVoid = True
+    isMethod = False
     
     # Write compileDo header
     stringToExport = tabInsert() + "<doStatement>\n"
@@ -1775,6 +1776,8 @@ def compileTerm():
     
     print "compileTerm()\n"
     
+    isMethod = False
+    
     # Write compileTerm header
     stringToExport = tabInsert() + "<term>\n"
     outFile.write(stringToExport)
@@ -1981,7 +1984,6 @@ def compileTerm():
             # Writing a class/var name
             stringToExport = tabInsert() + "<identifier> " + currentToken + " </identifier>\n"
             outFile.write(stringToExport)
-
 
             # Found a method call
             if (kindOf(currentToken) == "VAR"):
