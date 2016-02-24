@@ -1776,6 +1776,8 @@ def compileTerm():
     
     print "compileTerm()\n"
     
+    global classToCall
+    
     isMethod = False
     
     # Write compileTerm header
@@ -1797,11 +1799,13 @@ def compileTerm():
 
     # Found a stringConstant...
     elif currentTokenType == "STRING_CONST":
-        stringToExport = tabInsert() + "<stringConstant> " + currentToken.strip("\"") + " </stringConstant>\n"
+        
+        stringToProcess = currentToken.replace("\\", "") # Remove backslashes
+        stringToProcess = stringToProcess.replace("\"", "") # Remove front and back quotation marks
+        stringToExport = tabInsert() + "<stringConstant> " + stringToProcess + " </stringConstant>\n"
         outFile.write(stringToExport)
         
         # Code Gen
-        stringToProcess = currentToken.strip("\"")
         stringLength = len(stringToProcess)
         writePush("CONST", stringLength)
         writeCall("String.new", 1)
@@ -2004,7 +2008,16 @@ def compileTerm():
                 writePush("THIS", indexOf(currentToken))
                 isMethod = True
 
-            # Found a function/constuctor call
+            elif (kindOf(currentToken) == "ARG"):
+                outFile.write(tabInsert() + "<!-- Identifier: arg, used, " + str(indexOf(currentToken)) + " -->\n") # Chap 11, Stage 1 Comment
+                #subroutine method call (do foo.bar(x); // method:  push foo; push x; call Foo.bar 2)
+                
+                #Code Gen
+                classToCall = typeOf(currentToken)
+                writePush("ARG", indexOf(currentToken))
+                isMethod = True
+
+            # Found a function/constructor call
             elif (kindOf(currentToken) == "NONE"):
                 outFile.write(tabInsert() + "<!-- Identifier: class, used, no index -->\n") # Chap 11, Stage 1 Comment
                 #subroutine function call (do Sys.error(x); // function:  push x; call Sys.error 1)
@@ -2042,6 +2055,8 @@ def compileTerm():
                 
                     # Write expressionList
                     nArgsToCall = compileExpressionList()
+                    
+                    print subroutineToCall
                     
                     # CodeGen
                     if (isMethod):
